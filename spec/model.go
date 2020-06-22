@@ -1,12 +1,14 @@
 package spec
 
 type Root struct {
-	Step
 	Name string
 	Description string
+	Actions map[string][]StepUnion
+	Steps[] *StepUnion
 }
 
-type Step struct {
+type StepUnion struct {
+	Step
 	Value *ValueStep
 	Option *OptionStep
 	Multi *MultiStep
@@ -15,11 +17,15 @@ type Step struct {
 	Do string
 	Exec string
 	If string
-	Steps[] *Step
+}
+
+type Step struct {
+	Steps[] *StepUnion
 }
 
 type ValueStep struct {
 	Step
+	Value *ValueStep
 	Name string
 	Title string
 }

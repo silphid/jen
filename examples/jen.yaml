@@ -1,0 +1,45 @@
+name: go-service
+description: Generic Go micro-service implementing all best practices
+steps:
+  - value:
+      name: myName
+      title: Name of project # defaults to value of "name" property above
+      env: NAME # exports value as environment variable when invoking actions (`myName` defaults to `MY_NAME`)
+  - option:
+      name: myOption
+      title: A checkbox choice
+      steps: # optional sub-steps (if any sub-values define, value of myOption itself gets stored in myOption.enabled)
+      - value: # only prompted if parent option selected
+        name: subValue
+        title: Sub value of myOptions
+  - multi:
+      title: Select all desired options
+      items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
+      - name: myOption1
+        title: Displayed text for option 1
+      - name: myOption2
+        title: Displayed text for option 2
+  - select:
+      name: mySelect
+      title: Select one of the following choices
+      items: # Exclusive selection (radio-button), sets variable "Choices" to one of "choice1" or "choice2"
+      - value: choice1
+        title: Displayed text for choice 1
+      - value: choice2
+        title: Displayed text for choice 2
+  - option: # name is omitted here, because not needed
+      title: Install Codefresh triggers?
+      steps:
+      - do: install # All execution is enqueued to be executed at the end
+  - render: src
+  - if: mySelect == choice1
+    render: ../infra
+  - if: install
+    do: install
+  - exec: echo Hello world!
+actions:
+  install:
+  - if: myOption == some value
+    exec: install # executes script "install", passing all values as env vars
+  uninstall:
+  - exec: uninstall # executes script "uninstall", passing all values as env vars
