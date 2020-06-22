@@ -121,9 +121,9 @@ steps:
 		- value: # only prompted if parent option selected
 				name: subValue
 				title: Sub value of myOptions
-- options:
-		title: Select all the options
-		items: # Multi-selection (check-boxes), sets variable "Option1" to either "true" or "false", and same thing for "Option2"
+- multi:
+		title: Select all desired options
+		items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
     - name: myOption1
     	title: Displayed text for option 1
     - name: myOption2
