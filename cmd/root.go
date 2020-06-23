@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/spec"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"github.com/Samasource/jen/internal/model"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -22,30 +20,23 @@ var (
 )
 
 func run(_ *cobra.Command, _ []string) error {
-	root, err := loadSpec()
+	// Load spec
+	spec, err := model.Load()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%v", root)
+	// Execute all spec steps
+	context := model.Context{
+		Spec: spec,
+		Values: make(model.Values),
+	}
+	if err := context.Spec.Execute(context); err != nil {
+		return err
+	}
+
+	fmt.Printf("Context:\n%v", context)
 	return nil
-}
-
-func loadSpec() (spec.Root, error) {
-	// Load file to buffer
-	data, err := ioutil.ReadFile("examples/jen.yaml")
-	if err != nil {
-		return spec.Root{}, err
-	}
-
-	// Parse buffer as yaml into map
-	doc := spec.Root{}
-	err = yaml.Unmarshal(data, &doc)
-	if err != nil {
-		return spec.Root{}, err
-	}
-
-	return doc, nil
 }
 
 func Execute() error {

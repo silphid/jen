@@ -55,7 +55,7 @@ It is overly long and complex to manually create a new micro-service and best pr
 - CLI libraries
   - [spf13/cobra](https://github.com/spf13/cobra)
   - [urfave/cli](urfave/cli)
-  - [prompui](https://github.com/manifoldco/promptui)
+  - [survey](https://github.com/AlecAivazis/survey)
 - Templating libraries
   - [gomplate](https://docs.gomplate.ca/)
   - [go templates](https://golang.org/pkg/text/template/)
@@ -217,6 +217,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - OpenAPI
 - [Organizing Go Code](https://blog.golang.org/organizing-go-code)
 - [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
+- Codefresh build badge
 
 # Pseudo-code / logic
 

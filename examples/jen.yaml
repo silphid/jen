@@ -5,6 +5,9 @@ steps:
       name: myName
       title: Name of project # defaults to value of "name" property above
       env: NAME # exports value as environment variable when invoking actions (`myName` defaults to `MY_NAME`)
+  - secret:
+      name: secret
+      title: Your password
   - option:
       name: myOption
       title: A checkbox choice
