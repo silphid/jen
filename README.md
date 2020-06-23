@@ -247,25 +247,18 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 # Backlog
 
-## Create project skeleton
-
-- Cobra
-- Viper
-- Unit tests
-- https://github.com/manifoldco/promptui
-
-## Load spec file
-
-- Model spec file (dict/structs)
-- Load model from spec file
-
-## Implement prompts
-
-
-
-## Implement rendering
-
-
+- ~~Create project skeleton~~
+  - ~~Cobra~~
+  - ~~Viper~~
+- ~~Load spec file~~
+  - ~~Model spec file (dict/structs)~~
+  - ~~Load model from spec file~~
+- ~~Prompts~~
+- Rendering
+- Select template from list
+- Do (actions)
+- Exec (shell)
+- If (conditionals)
 
 ## Create minimal go project best practice template
 
@@ -278,13 +271,14 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
   - Create git repo
 - Override values at command-line level (`--set myValue=value`)
 - Override values from existing spec file
-- Sub-steps
+- Sub-steps and sub-values
 - Enqueuing all actual commands for execution at the end
 - Dynamic folder/file names
 - Conditional folders/files
 - Conditional expressions (ie: `.myValue == value`)
 - Multiple options grouped into single step (multiple check-boxes)
 - Reusable modules
+- Explicitly customizable env var names
 
 ## Out of scope (potential features)
 

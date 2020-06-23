@@ -1,9 +1,12 @@
+// Project: {{ .Name }}
 package model
 
 import (
 	"github.com/AlecAivazis/survey/v2"
 )
 
+// Conditional section
+{{ if .myOption -}}
 func (step *ValueStep) Execute(context Context) error {
 	prompt := &survey.Input{
 		Message: step.Title,
@@ -17,6 +20,7 @@ func (step *ValueStep) Execute(context Context) error {
 	context.Values[step.Name] = value
 	return nil
 }
+{{ endif -}}
 
 func (step *SecretStep) Execute(context Context) error {
 	prompt := &survey.Password{

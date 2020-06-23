@@ -1,19 +1,22 @@
-package model
+package internal
 
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"path"
 )
 
-func Load() (Spec, error) {
+func Load(templateDir string) (Spec, error) {
 	// Load file to buffer
-	data, err := ioutil.ReadFile("examples/jen.yaml")
+	data, err := ioutil.ReadFile(path.Join(templateDir, "jen.yaml"))
 	if err != nil {
 		return Spec{}, err
 	}
 
 	// Parse buffer as yaml into map
-	doc := Spec{}
+	doc := Spec{
+		TemplateDir: templateDir,
+	}
 	err = yaml.Unmarshal(data, &doc)
 	if err != nil {
 		return Spec{}, err

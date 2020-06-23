@@ -1,10 +1,9 @@
-name: go-service
-description: Generic Go micro-service implementing all best practices
+name: template1
+description: A first dummy test template
 steps:
   - value:
-      name: myName
+      name: Name
       title: Name of project # defaults to value of "name" property above
-      env: NAME # exports value as environment variable when invoking actions (`myName` defaults to `MY_NAME`)
   - secret:
       name: secret
       title: Your password
@@ -35,8 +34,6 @@ steps:
       steps:
       - do: install # All execution is enqueued to be executed at the end
   - render: src
-  - if: mySelect == choice1
-    render: ../infra
   - if: install
     do: install
   - exec: echo Hello world!

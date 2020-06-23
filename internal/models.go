@@ -1,13 +1,14 @@
-package model
+package internal
 
 type Values map[string]interface{}
 
 type Context struct {
 	Values Values
-	Spec Spec
+	Spec   Spec
 }
 
 type Spec struct {
+	TemplateDir string `json:"-"`
 	Name        string
 	Description string
 	Actions     map[string][]StepUnion
