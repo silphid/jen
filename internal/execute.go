@@ -26,6 +26,8 @@ func (step StepUnion) Execute(context Context) error {
 		err = step.Multi.Execute(context)
 	case step.Select != nil:
 		err = step.Select.Execute(context)
+	case step.Render != "":
+		err = render(context, step.Render)
 	default:
 		fmt.Print("Ignoring unsupported command (for now!)")
 	}

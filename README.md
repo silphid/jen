@@ -66,7 +66,7 @@ It is overly long and complex to manually create a new micro-service and best pr
 ## Create project in sub-folder, prompting for inputs
 
 ``` bash
-$ jen create
+$ jen gen
 ```
 
 - Prompts for which template to use
@@ -81,13 +81,13 @@ $ jen create
 ## Use values from yaml
 
 ``` bash
-$ jen go -f jen.yaml
+$ jen gen -f jen.yaml
 ```
 
 ## Specify value (avoid prompt)
 
 ``` bash
-$ jen go --set template=go-service
+$ jen gen --set template=go-service
 ```
 
 ## Perform an action (ie: add/remove Codefresh triggers)
@@ -99,7 +99,7 @@ $ jen do install
 ## Dry run (only show output, skip all disk changes)
 
 ``` bash
-$ jen go --dry-run
+$ jen gen --dry-run
 ```
 
 # Yaml formats
@@ -266,6 +266,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 ## Wishlist (if time allows)
 
+- Ensure output dir does not already exist
 - Custom actions
   - Create Codefresh build triggers
   - Create git repo
@@ -276,10 +277,28 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Dynamic folder/file names
 - Conditional folders/files
 - Conditional expressions (ie: `.myValue == value`)
-- Multiple options grouped into single step (multiple check-boxes)
+- Add support for [sprig](https://github.com/Masterminds/sprig) functions
 - Reusable modules
 - Explicitly customizable env var names
 
 ## Out of scope (potential features)
 
 - Importing existing project 
+
+# Best practices to document
+
+## Go
+
+### Wrap errors
+
+Only add info that was not already passed into method that returned error
+
+``` go
+f, err := os.Create(outputPath)
+if err != nil {
+  // ouputPath is already included in error message, only adding inputPath info
+	return fmt.Errorf("create output file for template %v: %v", inputPath, err)
+}
+
+```
+

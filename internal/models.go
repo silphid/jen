@@ -3,12 +3,13 @@ package internal
 type Values map[string]interface{}
 
 type Context struct {
-	Values Values
-	Spec   Spec
+	TemplateDir string
+	OutputDir string
+	Values      Values
+	Spec        Spec
 }
 
 type Spec struct {
-	TemplateDir string `json:"-"`
 	Name        string
 	Description string
 	Actions     map[string][]StepUnion

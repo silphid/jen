@@ -2,7 +2,7 @@ name: template1
 description: A first dummy test template
 steps:
   - value:
-      name: Name
+      name: name
       title: Name of project # defaults to value of "name" property above
   - secret:
       name: secret

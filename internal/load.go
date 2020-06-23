@@ -14,9 +14,7 @@ func Load(templateDir string) (Spec, error) {
 	}
 
 	// Parse buffer as yaml into map
-	doc := Spec{
-		TemplateDir: templateDir,
-	}
+	doc := Spec{}
 	err = yaml.Unmarshal(data, &doc)
 	if err != nil {
 		return Spec{}, err
