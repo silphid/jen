@@ -8,9 +8,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 )
+
+var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 
 func render(context Context, relativeInputDir string) error {
 	inputDir, err := filepath.Abs(path.Join(context.TemplateDir, relativeInputDir))
@@ -25,6 +28,7 @@ func render(context Context, relativeInputDir string) error {
 }
 
 func renderDir(context Context, inputPath, outputPath string) error {
+	Logf("Rendering dir %q -> %q", inputPath, outputPath)
 	infos, err := ioutil.ReadDir(inputPath)
 	if err != nil {
 		return err
@@ -33,12 +37,16 @@ func renderDir(context Context, inputPath, outputPath string) error {
 		return err
 	}
 	for _, info := range infos {
-		outputName, err := resolveName(context, info.Name())
+		outputName, include, err := resolveName(context, info.Name())
 		if err != nil {
 			return err
 		}
 		fullInput := path.Join(inputPath, info.Name())
 		fullOutput := path.Join(outputPath, outputName)
+		if !include {
+			Logf("Skipping %q", fullInput)
+			continue
+		}
 		if info.IsDir() {
 			err = renderDir(context, fullInput, fullOutput)
 		} else {
@@ -52,6 +60,7 @@ func renderDir(context Context, inputPath, outputPath string) error {
 }
 
 func renderFile(context Context, inputPath, outputPath string) error {
+	Logf("Rendering file %q -> %q", inputPath, outputPath)
 	tmpl, err := template.New(path.Base(inputPath)).Funcs(sprig.TxtFuncMap()).ParseFiles(inputPath)
 	if err != nil {
 		return err
@@ -67,18 +76,60 @@ func renderFile(context Context, inputPath, outputPath string) error {
 	return f.Close()
 }
 
-func resolveName(context Context, name string) (string, error) {
-	if strings.Index(name, "{{") == -1 {
-		return name, nil
+func resolveName(context Context, name string) (string, bool, error) {
+	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine
+	// whether the file/folder should be rendered and that expression then gets stripped
+	// from the name
+	for {
+		// Find expression
+		loc := doubleBracketRegexp.FindStringIndex(name)
+		if loc == nil {
+			break
+		}
+		expression := name[loc[0]+2 : loc[1]-2]
+
+		// Evaluate expression
+		value, err := evalExpression(context, expression)
+		if err != nil {
+			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %v", name, err)
+		}
+
+		// Should we exclude file/folder?
+		if !value {
+			return "", false, nil
+		}
+
+		// Remove expression from name
+		name = name[:loc[0]] + name[loc[1]:]
 	}
-	tmpl, err := template.New("base").Parse(name)
+
+	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
+	if strings.Index(name, "{{") != -1 {
+		tmpl, err := template.New("base").Parse(name)
+		if err != nil {
+			return "", false, fmt.Errorf("parse double-brace expression in name %q: %v", name, err)
+		}
+		var buffer bytes.Buffer
+		err = tmpl.Execute(&buffer, context.Values)
+		if err != nil {
+			return "", false, fmt.Errorf("render double-brace expression in name %q: %v", name, err)
+		}
+		return buffer.String(), true, nil
+	}
+
+	return name, true, nil
+}
+
+func evalExpression(context Context, expression string) (bool, error) {
+	ifExpr := "{{if " + expression + "}}true{{end}}"
+	tmpl, err := template.New("base").Parse(ifExpr)
 	if err != nil {
-		return "", err
+		return false, fmt.Errorf("evaluate expression %s: %v", expression, err)
 	}
 	var buffer bytes.Buffer
 	err = tmpl.Execute(&buffer, context.Values)
 	if err != nil {
-		return "", err
+		return false, fmt.Errorf("evaluate expression %s: %v", expression, err)
 	}
-	return buffer.String(), nil
+	return buffer.String() == "true", nil
 }

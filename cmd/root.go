@@ -22,6 +22,7 @@ var (
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "template-dir", "", "location of templates directory")
+	rootCmd.PersistentFlags().BoolVarP(&internal.Verbose, "verbose", "v", false, "display verbose messages")
 	rootCmd.AddCommand(gen.Cmd)
 }
 
