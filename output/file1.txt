@@ -1,0 +1,5 @@
+Project name: MyProj
+Project name in uppercase: MYPROJ
+
+myOption: true
+conditional content for myOption

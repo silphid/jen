@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/Masterminds/sprig"
 	"io/ioutil"
 	"os"
 	"path"
@@ -45,7 +46,10 @@ func renderDir(context Context, inputPath, outputPath string) error {
 }
 
 func renderFile(context Context, inputPath, outputPath string) error {
-	t, err := template.ParseFiles(inputPath)
+	t, err := template.
+		New(path.Base(inputPath)).
+		Funcs(sprig.TxtFuncMap()).
+		ParseFiles(inputPath)
 	if err != nil {
 		return err
 	}
@@ -55,7 +59,7 @@ func renderFile(context Context, inputPath, outputPath string) error {
 	}
 	err = t.Execute(f, context.Values)
 	if err != nil {
-		return fmt.Errorf("render t %v: %v", inputPath, err)
+		return fmt.Errorf("render template %v: %v", inputPath, err)
 	}
 	return f.Close()
 }
