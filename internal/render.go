@@ -1,12 +1,14 @@
 package internal
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/Masterminds/sprig"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -31,8 +33,12 @@ func renderDir(context Context, inputPath, outputPath string) error {
 		return err
 	}
 	for _, info := range infos {
+		outputName, err := resolveName(context, info.Name())
+		if err != nil {
+			return err
+		}
 		fullInput := path.Join(inputPath, info.Name())
-		fullOutput := path.Join(outputPath, info.Name())
+		fullOutput := path.Join(outputPath, outputName)
 		if info.IsDir() {
 			err = renderDir(context, fullInput, fullOutput)
 		} else {
@@ -46,10 +52,7 @@ func renderDir(context Context, inputPath, outputPath string) error {
 }
 
 func renderFile(context Context, inputPath, outputPath string) error {
-	t, err := template.
-		New(path.Base(inputPath)).
-		Funcs(sprig.TxtFuncMap()).
-		ParseFiles(inputPath)
+	tmpl, err := template.New(path.Base(inputPath)).Funcs(sprig.TxtFuncMap()).ParseFiles(inputPath)
 	if err != nil {
 		return err
 	}
@@ -57,9 +60,25 @@ func renderFile(context Context, inputPath, outputPath string) error {
 	if err != nil {
 		return fmt.Errorf("create output file for template %v: %v", inputPath, err)
 	}
-	err = t.Execute(f, context.Values)
+	err = tmpl.Execute(f, context.Values)
 	if err != nil {
 		return fmt.Errorf("render template %v: %v", inputPath, err)
 	}
 	return f.Close()
+}
+
+func resolveName(context Context, name string) (string, error) {
+	if strings.Index(name, "{{") == -1 {
+		return name, nil
+	}
+	tmpl, err := template.New("base").Parse(name)
+	if err != nil {
+		return "", err
+	}
+	var buffer bytes.Buffer
+	err = tmpl.Execute(&buffer, context.Values)
+	if err != nil {
+		return "", err
+	}
+	return buffer.String(), nil
 }

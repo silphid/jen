@@ -255,6 +255,8 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
   - ~~Load model from spec file~~
 - ~~Prompts~~
 - ~~Rendering~~
+- ~~Add support for [sprig](https://github.com/Masterminds/sprig) functions~~
+- ~~Dynamic folder/file names~~
 - Select template from list
 - Do (actions)
 - Exec (shell)
@@ -274,10 +276,8 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Override values from existing spec file
 - Sub-steps and sub-values
 - Enqueuing all actual commands for execution at the end
-- Dynamic folder/file names
 - Conditional folders/files
 - Conditional expressions (ie: `.myValue == value`)
-- ~~Add support for [sprig](https://github.com/Masterminds/sprig) functions~~
 - Reusable modules
 - Explicitly customizable env var names
 
