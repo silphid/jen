@@ -44,7 +44,7 @@ func renderDir(context Context, inputPath, outputPath string) error {
 		fullInput := path.Join(inputPath, info.Name())
 		fullOutput := path.Join(outputPath, outputName)
 		if !include {
-			Logf("Skipping %q", fullInput)
+			Logf("Skipping %q because conditional evaluates to false", fullInput)
 			continue
 		}
 		if info.IsDir() {
@@ -77,7 +77,7 @@ func renderFile(context Context, inputPath, outputPath string) error {
 }
 
 func resolveName(context Context, name string) (string, bool, error) {
-	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine
+	// Double-bracket expression (ie: "[[.option]]") in names are evaluated to determine
 	// whether the file/folder should be rendered and that expression then gets stripped
 	// from the name
 	for {
@@ -86,10 +86,10 @@ func resolveName(context Context, name string) (string, bool, error) {
 		if loc == nil {
 			break
 		}
-		expression := name[loc[0]+2 : loc[1]-2]
+		exp := name[loc[0]+2 : loc[1]-2]
 
 		// Evaluate expression
-		value, err := evalExpression(context, expression)
+		value, err := EvalExpression(context, exp)
 		if err != nil {
 			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %v", name, err)
 		}
@@ -103,7 +103,7 @@ func resolveName(context Context, name string) (string, bool, error) {
 		name = name[:loc[0]] + name[loc[1]:]
 	}
 
-	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
+	// Double-brace expression (ie: "{{.name}}") in names get interpolated as expected
 	if strings.Index(name, "{{") != -1 {
 		tmpl, err := template.New("base").Parse(name)
 		if err != nil {
@@ -118,18 +118,4 @@ func resolveName(context Context, name string) (string, bool, error) {
 	}
 
 	return name, true, nil
-}
-
-func evalExpression(context Context, expression string) (bool, error) {
-	ifExpr := "{{if " + expression + "}}true{{end}}"
-	tmpl, err := template.New("base").Parse(ifExpr)
-	if err != nil {
-		return false, fmt.Errorf("evaluate expression %s: %v", expression, err)
-	}
-	var buffer bytes.Buffer
-	err = tmpl.Execute(&buffer, context.Values)
-	if err != nil {
-		return false, fmt.Errorf("evaluate expression %s: %v", expression, err)
-	}
-	return buffer.String() == "true", nil
 }

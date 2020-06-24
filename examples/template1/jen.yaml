@@ -14,7 +14,8 @@ steps:
       - value: # only prompted if parent option selected
         name: subValue
         title: Sub value of myOptions
-  - multi:
+  - if: .myOption
+    multi:
       title: Select all desired options
       items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
       - name: myOption1
@@ -29,12 +30,13 @@ steps:
         title: Displayed text for choice 1
       - value: choice2
         title: Displayed text for choice 2
-  - option: # name is omitted here, because not needed
+  - if: eq .mySelect "choice1"
+    option: # name is omitted here, because not needed
       title: Install Codefresh triggers?
       steps:
       - do: install # All execution is enqueued to be executed at the end
   - render: src
-  - if: install
+  - if: .myOption
     do: install
   - exec: echo Hello world!
 actions:

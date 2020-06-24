@@ -258,10 +258,10 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Add support for [sprig](https://github.com/Masterminds/sprig) functions~~
 - ~~Dynamic folder/file names~~
 - ~~Conditional folders/files~~
+- ~~If (conditionals)~~
 - Select template from list
 - Do (actions)
 - Exec (shell)
-- If (conditionals)
 
 ## Create minimal go project best practice template
 
@@ -273,8 +273,9 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Custom actions
   - Create Codefresh build triggers
   - Create git repo
+- Save values to `jen.yaml`
+- Load values from existing spec file
 - Override values at command-line level (`--set myValue=value`)
-- Override values from existing spec file
 - Sub-steps and sub-values
 - Enqueuing all actual commands for execution at the end
 - Conditional expressions (ie: `.myValue == value`)
