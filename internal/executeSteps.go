@@ -50,7 +50,7 @@ func (step StepUnion) execute(index int, context Context) error {
 	case step.Do != "":
 		err = do(context, step.Do)
 	case step.Exec != "":
-		err = exec(context, step.Exec)
+		err = executeShellCommand(context, step.Exec)
 	default:
 		return fmt.Errorf("unsupported step #%d", index)
 	}

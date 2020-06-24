@@ -261,8 +261,15 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~If (conditionals)~~
 - ~~Do (actions)~~
 - Exec (shell)
+  - Pass all values as env vars (ie: `myValue` becomes `MY_VALUE`)
   - Create Codefresh build triggers
   - Create git repo
+- Manually invoke actions (`jen do <action>`)
+- Select template from list
+
+## Bugs
+
+- An invalid value with empty name is present in values map
 
 ## Create minimal go project best practice template
 
@@ -270,18 +277,17 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 ## Wishlist (if time allows)
 
-- Select template from list
 - Ensure output dir does not already exist
 - Save values to `jen.yaml`
 - Load values from existing spec file
 - Override values at command-line level (`--set myValue=value`)
 - Sub-steps and sub-values
 - Enqueuing all actual commands for execution at the end
-- Conditional expressions (ie: `.myValue == value`)
 - Reusable modules
 - Explicitly customizable env var names
+- Force all shell commands to execute in project's root folder (instead of CWD)
 
-## Out of scope (potential features)
+## Out of scope
 
 - Importing existing project 
 

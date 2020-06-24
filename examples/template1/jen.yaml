@@ -42,6 +42,6 @@ steps:
 actions:
   install:
   - if: eq .mySelect "choice1" 
-    exec: install # executes script "install", passing all values as env vars
+    exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars
   uninstall:
   - exec: uninstall # executes script "uninstall", passing all values as env vars
