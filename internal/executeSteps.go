@@ -9,19 +9,23 @@ type Executable interface {
 }
 
 func (root Spec) Execute(context Context) error {
-	for i, step := range root.Steps {
-		if err := step.Execute(i, context); err != nil {
+	return execute(context, root.Steps)
+}
+
+func execute(context Context, steps []*StepUnion) error {
+	for i, step := range steps {
+		if err := step.execute(i, context); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (step StepUnion) Execute(index int, context Context) error {
+func (step StepUnion) execute(index int, context Context) error {
 	if step.If != "" {
 		result, err := EvalExpression(context, step.If)
 		if err != nil {
-			return fmt.Errorf("evaluate if expression for step #%d: %v", index, err)
+			return fmt.Errorf("evaluate step #%d conditional expression: %w", index, err)
 		}
 		if !result {
 			Logf("Skipping step #%d because conditional %q evaluates to false", index, step.If)
@@ -33,6 +37,8 @@ func (step StepUnion) Execute(index int, context Context) error {
 	switch {
 	case step.Value != nil:
 		err = step.Value.Execute(context)
+	case step.Secret != nil:
+		err = step.Secret.Execute(context)
 	case step.Option != nil:
 		err = step.Option.Execute(context)
 	case step.Multi != nil:
@@ -41,8 +47,12 @@ func (step StepUnion) Execute(index int, context Context) error {
 		err = step.Select.Execute(context)
 	case step.Render != "":
 		err = render(context, step.Render)
+	case step.Do != "":
+		err = do(context, step.Do)
+	case step.Exec != "":
+		err = exec(context, step.Exec)
 	default:
-		fmt.Print("Ignoring unsupported command (for now!)")
+		return fmt.Errorf("unsupported step #%d", index)
 	}
 	return err
 }

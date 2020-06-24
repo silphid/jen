@@ -67,11 +67,11 @@ func renderFile(context Context, inputPath, outputPath string) error {
 	}
 	f, err := os.Create(outputPath)
 	if err != nil {
-		return fmt.Errorf("create output file for template %v: %v", inputPath, err)
+		return fmt.Errorf("create output file for template %v: %w", inputPath, err)
 	}
 	err = tmpl.Execute(f, context.Values)
 	if err != nil {
-		return fmt.Errorf("render template %v: %v", inputPath, err)
+		return fmt.Errorf("render template %v: %w", inputPath, err)
 	}
 	return f.Close()
 }
@@ -91,7 +91,7 @@ func resolveName(context Context, name string) (string, bool, error) {
 		// Evaluate expression
 		value, err := EvalExpression(context, exp)
 		if err != nil {
-			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %v", name, err)
+			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %w", name, err)
 		}
 
 		// Should we exclude file/folder?
@@ -107,12 +107,12 @@ func resolveName(context Context, name string) (string, bool, error) {
 	if strings.Index(name, "{{") != -1 {
 		tmpl, err := template.New("base").Parse(name)
 		if err != nil {
-			return "", false, fmt.Errorf("parse double-brace expression in name %q: %v", name, err)
+			return "", false, fmt.Errorf("parse double-brace expression in name %q: %w", name, err)
 		}
 		var buffer bytes.Buffer
 		err = tmpl.Execute(&buffer, context.Values)
 		if err != nil {
-			return "", false, fmt.Errorf("render double-brace expression in name %q: %v", name, err)
+			return "", false, fmt.Errorf("render double-brace expression in name %q: %w", name, err)
 		}
 		return buffer.String(), true, nil
 	}

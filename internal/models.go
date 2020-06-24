@@ -12,13 +12,14 @@ type Context struct {
 type Spec struct {
 	Name        string
 	Description string
-	Actions     map[string][]StepUnion
 	Steps       []*StepUnion
+	Actions     map[string][]*StepUnion
 }
 
 type StepUnion struct {
 	Step
 	Value  *ValueStep
+	Secret *SecretStep
 	Option *OptionStep
 	Multi  *MultiOptionStep
 	Select *SelectStep

@@ -145,7 +145,7 @@ steps:
   render: ../infra
 - if: install
   do: install
-- exec: echo Hello world!
+- exec: echo "Hello world"
 actions:
   install:
   - if: myOption == some value
@@ -259,9 +259,10 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Dynamic folder/file names~~
 - ~~Conditional folders/files~~
 - ~~If (conditionals)~~
-- Select template from list
-- Do (actions)
+- ~~Do (actions)~~
 - Exec (shell)
+  - Create Codefresh build triggers
+  - Create git repo
 
 ## Create minimal go project best practice template
 
@@ -269,10 +270,8 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 ## Wishlist (if time allows)
 
+- Select template from list
 - Ensure output dir does not already exist
-- Custom actions
-  - Create Codefresh build triggers
-  - Create git repo
 - Save values to `jen.yaml`
 - Load values from existing spec file
 - Override values at command-line level (`--set myValue=value`)
@@ -298,7 +297,7 @@ Only add info that was not already passed into method that returned error
 f, err := os.Create(outputPath)
 if err != nil {
   // ouputPath is already included in error message, only adding inputPath info
-	return fmt.Errorf("create output file for template %v: %v", inputPath, err)
+	return fmt.Errorf("create output file for template %v: %w", inputPath, err)
 }
 
 ```
