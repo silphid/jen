@@ -30,11 +30,6 @@ steps:
         title: Displayed text for choice 1
       - value: choice2
         title: Displayed text for choice 2
-  - if: eq .mySelect "choice1"
-    option: # name is omitted here, because not needed
-      title: Install Codefresh triggers?
-      steps:
-      - do: install # All execution is enqueued to be executed at the end
   - render: src
   - if: .myOption
     do: install

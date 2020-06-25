@@ -95,6 +95,7 @@ $ jen gen --set template=go-service
 ``` bash
 $ jen do install
 ```
+Manually invokes an action defined in spec file, using project values stored in jen.yaml file
 
 ## Dry run (only show output, skip all disk changes)
 
@@ -260,23 +261,27 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Conditional folders/files~~
 - ~~If (conditionals)~~
 - ~~Do (actions)~~
-- Exec (shell)
-  - Pass all values as env vars (ie: `myValue` becomes `MY_VALUE`)
+- ~~Exec (shell)~~
+  - ~~Pass all values as env vars (ie: `myValue` becomes `MY_VALUE`)~~
+- ~~Select template from list~~
+- Configure template path in `~/.jen` config file
+- Factotum
+  - Build and configure
+  - Create first draft of go template
   - Create Codefresh build triggers
   - Create git repo
-- Manually invoke actions (`jen do <action>`)
-- Select template from list
-
-## Bugs
-
-- An invalid value with empty name is present in values map
-
-## Create minimal go project best practice template
-
-
 
 ## Wishlist (if time allows)
 
+- Manually invoke actions (`jen do <action>`)
+  - `jen gen` must save values to jen.yaml
+    - Automatically save `template` property for current template
+  - pseudo-code:
+    - load values from `jen.yaml`
+    - determine template
+    - load proper template
+    - execute given action
+- When name omitted (because of sub-steps), do not store value with empty key
 - Ensure output dir does not already exist
 - Save values to `jen.yaml`
 - Load values from existing spec file
@@ -286,6 +291,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Reusable modules
 - Explicitly customizable env var names
 - Force all shell commands to execute in project's root folder (instead of CWD)
+- Set extra variables (not prompted) based on expressions
 
 ## Out of scope
 
