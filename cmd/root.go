@@ -23,9 +23,9 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "templates-dir", "", "location of templates directory")
+	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "templates", "", "location of templates directory (default is ~/.jen/templates)")
 	rootCmd.PersistentFlags().BoolVarP(&internal.Verbose, "verbose", "v", false, "display verbose messages")
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is ~/.jen)")
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is ~/.jen/config.yaml)")
 	rootCmd.AddCommand(gen.Cmd)
 }
 
@@ -46,13 +46,13 @@ func initConfig() {
 	viper.SetEnvPrefix("jen")
 	viper.AutomaticEnv()
 
-	viper.SetDefault("TemplatesDir", path.Join(jenDir, "templates"))
+	viper.SetDefault("templates", path.Join(jenDir, "templates"))
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 
 	if internal.TemplatesDir == "" {
-		internal.TemplatesDir = viper.GetString("TemplatesDir")
+		internal.TemplatesDir = viper.GetString("templates")
 	}
 }
