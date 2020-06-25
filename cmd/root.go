@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
+	"path"
 )
 
 var (
@@ -17,12 +18,14 @@ var (
 		Long:  `Jen is a code generator for scaffolding microservices from Go templates boasting best practices.`,
 		SilenceUsage: true,
 	}
+	configFile string
 )
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "template-dir", "", "location of templates directory")
+	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "templates-dir", "", "location of templates directory")
 	rootCmd.PersistentFlags().BoolVarP(&internal.Verbose, "verbose", "v", false, "display verbose messages")
+	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is ~/.jen)")
 	rootCmd.AddCommand(gen.Cmd)
 }
 
@@ -36,11 +39,20 @@ func initConfig() {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-	viper.AddConfigPath(home)
-	viper.SetConfigName(".jen")
+	jenDir := path.Join(home, internal.JenDirName)
+	viper.AddConfigPath(jenDir)
+	viper.SetConfigName(internal.ConfigFileName)
+	viper.SetConfigType("yaml")
+	viper.SetEnvPrefix("jen")
 	viper.AutomaticEnv()
+
+	viper.SetDefault("TemplatesDir", path.Join(jenDir, "templates"))
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+
+	if internal.TemplatesDir == "" {
+		internal.TemplatesDir = viper.GetString("TemplatesDir")
 	}
 }

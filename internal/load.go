@@ -8,7 +8,7 @@ import (
 
 func Load(templateDir string) (Spec, error) {
 	// Load file to buffer
-	data, err := ioutil.ReadFile(path.Join(templateDir, "jen.yaml"))
+	data, err := ioutil.ReadFile(path.Join(templateDir, SpecFileName))
 	if err != nil {
 		return Spec{}, err
 	}

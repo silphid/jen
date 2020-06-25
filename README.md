@@ -264,7 +264,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Exec (shell)~~
   - ~~Pass all values as env vars (ie: `myValue` becomes `MY_VALUE`)~~
 - ~~Select template from list~~
-- Configure template path in `~/.jen` config file
+- ~~Configure template path in `~/.jen` config file~~
 - Factotum
   - Build and configure
   - Create first draft of go template
@@ -292,6 +292,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Explicitly customizable env var names
 - Force all shell commands to execute in project's root folder (instead of CWD)
 - Set extra variables (not prompted) based on expressions
+- Resolve relative templates dir in config file relatively to config file's location
 
 ## Out of scope
 

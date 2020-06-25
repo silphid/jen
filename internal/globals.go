@@ -7,6 +7,12 @@ var (
 	Verbose bool
 )
 
+const (
+	JenDirName = ".jen"
+	ConfigFileName = "config.yaml"
+	SpecFileName = "template.yaml"
+)
+
 func Logf(message string, a ...interface{}) {
 	if Verbose {
 		fmt.Printf(message, a...)
