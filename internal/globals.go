@@ -9,7 +9,7 @@ var (
 
 const (
 	JenDirName = ".jen"
-	ConfigFileName = "config.yaml"
+	ConfigFileName = "config"
 	SpecFileName = "template.yaml"
 )
 

@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path"
+	"strings"
 )
 
 var (
@@ -49,10 +50,14 @@ func initConfig() {
 	viper.SetDefault("templates", path.Join(jenDir, "templates"))
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		internal.Logf("Using config file:", viper.ConfigFileUsed())
+	} else {
+		internal.Log("Config file not found")
 	}
 
 	if internal.TemplatesDir == "" {
 		internal.TemplatesDir = viper.GetString("templates")
 	}
+
+	internal.TemplatesDir = strings.Replace(internal.TemplatesDir, "~", home, -1)
 }
