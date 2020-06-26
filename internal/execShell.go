@@ -30,7 +30,13 @@ func execShell(context Context, command string) error {
 }
 
 func getEnvFromValues(values Values) []string {
+	// Pass current process env vars
 	var env []string
+	for _, entry := range os.Environ() {
+		env = append(env, entry)
+	}
+
+	// Then values env vars
 	Log("Environment variables:")
 	for key, value := range values {
 		entry := fmt.Sprintf("%s=%v", toSnakeCase(key), value)

@@ -289,6 +289,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Factotum Dockerfile should specify explicit jen version number in `go get`
 - Escape templating using something like `{{{...}}}` or `\{{...}}`
 - Default/initial values for all prompts
+- `script` config to add custom scripts bin dir to PATH during exec
 
 ## Out of scope
 
