@@ -2,7 +2,7 @@
 
 > Jen - *noun* (in Chinese philosophy) a compassionate love for humanity or for the world as a whole.
 
-Code generator for scaffolding microservices from Go templates boasting best practices.
+Code generator for scaffolding microservices from templates boasting best practices.
 
 ## Problem
 
@@ -104,31 +104,31 @@ steps:
     title: Name of project # defaults to value of "name" property above
     env: NAME # exports value as environment variable when invoking actions (`myName` defaults to `MY_NAME`)
 - option:
-		name: myOption
-		title: A checkbox choice
-		steps: # optional sub-steps (if any sub-values define, value of myOption itself gets stored in myOption.enabled)
-		- value: # only prompted if parent option selected
-				name: subValue
-				title: Sub value of myOptions
+    name: myOption
+    title: A checkbox choice
+    steps: # optional sub-steps (if any sub-values define, value of myOption itself gets stored in myOption.enabled)
+    - value: # only prompted if parent option selected
+        name: subValue
+        title: Sub value of myOptions
 - multi:
-		title: Select all desired options
-		items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
+    title: Select all desired options
+    items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
     - name: myOption1
     	title: Displayed text for option 1
     - name: myOption2
     	title: Displayed text for option 2
 - select:
-		name: mySelect
-		title: Select one of the following choices
+    name: mySelect
+    title: Select one of the following choices
     items: # Exclusive selection (radio-button), sets variable "Choices" to one of "choice1" or "choice2"
     - value: choice1
     	title: Displayed text for choice 1
     - value: choice2
     	title: Displayed text for choice 2
 - option: # name is omitted here, because not needed
-		title: Install Codefresh triggers?
-		steps:
-		- do: install # All execution is enqueued to be executed at the end
+    title: Install Codefresh triggers?
+    steps:
+    - do: install # All execution is enqueued to be executed at the end
 - render: src
 - if: mySelect == choice1
   render: ../infra
@@ -290,6 +290,12 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Escape templating using something like `{{{...}}}` or `\{{...}}`
 - Default/initial values for all prompts
 - `script` config to add custom scripts bin dir to PATH during exec
+- Only treat specific files as templates (either inclusively or exclusively)
+- Action to remove/clean-up project completely (maybe prompt for what to remove)
+  - unpromote from stg
+  - remove triggers
+  - remove ECR repository
+  - remove git repository
 
 ## Out of scope
 
