@@ -259,11 +259,11 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Configure template path in `~/.jen` config file~~
 - ~~Automatically create output dir based on project name~~
 - ~~Execute shell commands in output folder (instead of CWD)~~
-- Factotum
+- ~~Factotum~~
   - ~~Build and configure~~
-  - Create first draft of go template
-  - Create Codefresh build triggers
-  - Create git repo
+  - ~~Create first draft of go template~~
+  - ~~Create Codefresh build triggers~~
+  - ~~Create git repo~~
 
 ## Wishlist (if time allows)
 
