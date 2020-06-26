@@ -8,22 +8,22 @@ type Executable interface {
 	Execute(context Context) error
 }
 
-func (root Spec) Execute(context Context) error {
+func (root Spec) Execute(context *Context) error {
 	return execute(context, root.Steps)
 }
 
-func execute(context Context, steps []*StepUnion) error {
+func execute(context *Context, steps []*StepUnion) error {
 	for i, step := range steps {
-		if err := step.execute(i, context); err != nil {
+		if err := step.execute(context, i + 1); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (step StepUnion) execute(index int, context Context) error {
+func (step StepUnion) execute(context *Context, index int) error {
 	if step.If != "" {
-		result, err := EvalExpression(context, step.If)
+		result, err := EvalBoolExpression(*context, step.If)
 		if err != nil {
 			return fmt.Errorf("evaluate step #%d conditional expression: %w", index, err)
 		}
@@ -36,21 +36,23 @@ func (step StepUnion) execute(index int, context Context) error {
 	var err error
 	switch {
 	case step.Value != nil:
-		err = step.Value.Execute(context)
+		err = step.Value.Execute(*context)
 	case step.Secret != nil:
-		err = step.Secret.Execute(context)
+		err = step.Secret.Execute(*context)
 	case step.Option != nil:
-		err = step.Option.Execute(context)
+		err = step.Option.Execute(*context)
 	case step.Multi != nil:
-		err = step.Multi.Execute(context)
+		err = step.Multi.Execute(*context)
 	case step.Select != nil:
-		err = step.Select.Execute(context)
+		err = step.Select.Execute(*context)
+	case step.SetOutput != "":
+		err = setOutput(context, step.SetOutput)
 	case step.Render != "":
-		err = render(context, step.Render)
+		err = render(*context, step.Render)
 	case step.Do != "":
 		err = do(context, step.Do)
 	case step.Exec != "":
-		err = executeShellCommand(context, step.Exec)
+		err = execShell(*context, step.Exec)
 	default:
 		return fmt.Errorf("unsupported step #%d", index)
 	}

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func executeShellCommand(context Context, command string) error {
+func execShell(context Context, command string) error {
 	Logf("Executing command %q", command)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Env = getEnvFromValues(context.Values)

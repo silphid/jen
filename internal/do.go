@@ -2,7 +2,7 @@ package internal
 
 import "fmt"
 
-func do(context Context, action string) error {
+func do(context *Context, action string) error {
 	steps, ok := context.Spec.Actions[action]
 	if !ok {
 		return fmt.Errorf("action not found %q", action)

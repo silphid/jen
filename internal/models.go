@@ -23,6 +23,7 @@ type StepUnion struct {
 	Option *OptionStep
 	Multi  *MultiOptionStep
 	Select *SelectStep
+	SetOutput string `yaml:"setOutput"`
 	Render string
 	Do     string
 	Exec   string

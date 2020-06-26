@@ -22,7 +22,7 @@ var (
 
 func init() {
 	Cmd.PersistentFlags().StringVarP(&template, "template", "t", "", "name of template to use")
-	Cmd.PersistentFlags().StringVarP(&outputDir, "output", "o", ".", "output directory")
+	Cmd.PersistentFlags().StringVarP(&outputDir, "output", "o", "", "output directory")
 }
 
 func run(_ *cobra.Command, _ []string) error {
@@ -49,7 +49,7 @@ func run(_ *cobra.Command, _ []string) error {
 		Spec:        spec,
 		Values:      make(internal.Values),
 	}
-	if err := context.Spec.Execute(context); err != nil {
+	if err := context.Spec.Execute(&context); err != nil {
 		return err
 	}
 

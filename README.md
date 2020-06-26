@@ -48,18 +48,6 @@ It is overly long and complex to manually create a new micro-service and best pr
   - [create-service](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/create-service)
   - [add-service-triggers](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/add-service-triggers)
   - [remove-service-triggers](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/remove-service-triggers)
-- Existing scaffolding tools
-
-- [Yeoman Go Generator](https://github.com/bench/generator-go)
-
-- CLI libraries
-  - [spf13/cobra](https://github.com/spf13/cobra)
-  - [urfave/cli](urfave/cli)
-  - [survey](https://github.com/AlecAivazis/survey)
-- Templating libraries
-  - [gomplate](https://docs.gomplate.ca/)
-  - [go templates](https://golang.org/pkg/text/template/)
-  - [sprig](https://github.com/Masterminds/sprig)
 
 # Command syntax
 
@@ -209,7 +197,11 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 - Environment vars: https://github.com/kelseyhightower/envconfig
 - Logging: https://github.com/uber-go/zap
+
+## Boilerplates
+
 - podinfo template: https://github.com/stefanprodan/podinfo
+- https://github.com/dhax/go-base
 
 ## Practices
 
@@ -265,8 +257,10 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
   - ~~Pass all values as env vars (ie: `myValue` becomes `MY_VALUE`)~~
 - ~~Select template from list~~
 - ~~Configure template path in `~/.jen` config file~~
+- ~~Automatically create output dir based on project name~~
+- Execute shell commands in output folder (instead of CWD)
 - Factotum
-  - Build and configure
+  - ~~Build and configure~~
   - Create first draft of go template
   - Create Codefresh build triggers
   - Create git repo
@@ -290,9 +284,11 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - Enqueuing all actual commands for execution at the end
 - Reusable modules
 - Explicitly customizable env var names
-- Force all shell commands to execute in project's root folder (instead of CWD)
 - Set extra variables (not prompted) based on expressions
 - Resolve relative templates dir in config file relatively to config file's location
+- Factotum Dockerfile should specify explicit jen version number in `go get`
+- Escape templating using something like `{{{...}}}` or `\{{...}}`
+- Default/initial values for all prompts
 
 ## Out of scope
 

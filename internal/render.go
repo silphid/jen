@@ -89,7 +89,7 @@ func resolveName(context Context, name string) (string, bool, error) {
 		exp := name[loc[0]+2 : loc[1]-2]
 
 		// Evaluate expression
-		value, err := EvalExpression(context, exp)
+		value, err := EvalBoolExpression(context, exp)
 		if err != nil {
 			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %w", name, err)
 		}
