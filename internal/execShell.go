@@ -4,17 +4,28 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
 func execShell(context Context, command string) error {
-	Logf("Executing command %q", command)
-	cmd := exec.Command("bash", "-c", command)
+	outputDir, err := filepath.Abs(context.OutputDir)
+	if err != nil {
+		return err
+	}
+	if err := createOutputDir(outputDir); err != nil {
+		return err
+	}
+	Logf("Executing command %q in dir %q", command, outputDir)
+	cmd := exec.Command("bash", "-c", "set -e; " + command)
 	cmd.Env = getEnvFromValues(context.Values)
+	cmd.Dir = outputDir
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	Log("--")
+	defer Log("--")
 	return cmd.Run()
 }
 

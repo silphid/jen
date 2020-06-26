@@ -258,7 +258,7 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 - ~~Select template from list~~
 - ~~Configure template path in `~/.jen` config file~~
 - ~~Automatically create output dir based on project name~~
-- Execute shell commands in output folder (instead of CWD)
+- ~~Execute shell commands in output folder (instead of CWD)~~
 - Factotum
   - ~~Build and configure~~
   - Create first draft of go template

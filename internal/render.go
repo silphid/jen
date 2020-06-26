@@ -33,7 +33,7 @@ func renderDir(context Context, inputPath, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(outputPath, os.ModePerm); err != nil {
+	if err := createOutputDir(outputPath); err != nil {
 		return err
 	}
 	for _, info := range infos {
