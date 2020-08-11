@@ -2,10 +2,10 @@ FROM golang:1.14-buster as build
 
 ENV GO111MODULE="on"
 WORKDIR /app
-COPY go.mod .
-COPY go.sum .
+COPY src/go.mod .
+COPY src/go.sum .
 RUN go mod download
-COPY . src
+COPY src .
 RUN go build
 
 # -----------
