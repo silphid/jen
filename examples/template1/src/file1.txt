@@ -1,7 +1,7 @@
-Project name: {{.name}}
-Project name in uppercase: {{.name | upper}}
+Project name: {{.NAME}}
+Project name in uppercase: {{.NAME | upper}}
 
-myOption: {{.myOption}}
-{{if .myOption -}}
-  conditional content for myOption
+myOption: {{.MY_OPTION}}
+{{if .MY_OPTION -}}
+  conditional content for MY_OPTION
 {{end -}}

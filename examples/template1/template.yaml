@@ -2,41 +2,41 @@ name: template1
 description: A first dummy test template
 steps:
   - value:
-      name: name
-      title: Name of project # defaults to value of "name" property above
+      name: NAME
+      title: Name of project # defaults to value of "NAME" property above
   - secret:
-      name: secret
+      name: SECRET
       title: Your password
   - option:
-      name: myOption
+      name: MY_OPTION
       title: A checkbox choice
-      steps: # optional sub-steps (if any sub-values define, value of myOption itself gets stored in myOption.enabled)
-      - value: # only prompted if parent option selected
-        name: subValue
-        title: Sub value of myOptions
-  - if: .myOption
+      steps: # optional sub-steps (if any sub-values define, value of MY_OPTION itself gets stored in MY_OPTION.enabled)
+        - value: # only prompted if parent option selected
+          name: SUB_VALUE
+          title: Sub value of myOptions
+  - if: .MY_OPTION
     multi:
       title: Select all desired options
-      items: # Multi-selection (check-boxes), sets variable "myOption1" to either "true" or "false", and same thing for "myOption2"
-      - name: myOption1
-        title: Displayed text for option 1
-      - name: myOption2
-        title: Displayed text for option 2
+      items: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
+        - name: MY_OPTION1
+          title: Displayed text for option 1
+        - name: MY_OPTION2
+          title: Displayed text for option 2
   - select:
-      name: mySelect
+      name: MY_SELECT
       title: Select one of the following choices
-      items: # Exclusive selection (radio-button), sets variable "Choices" to one of "choice1" or "choice2"
-      - value: choice1
-        title: Displayed text for choice 1
-      - value: choice2
-        title: Displayed text for choice 2
+      items: # Exclusive selection (radio-button), sets variable "MY_SELECT" to one of "choice1" or "choice2"
+        - value: choice1
+          title: Displayed text for choice 1
+        - value: choice2
+          title: Displayed text for choice 2
   - render: src
-  - if: .myOption
+  - if: .MY_OPTION
     do: install
   - exec: echo Hello world!
 actions:
   install:
-  - if: eq .mySelect "choice1" 
-    exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars
+    - if: eq .MY_SELECT "choice1"
+      exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars
   uninstall:
-  - exec: uninstall # executes script "uninstall", passing all values as env vars
+    - exec: uninstall # executes script "uninstall", passing all values as env vars
