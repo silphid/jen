@@ -1,4 +1,4 @@
-package gen
+package create
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 var (
 	Cmd = &cobra.Command{
-		Use:   "gen",
+		Use:   "create",
 		Short: "Generates a new project by executing given template",
 		RunE: run,
 	}

@@ -1,7 +1,7 @@
 name: template1
 description: A first dummy test template
 steps:
-  - value:
+  - string:
       name: NAME
       title: Name of project # defaults to value of "NAME" property above
   - secret:
@@ -9,7 +9,7 @@ steps:
       title: Your password
   - option:
       name: MY_OPTION
-      title: A checkbox choice
+      title: A yes/no choice
       steps: # optional sub-steps (if any sub-values define, value of MY_OPTION itself gets stored in MY_OPTION.enabled)
         - value: # only prompted if parent option selected
           name: SUB_VALUE

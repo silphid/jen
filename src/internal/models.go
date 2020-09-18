@@ -18,23 +18,23 @@ type Spec struct {
 
 type StepUnion struct {
 	Step
-	Value  *ValueStep
-	Secret *SecretStep
-	Option *OptionStep
-	Multi  *MultiOptionStep
-	Select *SelectStep
+	String    *StringStep
+	Secret    *SecretStep
+	Option    *OptionStep
+	Multi     *MultiOptionStep
+	Select    *SelectStep
 	SetOutput string `yaml:"setOutput"`
-	Render string
-	Do     string
-	Exec   string
-	If     string
+	Render    string
+	Do        string
+	Exec      string
+	If        string
 }
 
 type Step struct {
 	Steps []*StepUnion
 }
 
-type ValueStep struct {
+type StringStep struct {
 	Step
 	Name  string
 	Title string

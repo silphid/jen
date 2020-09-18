@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/cmd/gen"
+	"github.com/Samasource/jen/cmd/create"
 	"github.com/Samasource/jen/internal"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&internal.TemplatesDir, "templates", "", "location of templates directory (default is ~/.jen/templates)")
 	rootCmd.PersistentFlags().BoolVarP(&internal.Verbose, "verbose", "v", false, "display verbose messages")
 	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "config file (default is ~/.jen/config.yaml)")
-	rootCmd.AddCommand(gen.Cmd)
+	rootCmd.AddCommand(create.Cmd)
 }
 
 func Execute() error {

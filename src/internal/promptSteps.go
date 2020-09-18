@@ -4,7 +4,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 )
 
-func (step *ValueStep) Execute(context Context) error {
+func (step *StringStep) Execute(context Context) error {
 	prompt := &survey.Input{
 		Message: step.Title,
 	}
