@@ -37,8 +37,6 @@ func (step StepUnion) execute(context *Context, index int) error {
 	switch {
 	case step.String != nil:
 		err = step.String.Execute(*context)
-	case step.Secret != nil:
-		err = step.Secret.Execute(*context)
 	case step.Option != nil:
 		err = step.Option.Execute(*context)
 	case step.Multi != nil:

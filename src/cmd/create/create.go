@@ -42,7 +42,7 @@ func run(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	// execute all spec steps
+	// Execute all spec steps
 	context := internal.Context{
 		TemplateDir: templateDir,
 		OutputDir:   outputDir,

@@ -44,38 +44,61 @@ It is overly long and complex to manually create a new micro-service and best pr
 
 ## Resources
 
+- Yaml parsers:
+  - https://sweetohm.net/article/go-yaml-parsers.en.html
+  - https://github.com/kylelemons/go-gypsy
+
 - My script drafts:
   - [create-service](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/create-service)
   - [add-service-triggers](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/add-service-triggers)
   - [remove-service-triggers](https://github.com/Samasource/factotum/blob/master/rootfs/root/bin/pipelines/remove-service-triggers)
 
+## How it works
+
+### Creating new project
+
+- Create an empty directory and chdir into it
+- Call `jen create {template}` (or just `jen create` to be prompted for the template)
+- Select which template to use
+- Answer template-specific questions
+
+### Executing custom actions
+
+- chdir into project directory
+- Call `jen do {action}` (or just `jen do` to be prompted for the action)
+
+### Start a shell with all project env vars exported
+
+- cd into project directory
+- Call `jen shell`
+
+
+
 # Command syntax
 
-## Create project in sub-folder, prompting for inputs
+## Create project in current empty-folder
 
 ``` bash
-$ jen gen
+$ mkdir my-project
+$ cd my-project
+$ jen create
 ```
 
 - Prompts for which template to use
-- Prompts for project name
-- Prompts whether to create git repo
-- Prompts whether to install app after creation
 - Prompts for all custom inputs defined in template
-- Creates new sub-folder from project name
 - Saves values to `jen.yaml` file in project root
 - Copies and interpolates all source files
 
 ## Use values from yaml
 
 ``` bash
-$ jen gen -f jen.yaml
+$ jen create -f jen.yaml
 ```
 
 ## Specify value (avoid prompt)
 
 ``` bash
-$ jen gen --set template=go-service
+$ jen create --set template=go-service
 ```
 
 ## Perform an action (ie: add/remove Codefresh triggers)
@@ -88,7 +111,13 @@ Manually invokes an action defined in spec file, using project values stored in 
 ## Dry run (only show output, skip all disk changes)
 
 ``` bash
-$ jen gen --dry-run
+$ jen create --dry-run
+```
+
+## Edit existing values
+
+``` bash
+$ jen edit
 ```
 
 # Yaml formats
@@ -98,11 +127,11 @@ $ jen gen --dry-run
 ``` yaml
 name: go-service
 description: Generic Go micro-service implementing all best practices
-steps:
+create:
 - value:
-    name: myName
+    name: NAME
     title: Name of project # defaults to value of "name" property above
-    env: NAME # exports value as environment variable when invoking actions (`myName` defaults to `MY_NAME`)
+    default: $(basename $(pwd))
 - option:
     name: myOption
     title: A checkbox choice
@@ -141,6 +170,16 @@ actions:
   	exec: install # executes script "install", passing all values as env vars
   uninstall:
   - exec: uninstall # executes script "uninstall", passing all values as env vars
+```
+
+## Expressions
+
+The `title`, `value`, `default` and `if` properties are treated as expressions, which are strings containing either or both go template and shell directives.
+
+For example, `title` could be defined as:
+
+```yaml
+title: Do you want your project {{.NAME}} to be created in current directory $(basename $(pwd))
 ```
 
 ## Values file

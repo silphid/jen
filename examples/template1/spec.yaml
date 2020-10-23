@@ -1,0 +1,50 @@
+name: template1
+description: A first dummy test template
+version: 0.0.1
+values:
+  VAR1: value1
+  VAR2: value2
+actions:
+  create:
+    - prompt:
+        question: Name of project # defaults to value of "NAME" property above
+        var: NAME
+        type: text # this is the default
+        default: $(basename $(pwd))
+    - prompt:
+        question: A yes/no choice
+        var: MY_OPTION
+        type: option
+        default: true
+    - if: {{.MY_OPTION}}
+      prompt:
+        question: Select all desired options
+        type: options # default if options property specified
+        options: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
+          - display: Displayed text for option 1
+            var: MY_OPTION1
+            default: true
+          - display: Displayed text for option 2
+            var: MY_OPTION2
+            default: false
+    - prompt:
+        question: Select one of the following choices
+        var: MY_SELECT
+        type: choice # default if choices property specified
+        default: choice1
+        choices: # Exclusive selection (radio-button), sets variable "MY_SELECT" to one of "choice1" or "choice2"
+          - display: Displayed text for choice 1
+            value: choice1
+          - display: Displayed text for choice 2
+            value: choice2
+    - save:
+    - include: sub_template
+    - render: src
+    - if: {{.MY_OPTION}}
+      do: install
+    - exec: echo Hello world!
+  install:
+    - if: {{eq .MY_SELECT "choice1"}}
+      exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars
+  uninstall:
+    - exec: uninstall # executes script "uninstall", passing all values as env vars

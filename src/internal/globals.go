@@ -10,7 +10,7 @@ var (
 const (
 	JenDirName = ".jen"
 	ConfigFileName = "config"
-	SpecFileName = "template.yaml"
+	SpecFileName = "spec.yaml"
 )
 
 func Logf(message string, a ...interface{}) {
