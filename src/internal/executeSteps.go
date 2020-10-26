@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"fmt"
@@ -52,3 +52,4 @@ func (step StepUnion) execute(context *Context, index int) error {
 	}
 	return err
 }
+*/

@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"fmt"
@@ -43,3 +43,4 @@ func getEnvFromValues(values Values) []string {
 	}
 	return env
 }
+*/

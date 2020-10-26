@@ -1,4 +1,4 @@
-package create
+/*package create
 
 import (
 	"fmt"
@@ -92,4 +92,4 @@ func promptTemplate(templatesDir string) (string, error) {
 	}
 
 	return templates[index], nil
-}
+}*/

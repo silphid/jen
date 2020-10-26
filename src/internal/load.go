@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"gopkg.in/yaml.v2"
@@ -22,3 +22,4 @@ func Load(templateDir string) (Spec, error) {
 
 	return doc, nil
 }
+*/

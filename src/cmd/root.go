@@ -1,5 +1,11 @@
 package cmd
 
+func Execute() error {
+	return nil
+}
+
+/*package cmd
+
 import (
 	"fmt"
 	"github.com/Samasource/jen/cmd/create"
@@ -61,3 +67,4 @@ func initConfig() {
 
 	internal.TemplatesDir = strings.Replace(internal.TemplatesDir, "~", home, -1)
 }
+*/

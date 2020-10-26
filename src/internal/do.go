@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import "fmt"
 
@@ -10,3 +10,4 @@ func do(context *Context, action string) error {
 	Logf("Doing action %q", action)
 	return execute(context, steps)
 }
+*/

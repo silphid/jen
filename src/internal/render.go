@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"bytes"
@@ -119,3 +119,4 @@ func resolveName(context Context, name string) (string, bool, error) {
 
 	return name, true, nil
 }
+*/

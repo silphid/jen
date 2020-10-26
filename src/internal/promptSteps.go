@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"github.com/AlecAivazis/survey/v2"
@@ -88,3 +88,4 @@ func (step *SelectStep) Execute(context Context) error {
 	context.Values[step.Name] = step.Items[value].Value
 	return nil
 }
+*/

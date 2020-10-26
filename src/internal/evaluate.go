@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 import (
 	"bytes"
@@ -28,3 +28,4 @@ func EvalTemplate(context Context, text string) (string, error) {
 	}
 	return buffer.String(), nil
 }
+*/

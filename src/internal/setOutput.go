@@ -1,4 +1,4 @@
-package internal
+/*package internal
 
 func setOutput(context *Context, dir string) error {
 	if context.OutputDir != "" {
@@ -15,3 +15,4 @@ func setOutput(context *Context, dir string) error {
 	context.OutputDir = dir
 	return nil
 }
+*/

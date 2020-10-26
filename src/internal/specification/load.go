@@ -2,21 +2,20 @@ package specification
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/specification/prompts"
 	"github.com/Samasource/jen/internal/specification/prompts/option"
 	"github.com/Samasource/jen/internal/specification/prompts/text"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"strings"
 )
 
-func loadActions(node yaml.Map) ([]Action, error) {
+func LoadActions(node yaml.Map) ([]Action, error) {
 	var actions []Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
 			return nil, fmt.Errorf("value of action %q must be a list", name)
 		}
-		steps, err := loadSteps(name, stepList)
+		steps, err := loadSteps(stepList)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
@@ -25,7 +24,7 @@ func loadActions(node yaml.Map) ([]Action, error) {
 	return actions, nil
 }
 
-func loadSteps(list yaml.List) ([]*Executable, error) {
+func loadSteps(list yaml.List) ([]Executable, error) {
 	var steps []*Executable
 	for idx, value := range list {
 		stepMap, ok := value.(yaml.Map)
@@ -41,7 +40,7 @@ func loadSteps(list yaml.List) ([]*Executable, error) {
 	return steps, nil
 }
 
-func loadStep(node yaml.Map) (*Executable, error) {
+func loadStep(node yaml.Map) (Executable, error) {
 	ifCondition, err := getOptionalString(node, "if", "")
 	if err != nil {
 		return nil, err
