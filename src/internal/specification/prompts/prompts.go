@@ -1,6 +1,8 @@
 package prompts
 
-import "github.com/Samasource/jen/internal/steps"
+import (
+	"github.com/Samasource/jen/internal/specification"
+)
 
 type Type string
 
@@ -12,7 +14,6 @@ const (
 )
 
 type Prompt struct {
-	steps.Step
+	specification.Step
 	Question string
-	Type     Type
 }

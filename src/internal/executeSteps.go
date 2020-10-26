@@ -4,17 +4,13 @@ import (
 	"fmt"
 )
 
-type Executable interface {
-	Execute(context Context) error
-}
-
 func (root Spec) Execute(context *Context) error {
 	return execute(context, root.Steps)
 }
 
 func execute(context *Context, steps []*StepUnion) error {
 	for i, step := range steps {
-		if err := step.execute(context, i + 1); err != nil {
+		if err := step.execute(context, i+1); err != nil {
 			return err
 		}
 	}

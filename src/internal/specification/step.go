@@ -1,4 +1,4 @@
-package steps
+package specification
 
 type Step struct {
 	If string

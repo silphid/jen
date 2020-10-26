@@ -1,8 +1,9 @@
 package options
 
 import (
+	"fmt"
 	"github.com/Samasource/jen/internal"
-	"github.com/Samasource/jen/internal/steps/prompts"
+	"github.com/Samasource/jen/internal/specification/prompts"
 )
 
 type Option struct {
@@ -16,5 +17,6 @@ type Prompt struct {
 	Options []Option
 }
 
-func (p *Prompt) Execute(context internal.Context) {
+func (p Prompt) Execute(context internal.Context) error {
+	return fmt.Errorf("not implemented")
 }

@@ -6,5 +6,5 @@ type Render struct {
 	Directory string
 }
 
-func (r *Render) Execute(context internal.Context) {
+func (r Render) Execute(context internal.Context) {
 }

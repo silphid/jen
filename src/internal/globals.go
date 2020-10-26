@@ -4,13 +4,13 @@ import "fmt"
 
 var (
 	TemplatesDir string
-	Verbose bool
+	Verbose      bool
 )
 
 const (
-	JenDirName = ".jen"
+	JenDirName     = ".jen"
 	ConfigFileName = "config"
-	SpecFileName = "spec.yaml"
+	SpecFileName   = "jen.yaml"
 )
 
 func Logf(message string, a ...interface{}) {

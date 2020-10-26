@@ -1,11 +1,13 @@
-name: template1
-description: A first dummy test template
-version: 0.0.1
-values:
-  VAR1: value1
-  VAR2: value2
+metadata:
+  name: template1
+  description: A first dummy test template
+  version: 0.0.1
+import:
+  common: common
+  go: go/common
 actions:
   create:
+    - call: common.create
     - prompt:
         question: Name of project # defaults to value of "NAME" property above
         var: NAME
@@ -37,8 +39,6 @@ actions:
             value: choice1
           - display: Displayed text for choice 2
             value: choice2
-    - save:
-    - include: sub_template
     - render: src
     - if: {{.MY_OPTION}}
       do: install
