@@ -1,6 +1,8 @@
-package internal
+package executable
 
-import "github.com/Samasource/jen/internal/specification"
+type Executable interface {
+	Execute(context Context) error
+}
 
 type Values map[string]interface{}
 
@@ -16,5 +18,5 @@ type Spec struct {
 	Description string
 	Version     string
 	Values      Values
-	Actions     map[string][]*specification.Executable
+	Actions     map[string][]*Executable
 }

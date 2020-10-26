@@ -2,6 +2,7 @@ package specification
 
 import (
 	"fmt"
+	"github.com/Samasource/jen/internal/specification/executable"
 	"github.com/Samasource/jen/internal/specification/prompts/option"
 	"github.com/Samasource/jen/internal/specification/prompts/text"
 	"github.com/kylelemons/go-gypsy/yaml"
@@ -24,8 +25,8 @@ func LoadActions(node yaml.Map) ([]Action, error) {
 	return actions, nil
 }
 
-func loadSteps(list yaml.List) ([]Executable, error) {
-	var steps []*Executable
+func loadSteps(list yaml.List) ([]executable.Executable, error) {
+	var steps []executable.Executable
 	for idx, value := range list {
 		stepMap, ok := value.(yaml.Map)
 		if !ok {
@@ -40,7 +41,7 @@ func loadSteps(list yaml.List) ([]Executable, error) {
 	return steps, nil
 }
 
-func loadStep(node yaml.Map) (Executable, error) {
+func loadStep(node yaml.Map) (executable.Executable, error) {
 	ifCondition, err := getOptionalString(node, "if", "")
 	if err != nil {
 		return nil, err
@@ -55,7 +56,7 @@ func loadStep(node yaml.Map) (Executable, error) {
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadPrompt(node yaml.Map, ifCondition string) (Executable, error) {
+func loadPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	promptType, err := getOptionalString(node, "type", "text")
 	if err != nil {
 		return nil, err
@@ -74,7 +75,7 @@ func loadPrompt(node yaml.Map, ifCondition string) (Executable, error) {
 	}
 }
 
-func loadTextPrompt(node yaml.Map, ifCondition string) (Executable, error) {
+func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	x := text.Prompt{}
 	x.If = ifCondition
 	var err error
@@ -93,7 +94,7 @@ func loadTextPrompt(node yaml.Map, ifCondition string) (Executable, error) {
 	return x, nil
 }
 
-func loadOptionPrompt(node yaml.Map, ifCondition string) (Executable, error) {
+func loadOptionPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	x := option.Prompt{}
 	x.If = ifCondition
 	var err error
@@ -112,11 +113,11 @@ func loadOptionPrompt(node yaml.Map, ifCondition string) (Executable, error) {
 	return x, nil
 }
 
-func loadOptionsPrompt(node yaml.Map, ifCondition string) (Executable, error) {
+func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	return nil, fmt.Errorf("not implemented")
 }
 
-func loadChoicePrompt(node yaml.Map, ifCondition string) (Executable, error) {
+func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	return nil, fmt.Errorf("not implemented")
 }
 
