@@ -5,9 +5,9 @@ import (
 	"github.com/Samasource/jen/internal/specification/executable"
 )
 
-type Choice struct {
-	Question string
-	Value    string
+type Item struct {
+	Text  string
+	Value string
 }
 
 type Prompt struct {
@@ -15,7 +15,7 @@ type Prompt struct {
 	Question string
 	Var      string
 	Default  string
-	Choices  []Choice
+	Items    []Item
 }
 
 func (p Prompt) Execute(context executable.Context) error {

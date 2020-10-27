@@ -2,8 +2,10 @@ package specification
 
 import (
 	"github.com/Samasource/jen/internal/specification/executable"
+	"github.com/Samasource/jen/internal/specification/prompts/choice"
+	"github.com/Samasource/jen/internal/specification/prompts/input"
 	"github.com/Samasource/jen/internal/specification/prompts/option"
-	"github.com/Samasource/jen/internal/specification/prompts/text"
+	"github.com/Samasource/jen/internal/specification/prompts/options"
 	"github.com/go-test/deep"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/stretchr/testify/assert"
@@ -19,43 +21,27 @@ func TestLoadStep(t *testing.T) {
 		error    string
 	}{
 		{
-			name: "text prompt with default type",
+			name: "input prompt",
 			buffer: `
 if: Condition
-prompt:
+input:
   question: Question
   var: Variable
-  default: Default Value`,
-			expected: text.Prompt{
+  default: Default`,
+			expected: input.Prompt{
 				If:       "Condition",
 				Question: "Question",
 				Var:      "Variable",
-				Default:  "Default Value",
+				Default:  "Default",
 			},
 		},
 		{
-			name: "text prompt with explicit type",
+			name: "input prompt without if or default",
 			buffer: `
-if: Condition
-prompt:
-  type: text
-  question: Question
-  var: Variable
-  default: Default Value`,
-			expected: text.Prompt{
-				If:       "Condition",
-				Question: "Question",
-				Var:      "Variable",
-				Default:  "Default Value",
-			},
-		},
-		{
-			name: "text prompt without if or default",
-			buffer: `
-prompt:
+input:
   question: Question
   var: Variable`,
-			expected: text.Prompt{
+			expected: input.Prompt{
 				Question: "Question",
 				Var:      "Variable",
 			},
@@ -63,22 +49,21 @@ prompt:
 		{
 			name: "missing required question property",
 			buffer: `
-prompt:
+input:
   var: Variable`,
 			error: `missing required property "question"`,
 		},
 		{
 			name: "missing required var property",
 			buffer: `
-prompt:
+input:
   question: Question`,
 			error: `missing required property "var"`,
 		},
 		{
 			name: "option prompt",
 			buffer: `
-prompt:
-  type: option
+option:
   question: Question
   var: Variable
   default: true`,
@@ -91,8 +76,7 @@ prompt:
 		{
 			name: "option prompt with default default value",
 			buffer: `
-prompt:
-  type: option
+option:
   question: Question
   var: Variable`,
 			expected: option.Prompt{
@@ -104,12 +88,80 @@ prompt:
 		{
 			name: "option prompt with invalid default value",
 			buffer: `
-prompt:
-  type: option
+option:
   question: Question
   var: Variable
   default: Whatever`,
 			error: `invalid bool value: "Whatever"`,
+		},
+		{
+			name: "options prompt",
+			buffer: `
+options:
+  question: Question
+  items:
+    - text: Text 1
+      var: Variable 1
+      default: true
+    - text: Text 2
+      var: Variable 2
+      default: false
+    - text: Text 3
+      var: Variable 3`,
+			expected: options.Prompt{
+				Question: "Question",
+				Items: []options.Item{
+					{
+						Text:    "Text 1",
+						Var:     "Variable 1",
+						Default: true,
+					},
+					{
+						Text:    "Text 2",
+						Var:     "Variable 2",
+						Default: false,
+					},
+					{
+						Text:    "Text 3",
+						Var:     "Variable 3",
+						Default: false,
+					},
+				},
+			},
+		},
+		{
+			name: "choice prompt",
+			buffer: `
+choice:
+  question: Question
+  var: Variable
+  default: Default
+  items:
+    - text: Text 1
+      value: Value 1
+    - text: Text 2
+      value: Value 2
+    - text: Text 3
+      value: Value 3`,
+			expected: choice.Prompt{
+				Question: "Question",
+				Var:      "Variable",
+				Default:  "Default",
+				Items: []choice.Item{
+					{
+						Text:  "Text 1",
+						Value: "Value 1",
+					},
+					{
+						Text:  "Text 2",
+						Value: "Value 2",
+					},
+					{
+						Text:  "Text 3",
+						Value: "Value 3",
+					},
+				},
+			},
 		},
 	}
 

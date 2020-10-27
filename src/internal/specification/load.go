@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/Samasource/jen/internal/specification/executable"
 	"github.com/Samasource/jen/internal/specification/prompts/choice"
+	"github.com/Samasource/jen/internal/specification/prompts/input"
 	"github.com/Samasource/jen/internal/specification/prompts/option"
 	"github.com/Samasource/jen/internal/specification/prompts/options"
-	"github.com/Samasource/jen/internal/specification/prompts/text"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"strings"
 )
@@ -48,33 +48,40 @@ func loadStep(node yaml.Map) (executable.Executable, error) {
 	if err != nil {
 		return nil, err
 	}
-	if promptNode, ok := node["prompt"]; ok {
-		promptMap, ok := promptNode.(yaml.Map)
-		if !ok {
-			return nil, fmt.Errorf("value of prompt must be an object")
-		}
-		return loadPrompt(promptMap, ifCondition)
-	}
-	return nil, fmt.Errorf("unknown step type")
-}
 
-func loadPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
-	promptType, err := getOptionalString(node, "type", "text")
-	if err != nil {
-		return nil, err
+	items := []struct {
+		name string
+		fct  func(node yaml.Map, ifCondition string) (executable.Executable, error)
+	}{
+		{
+			name: "input",
+			fct:  loadTextPrompt,
+		},
+		{
+			name: "option",
+			fct:  loadOptionPrompt,
+		},
+		{
+			name: "options",
+			fct:  loadOptionsPrompt,
+		},
+		{
+			name: "choice",
+			fct:  loadChoicePrompt,
+		},
 	}
-	switch promptType {
-	case "text":
-		return loadTextPrompt(node, ifCondition)
-	case "option":
-		return loadOptionPrompt(node, ifCondition)
-	case "options":
-		return loadOptionsPrompt(node, ifCondition)
-	case "choice":
-		return loadChoicePrompt(node, ifCondition)
-	default:
-		return nil, fmt.Errorf("unsupported prompt type %q", promptType)
+
+	for _, x := range items {
+		child, ok, err := getOptionalMap(node, x.name)
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			return x.fct(child, ifCondition)
+		}
 	}
+
+	return nil, fmt.Errorf("unknown step type")
 }
 
 func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
@@ -90,7 +97,7 @@ func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, e
 	if err != nil {
 		return nil, err
 	}
-	return text.Prompt{
+	return input.Prompt{
 		If:       ifCondition,
 		Question: question,
 		Var:      variable,
@@ -125,18 +132,18 @@ func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable
 		return nil, err
 	}
 
-	// Load child items
-	list, err := getRequiredList(node, "options")
+	// Load children
+	list, err := getRequiredList(node, "items")
 	if err != nil {
 		return nil, err
 	}
-	var items []options.Option
+	var items []options.Item
 	for _, child := range list {
 		childMap, ok := child.(yaml.Map)
 		if !ok {
 			return nil, fmt.Errorf("items of %q property must be objects", "options")
 		}
-		question, err := getRequiredString(childMap, "question")
+		question, err := getRequiredString(childMap, "text")
 		if err != nil {
 			return nil, err
 		}
@@ -148,17 +155,17 @@ func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable
 		if err != nil {
 			return nil, err
 		}
-		items = append(items, options.Option{
-			Question: question,
-			Var:      variable,
-			Default:  defaultValue,
+		items = append(items, options.Item{
+			Text:    question,
+			Var:     variable,
+			Default: defaultValue,
 		})
 	}
 
 	return options.Prompt{
 		If:       ifCondition,
 		Question: question,
-		Options:  items,
+		Items:    items,
 	}, nil
 }
 
@@ -167,23 +174,27 @@ func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable,
 	if err != nil {
 		return nil, err
 	}
+	variable, err := getRequiredString(node, "var")
+	if err != nil {
+		return nil, err
+	}
 	defaultValue, err := getOptionalString(node, "default", "")
 	if err != nil {
 		return nil, err
 	}
 
-	// Load child items
-	list, err := getRequiredList(node, "options")
+	// Load children
+	list, err := getRequiredList(node, "items")
 	if err != nil {
 		return nil, err
 	}
-	var items []choice.Choice
+	var items []choice.Item
 	for _, child := range list {
 		childMap, ok := child.(yaml.Map)
 		if !ok {
 			return nil, fmt.Errorf("items of %q property must be objects", "options")
 		}
-		question, err := getRequiredString(childMap, "question")
+		text, err := getRequiredString(childMap, "text")
 		if err != nil {
 			return nil, err
 		}
@@ -191,18 +202,31 @@ func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable,
 		if err != nil {
 			return nil, err
 		}
-		items = append(items, choice.Choice{
-			Question: question,
-			Value:    value,
+		items = append(items, choice.Item{
+			Text:  text,
+			Value: value,
 		})
 	}
 
 	return choice.Prompt{
 		If:       ifCondition,
 		Question: question,
+		Var:      variable,
 		Default:  defaultValue,
-		Choices:  items,
+		Items:    items,
 	}, nil
+}
+
+func getOptionalMap(node yaml.Map, key string) (yaml.Map, bool, error) {
+	child, ok := node[key]
+	if !ok {
+		return nil, false, nil
+	}
+	m, ok := child.(yaml.Map)
+	if !ok {
+		return nil, false, fmt.Errorf("property %q must be an object", key)
+	}
+	return m, true, nil
 }
 
 func getRequiredList(node yaml.Map, key string) (yaml.List, error) {

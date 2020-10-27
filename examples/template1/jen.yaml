@@ -8,36 +8,32 @@ import:
 actions:
   create:
     - call: common.create
-    - prompt:
+    - input:
         question: Name of project # defaults to value of "NAME" property above
         var: NAME
-        type: text # this is the default
         default: $(basename $(pwd))
-    - prompt:
+    - option:
         question: A yes/no choice
         var: MY_OPTION
-        type: option
         default: true
     - if: {{.MY_OPTION}}
-      prompt:
+      options:
         question: Select all desired options
-        type: options # default if options property specified
-        options: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
-          - question: Displayed text for option 1
+        items: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
+          - text: Displayed text for option 1
             var: MY_OPTION1
             default: true
-          - question: Displayed text for option 2
+          - text: Displayed text for option 2
             var: MY_OPTION2
             default: false
-    - prompt:
+    - choice:
         question: Select one of the following choices
         var: MY_SELECT
-        type: choice # default if choices property specified
         default: choice1
-        choices: # Exclusive selection (radio-button), sets variable "MY_SELECT" to one of "choice1" or "choice2"
-          - question: Displayed text for choice 1
+        items: # Exclusive selection (radio-button), sets variable "MY_SELECT" to one of "choice1" or "choice2"
+          - text: Displayed text for choice 1
             value: choice1
-          - question: Displayed text for choice 2
+          - text: Displayed text for choice 2
             value: choice2
     - render: src
     - if: {{.MY_OPTION}}
