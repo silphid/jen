@@ -3,7 +3,9 @@ package specification
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal/specification/executable"
+	"github.com/Samasource/jen/internal/specification/prompts/choice"
 	"github.com/Samasource/jen/internal/specification/prompts/option"
+	"github.com/Samasource/jen/internal/specification/prompts/options"
 	"github.com/Samasource/jen/internal/specification/prompts/text"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"strings"
@@ -118,11 +120,101 @@ func loadOptionPrompt(node yaml.Map, ifCondition string) (executable.Executable,
 }
 
 func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
-	return nil, fmt.Errorf("not implemented")
+	question, err := getRequiredString(node, "question")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load child items
+	list, err := getRequiredList(node, "options")
+	if err != nil {
+		return nil, err
+	}
+	var items []options.Option
+	for _, child := range list {
+		childMap, ok := child.(yaml.Map)
+		if !ok {
+			return nil, fmt.Errorf("items of %q property must be objects", "options")
+		}
+		question, err := getRequiredString(childMap, "question")
+		if err != nil {
+			return nil, err
+		}
+		variable, err := getRequiredString(childMap, "var")
+		if err != nil {
+			return nil, err
+		}
+		defaultValue, err := getOptionalBool(childMap, "default", false)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, options.Option{
+			Question: question,
+			Var:      variable,
+			Default:  defaultValue,
+		})
+	}
+
+	return options.Prompt{
+		If:       ifCondition,
+		Question: question,
+		Options:  items,
+	}, nil
 }
 
 func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
-	return nil, fmt.Errorf("not implemented")
+	question, err := getRequiredString(node, "question")
+	if err != nil {
+		return nil, err
+	}
+	defaultValue, err := getOptionalString(node, "default", "")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load child items
+	list, err := getRequiredList(node, "options")
+	if err != nil {
+		return nil, err
+	}
+	var items []choice.Choice
+	for _, child := range list {
+		childMap, ok := child.(yaml.Map)
+		if !ok {
+			return nil, fmt.Errorf("items of %q property must be objects", "options")
+		}
+		question, err := getRequiredString(childMap, "question")
+		if err != nil {
+			return nil, err
+		}
+		value, err := getRequiredString(childMap, "value")
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, choice.Choice{
+			Question: question,
+			Value:    value,
+		})
+	}
+
+	return choice.Prompt{
+		If:       ifCondition,
+		Question: question,
+		Default:  defaultValue,
+		Choices:  items,
+	}, nil
+}
+
+func getRequiredList(node yaml.Map, key string) (yaml.List, error) {
+	child, ok := node[key]
+	if !ok {
+		return nil, fmt.Errorf("missing required property %q", key)
+	}
+	list, ok := child.(yaml.List)
+	if !ok {
+		return nil, fmt.Errorf("property %q must be a list", key)
+	}
+	return list, nil
 }
 
 func getRequiredString(node yaml.Map, key string) (string, error) {

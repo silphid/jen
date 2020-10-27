@@ -6,8 +6,8 @@ import (
 )
 
 type Choice struct {
-	Display string
-	Value   string
+	Question string
+	Value    string
 }
 
 type Prompt struct {

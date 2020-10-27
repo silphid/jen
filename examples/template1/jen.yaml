@@ -23,10 +23,10 @@ actions:
         question: Select all desired options
         type: options # default if options property specified
         options: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
-          - display: Displayed text for option 1
+          - question: Displayed text for option 1
             var: MY_OPTION1
             default: true
-          - display: Displayed text for option 2
+          - question: Displayed text for option 2
             var: MY_OPTION2
             default: false
     - prompt:
@@ -35,9 +35,9 @@ actions:
         type: choice # default if choices property specified
         default: choice1
         choices: # Exclusive selection (radio-button), sets variable "MY_SELECT" to one of "choice1" or "choice2"
-          - display: Displayed text for choice 1
+          - question: Displayed text for choice 1
             value: choice1
-          - display: Displayed text for choice 2
+          - question: Displayed text for choice 2
             value: choice2
     - render: src
     - if: {{.MY_OPTION}}

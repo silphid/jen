@@ -6,9 +6,9 @@ import (
 )
 
 type Option struct {
-	Display string
-	Var     string
-	Default string
+	Question string
+	Var      string
+	Default  bool
 }
 
 type Prompt struct {
