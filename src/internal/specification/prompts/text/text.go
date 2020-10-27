@@ -3,13 +3,13 @@ package text
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal/specification/executable"
-	"github.com/Samasource/jen/internal/specification/prompts"
 )
 
 type Prompt struct {
-	prompts.Prompt
-	Var     string
-	Default string
+	If       string
+	Question string
+	Var      string
+	Default  string
 }
 
 func (p Prompt) Execute(context executable.Context) error {

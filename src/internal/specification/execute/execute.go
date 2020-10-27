@@ -6,6 +6,7 @@ import (
 )
 
 type Execute struct {
+	If      string
 	Command string
 }
 

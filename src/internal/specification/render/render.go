@@ -6,6 +6,7 @@ import (
 )
 
 type Render struct {
+	If        string
 	Directory string
 }
 
