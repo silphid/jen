@@ -1,11 +1,14 @@
-package specification
+package load
 
 import (
 	"github.com/Samasource/jen/internal/specification/executable"
-	"github.com/Samasource/jen/internal/specification/prompts/choice"
-	"github.com/Samasource/jen/internal/specification/prompts/input"
-	"github.com/Samasource/jen/internal/specification/prompts/option"
-	"github.com/Samasource/jen/internal/specification/prompts/options"
+	"github.com/Samasource/jen/internal/specification/steps/choice"
+	"github.com/Samasource/jen/internal/specification/steps/do"
+	"github.com/Samasource/jen/internal/specification/steps/execute"
+	"github.com/Samasource/jen/internal/specification/steps/input"
+	"github.com/Samasource/jen/internal/specification/steps/option"
+	"github.com/Samasource/jen/internal/specification/steps/options"
+	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/go-test/deep"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/stretchr/testify/assert"
@@ -161,6 +164,39 @@ choice:
 						Value: "Value 3",
 					},
 				},
+			},
+		},
+		{
+			name: "render step",
+			buffer: `
+if: Condition
+render:
+  source: Source`,
+			expected: render.Render{
+				If:     "Condition",
+				Source: "Source",
+			},
+		},
+		{
+			name: "exec step",
+			buffer: `
+if: Condition
+exec:
+  command: Command`,
+			expected: execute.Execute{
+				If:      "Condition",
+				Command: "Command",
+			},
+		},
+		{
+			name: "do step",
+			buffer: `
+if: Condition
+do:
+  action: Action`,
+			expected: do.Do{
+				If:     "Condition",
+				Action: "Action",
 			},
 		},
 	}

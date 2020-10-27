@@ -35,10 +35,13 @@ actions:
             value: choice1
           - text: Displayed text for choice 2
             value: choice2
-    - render: src
+    - render:
+        source: src
     - if: {{.MY_OPTION}}
-      do: install
-    - exec: echo Hello world!
+      do:
+        action: install
+    - exec:
+        command: echo Hello world!
   install:
     - if: {{eq .MY_SELECT "choice1"}}
       exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars

@@ -1,18 +1,21 @@
-package specification
+package load
 
 import (
 	"fmt"
+	"github.com/Samasource/jen/internal/specification"
 	"github.com/Samasource/jen/internal/specification/executable"
-	"github.com/Samasource/jen/internal/specification/prompts/choice"
-	"github.com/Samasource/jen/internal/specification/prompts/input"
-	"github.com/Samasource/jen/internal/specification/prompts/option"
-	"github.com/Samasource/jen/internal/specification/prompts/options"
+	"github.com/Samasource/jen/internal/specification/steps/choice"
+	"github.com/Samasource/jen/internal/specification/steps/do"
+	"github.com/Samasource/jen/internal/specification/steps/execute"
+	"github.com/Samasource/jen/internal/specification/steps/input"
+	"github.com/Samasource/jen/internal/specification/steps/option"
+	"github.com/Samasource/jen/internal/specification/steps/options"
+	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
-	"strings"
 )
 
-func LoadActions(node yaml.Map) ([]Action, error) {
-	var actions []Action
+func LoadActions(node yaml.Map) ([]specification.Action, error) {
+	var actions []specification.Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
@@ -22,7 +25,7 @@ func LoadActions(node yaml.Map) ([]Action, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
-		actions = append(actions, Action{Name: name, Steps: steps})
+		actions = append(actions, specification.Action{Name: name, Steps: steps})
 	}
 	return actions, nil
 }
@@ -55,19 +58,31 @@ func loadStep(node yaml.Map) (executable.Executable, error) {
 	}{
 		{
 			name: "input",
-			fct:  loadTextPrompt,
+			fct:  loadInputStep,
 		},
 		{
 			name: "option",
-			fct:  loadOptionPrompt,
+			fct:  loadOptionStep,
 		},
 		{
 			name: "options",
-			fct:  loadOptionsPrompt,
+			fct:  loadOptionsStep,
 		},
 		{
 			name: "choice",
-			fct:  loadChoicePrompt,
+			fct:  loadChoiceStep,
+		},
+		{
+			name: "render",
+			fct:  loadRenderStep,
+		},
+		{
+			name: "exec",
+			fct:  loadExecStep,
+		},
+		{
+			name: "do",
+			fct:  loadDoStep,
 		},
 	}
 
@@ -84,7 +99,7 @@ func loadStep(node yaml.Map) (executable.Executable, error) {
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadInputStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -105,7 +120,7 @@ func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, e
 	}, nil
 }
 
-func loadOptionPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadOptionStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -126,7 +141,7 @@ func loadOptionPrompt(node yaml.Map, ifCondition string) (executable.Executable,
 	}, nil
 }
 
-func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadOptionsStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -169,7 +184,7 @@ func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable
 	}, nil
 }
 
-func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadChoiceStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -217,78 +232,38 @@ func loadChoicePrompt(node yaml.Map, ifCondition string) (executable.Executable,
 	}, nil
 }
 
-func getOptionalMap(node yaml.Map, key string) (yaml.Map, bool, error) {
-	child, ok := node[key]
-	if !ok {
-		return nil, false, nil
-	}
-	m, ok := child.(yaml.Map)
-	if !ok {
-		return nil, false, fmt.Errorf("property %q must be an object", key)
-	}
-	return m, true, nil
-}
-
-func getRequiredList(node yaml.Map, key string) (yaml.List, error) {
-	child, ok := node[key]
-	if !ok {
-		return nil, fmt.Errorf("missing required property %q", key)
-	}
-	list, ok := child.(yaml.List)
-	if !ok {
-		return nil, fmt.Errorf("property %q must be a list", key)
-	}
-	return list, nil
-}
-
-func getRequiredString(node yaml.Map, key string) (string, error) {
-	value, ok, err := getString(node, key)
+func loadRenderStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+	source, err := getRequiredString(node, "source")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if !ok {
-		return "", fmt.Errorf("missing required property %q", key)
-	}
-	return value, nil
+
+	return render.Render{
+		If:     ifCondition,
+		Source: source,
+	}, nil
 }
 
-func getOptionalString(node yaml.Map, key string, defaultValue string) (string, error) {
-	value, ok, err := getString(node, key)
+func loadExecStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+	command, err := getRequiredString(node, "command")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if !ok {
-		return defaultValue, nil
-	}
-	return value, nil
+
+	return execute.Execute{
+		If:      ifCondition,
+		Command: command,
+	}, nil
 }
 
-func getString(node yaml.Map, key string) (string, bool, error) {
-	value, ok := node[key]
-	if !ok {
-		return "", false, nil
-	}
-	scalar, ok := value.(yaml.Scalar)
-	if !ok {
-		return "", false, fmt.Errorf("property %q must be a string", key)
-	}
-	return scalar.String(), true, nil
-}
-
-func getOptionalBool(node yaml.Map, key string, defaultValue bool) (bool, error) {
-	value, ok, err := getString(node, key)
+func loadDoStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+	action, err := getRequiredString(node, "action")
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	if !ok {
-		return defaultValue, nil
-	}
-	switch strings.ToLower(value) {
-	case "true":
-		return true, nil
-	case "false":
-		return false, nil
-	default:
-		return false, fmt.Errorf("invalid bool value: %q", value)
-	}
+
+	return do.Do{
+		If:     ifCondition,
+		Action: action,
+	}, nil
 }

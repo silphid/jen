@@ -6,8 +6,8 @@ import (
 )
 
 type Render struct {
-	If        string
-	Directory string
+	If     string
+	Source string
 }
 
 func (r Render) Execute(context executable.Context) error {
