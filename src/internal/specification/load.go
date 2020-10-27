@@ -76,41 +76,45 @@ func loadPrompt(node yaml.Map, ifCondition string) (executable.Executable, error
 }
 
 func loadTextPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
-	x := text.Prompt{}
-	x.If = ifCondition
-	var err error
-	x.Question, err = getRequiredString(node, "question")
+	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
 	}
-	x.Var, err = getRequiredString(node, "var")
+	variable, err := getRequiredString(node, "var")
 	if err != nil {
 		return nil, err
 	}
-	x.Default, err = getOptionalString(node, "default", "")
+	defaultValue, err := getOptionalString(node, "default", "")
 	if err != nil {
 		return nil, err
 	}
-	return x, nil
+	return text.Prompt{
+		If:       ifCondition,
+		Question: question,
+		Var:      variable,
+		Default:  defaultValue,
+	}, nil
 }
 
 func loadOptionPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
-	x := option.Prompt{}
-	x.If = ifCondition
-	var err error
-	x.Question, err = getRequiredString(node, "question")
+	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
 	}
-	x.Var, err = getRequiredString(node, "var")
+	variable, err := getRequiredString(node, "var")
 	if err != nil {
 		return nil, err
 	}
-	x.Default, err = getOptionalBool(node, "default", false)
+	defaultValue, err := getOptionalBool(node, "default", false)
 	if err != nil {
 		return nil, err
 	}
-	return x, nil
+	return option.Prompt{
+		If:       ifCondition,
+		Question: question,
+		Var:      variable,
+		Default:  defaultValue,
+	}, nil
 }
 
 func loadOptionsPrompt(node yaml.Map, ifCondition string) (executable.Executable, error) {
