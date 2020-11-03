@@ -78,11 +78,9 @@ func TestEvalBoolExpression(t *testing.T) {
 			actual, err := EvalBoolExpression(values, f.Condition)
 
 			if f.Error != "" {
-				// Ensure proper Error was returned
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), f.Error)
+				assert.Equal(t, f.Error, err.Error())
 			} else {
-				// Compare with Expected actual
 				assert.Nil(t, err)
 				assert.Equal(t, f.Expected, actual)
 			}

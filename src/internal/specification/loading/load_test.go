@@ -38,13 +38,11 @@ func run(t *testing.T, fixtures []fixture, load func(yaml.Map) (interface{}, err
 			actual, err := load(file.Root.(yaml.Map))
 
 			if f.Error != "" {
-				// Ensure proper Error was returned
 				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), f.Error)
+				assert.Equal(t, f.Error, err.Error())
 			} else {
-				// Compare with Expected actual
 				assert.Nil(t, err)
-				if diff := deep.Equal(actual, f.Expected); diff != nil {
+				if diff := deep.Equal(f.Expected, actual); diff != nil {
 					t.Error(diff)
 				}
 			}
