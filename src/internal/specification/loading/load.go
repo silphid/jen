@@ -1,4 +1,4 @@
-package load
+package loading
 
 import (
 	"fmt"
@@ -12,9 +12,44 @@ import (
 	"github.com/Samasource/jen/internal/specification/steps/options"
 	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
+	"sort"
 )
 
-func LoadActions(node yaml.Map) ([]specification.Action, error) {
+func LoadSpec(node yaml.Map) (*specification.Spec, error) {
+	spec := new(specification.Spec)
+
+	// Load metadata
+	metadata, err := getRequiredMap(node, "metadata")
+	if err != nil {
+		return nil, err
+	}
+	spec.Name, err = getRequiredString(metadata, "Name")
+	if err != nil {
+		return nil, err
+	}
+	spec.Description, err = getRequiredString(metadata, "description")
+	if err != nil {
+		return nil, err
+	}
+	spec.Version, err = getRequiredString(metadata, "version")
+	if err != nil {
+		return nil, err
+	}
+
+	// Load actions
+	actions, err := getRequiredMap(node, "actions")
+	if err != nil {
+		return nil, err
+	}
+	spec.Actions, err = loadActions(actions)
+	if err != nil {
+		return nil, err
+	}
+
+	return spec, nil
+}
+
+func loadActions(node yaml.Map) ([]specification.Action, error) {
 	var actions []specification.Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
@@ -27,6 +62,9 @@ func LoadActions(node yaml.Map) ([]specification.Action, error) {
 		}
 		actions = append(actions, specification.Action{Name: name, Steps: steps})
 	}
+	sort.Slice(actions, func(i, j int) bool {
+		return actions[i].Name < actions[j].Name
+	})
 	return actions, nil
 }
 

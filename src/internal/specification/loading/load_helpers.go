@@ -1,10 +1,22 @@
-package load
+package loading
 
 import (
 	"fmt"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"strings"
 )
+
+func getRequiredMap(node yaml.Map, key string) (yaml.Map, error) {
+	child, ok := node[key]
+	if !ok {
+		return nil, fmt.Errorf("missing required property %q", key)
+	}
+	m, ok := child.(yaml.Map)
+	if !ok {
+		return nil, fmt.Errorf("property %q must be an object", key)
+	}
+	return m, nil
+}
 
 func getOptionalMap(node yaml.Map, key string) (yaml.Map, bool, error) {
 	child, ok := node[key]

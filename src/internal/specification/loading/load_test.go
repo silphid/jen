@@ -1,4 +1,4 @@
-package load
+package loading
 
 import (
 	"github.com/Samasource/jen/internal/specification"
@@ -17,22 +17,52 @@ import (
 	"testing"
 )
 
+type fixture struct {
+	Name     string
+	Buffer   string
+	Expected interface{}
+	Error    string
+}
+
+func run(t *testing.T, fixtures []fixture, load func(yaml.Map) (interface{}, error)) {
+	for _, f := range fixtures {
+		t.Run(f.Name, func(t *testing.T) {
+			// Load Buffer into yaml dom
+			reader := strings.NewReader(f.Buffer)
+			file := new(yaml.File)
+			var err error
+			file.Root, err = yaml.Parse(reader)
+			assert.Nil(t, err)
+
+			// Load actual from yaml dom
+			actual, err := load(file.Root.(yaml.Map))
+
+			if f.Error != "" {
+				// Ensure proper Error was returned
+				assert.NotNil(t, err)
+				assert.Equal(t, err.Error(), f.Error)
+			} else {
+				// Compare with Expected actual
+				assert.Nil(t, err)
+				if diff := deep.Equal(actual, f.Expected); diff != nil {
+					t.Error(diff)
+				}
+			}
+		})
+	}
+}
+
 func TestLoadStep(t *testing.T) {
-	tests := []struct {
-		name     string
-		buffer   string
-		expected executable.Executable
-		error    string
-	}{
+	fixtures := []fixture{
 		{
-			name: "input prompt",
-			buffer: `
+			Name: "input prompt",
+			Buffer: `
 if: Condition
 input:
   question: Question
   var: Variable
   default: Default`,
-			expected: input.Prompt{
+			Expected: input.Prompt{
 				If:       "Condition",
 				Question: "Question",
 				Var:      "Variable",
@@ -40,67 +70,67 @@ input:
 			},
 		},
 		{
-			name: "input prompt without if or default",
-			buffer: `
+			Name: "input prompt without if or default",
+			Buffer: `
 input:
   question: Question
   var: Variable`,
-			expected: input.Prompt{
+			Expected: input.Prompt{
 				Question: "Question",
 				Var:      "Variable",
 			},
 		},
 		{
-			name: "missing required question property",
-			buffer: `
+			Name: "missing required question property",
+			Buffer: `
 input:
   var: Variable`,
-			error: `missing required property "question"`,
+			Error: `missing required property "question"`,
 		},
 		{
-			name: "missing required var property",
-			buffer: `
+			Name: "missing required var property",
+			Buffer: `
 input:
   question: Question`,
-			error: `missing required property "var"`,
+			Error: `missing required property "var"`,
 		},
 		{
-			name: "option prompt",
-			buffer: `
+			Name: "option prompt",
+			Buffer: `
 option:
   question: Question
   var: Variable
   default: true`,
-			expected: option.Prompt{
+			Expected: option.Prompt{
 				Question: "Question",
 				Var:      "Variable",
 				Default:  true,
 			},
 		},
 		{
-			name: "option prompt with default default value",
-			buffer: `
+			Name: "option prompt with default default value",
+			Buffer: `
 option:
   question: Question
   var: Variable`,
-			expected: option.Prompt{
+			Expected: option.Prompt{
 				Question: "Question",
 				Var:      "Variable",
 				Default:  false,
 			},
 		},
 		{
-			name: "option prompt with invalid default value",
-			buffer: `
+			Name: "option prompt with invalid default value",
+			Buffer: `
 option:
   question: Question
   var: Variable
   default: Whatever`,
-			error: `invalid bool value: "Whatever"`,
+			Error: `invalid bool value: "Whatever"`,
 		},
 		{
-			name: "options prompt",
-			buffer: `
+			Name: "options prompt",
+			Buffer: `
 options:
   question: Question
   items:
@@ -112,7 +142,7 @@ options:
       default: false
     - text: Text 3
       var: Variable 3`,
-			expected: options.Prompt{
+			Expected: options.Prompt{
 				Question: "Question",
 				Items: []options.Item{
 					{
@@ -134,8 +164,8 @@ options:
 			},
 		},
 		{
-			name: "choice prompt",
-			buffer: `
+			Name: "choice prompt",
+			Buffer: `
 choice:
   question: Question
   var: Variable
@@ -147,7 +177,7 @@ choice:
       value: Value 2
     - text: Text 3
       value: Value 3`,
-			expected: choice.Prompt{
+			Expected: choice.Prompt{
 				Question: "Question",
 				Var:      "Variable",
 				Default:  "Default",
@@ -168,76 +198,50 @@ choice:
 			},
 		},
 		{
-			name: "render step",
-			buffer: `
+			Name: "render step",
+			Buffer: `
 if: Condition
 render:
   source: Source`,
-			expected: render.Render{
+			Expected: render.Render{
 				If:     "Condition",
 				Source: "Source",
 			},
 		},
 		{
-			name: "exec step",
-			buffer: `
+			Name: "exec step",
+			Buffer: `
 if: Condition
 exec:
   command: Command`,
-			expected: execute.Execute{
+			Expected: execute.Execute{
 				If:      "Condition",
 				Command: "Command",
 			},
 		},
 		{
-			name: "do step",
-			buffer: `
+			Name: "do step",
+			Buffer: `
 if: Condition
 do:
   action: Action`,
-			expected: do.Do{
+			Expected: do.Do{
 				If:     "Condition",
 				Action: "Action",
 			},
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Load buffer into yaml dom
-			reader := strings.NewReader(tt.buffer)
-			f := new(yaml.File)
-			var err error
-			f.Root, err = yaml.Parse(reader)
-			assert.Nil(t, err)
-
-			// Load actual from yaml dom
-			actual, err := loadStep(f.Root.(yaml.Map))
-
-			if tt.error != "" {
-				// Ensure proper error was returned
-				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), tt.error)
-			} else {
-				// Compare with expected actual
-				assert.Nil(t, err)
-				if diff := deep.Equal(actual, tt.expected); diff != nil {
-					t.Error(diff)
-				}
-			}
-		})
-	}
+	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
+		return loadStep(m)
+	})
 }
-func TestLoadAction(t *testing.T) {
-	tests := []struct {
-		name     string
-		buffer   string
-		expected []specification.Action
-		error    string
-	}{
+
+func TestLoadActions(t *testing.T) {
+	fixtures := []fixture{
 		{
-			name: "two actions with one step each",
-			buffer: `
+			Name: "two actions with one step each",
+			Buffer: `
 action1:
   - if: Condition 1
     input:
@@ -247,7 +251,7 @@ action2:
   - input:
       question: Question 2
       var: Variable 2`,
-			expected: []specification.Action{
+			Expected: []specification.Action{
 				{
 					Name: "action1",
 					Steps: []executable.Executable{
@@ -271,29 +275,63 @@ action2:
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Load buffer into yaml dom
-			reader := strings.NewReader(tt.buffer)
-			f := new(yaml.File)
-			var err error
-			f.Root, err = yaml.Parse(reader)
-			assert.Nil(t, err)
+	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
+		return loadActions(m)
+	})
+}
 
-			// Load actual from yaml dom
-			actual, err := LoadActions(f.Root.(yaml.Map))
-
-			if tt.error != "" {
-				// Ensure proper error was returned
-				assert.NotNil(t, err)
-				assert.Equal(t, err.Error(), tt.error)
-			} else {
-				// Compare with expected actual
-				assert.Nil(t, err)
-				if diff := deep.Equal(actual, tt.expected); diff != nil {
-					t.Error(diff)
-				}
-			}
-		})
+func TestLoadSpec(t *testing.T) {
+	fixtures := []fixture{
+		{
+			Name: "",
+			Buffer: `
+metadata:
+  Name: Name
+  description: Description
+  version: 0.0.1
+import:
+  common: common
+  go: go/common
+actions:
+  action1:
+    - if: Condition 1
+      input:
+        question: Question 1
+        var: Variable 1
+  action2:
+    - input:
+        question: Question 2
+        var: Variable 2`,
+			Expected: &specification.Spec{
+				Name:        "Name",
+				Description: "Description",
+				Version:     "0.0.1",
+				Actions: []specification.Action{
+					{
+						Name: "action1",
+						Steps: []executable.Executable{
+							input.Prompt{
+								If:       "Condition 1",
+								Question: "Question 1",
+								Var:      "Variable 1",
+							},
+						},
+					},
+					{
+						Name: "action2",
+						Steps: []executable.Executable{
+							input.Prompt{
+								Question: "Question 2",
+								Var:      "Variable 2",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
+
+	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
+		return LoadSpec(m)
+	})
 }
