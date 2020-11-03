@@ -16,7 +16,7 @@ actions:
         question: A yes/no choice
         var: MY_OPTION
         default: true
-    - if: {{.MY_OPTION}}
+    - if: .MY_OPTION
       options:
         question: Select all desired options
         items: # Multi-selection (check-boxes), sets variable "MY_OPTION1" to either "true" or "false", and same thing for "MY_OPTION2"
@@ -37,13 +37,13 @@ actions:
             value: choice2
     - render:
         source: src
-    - if: {{.MY_OPTION}}
+    - if: .MY_OPTION
       do:
         action: install
     - exec:
         command: echo Hello world!
   install:
-    - if: {{eq .MY_SELECT "choice1"}}
+    - if: eq .MY_SELECT "choice1"
       exec: "echo Project: $NAME Secret: $SECRET" # executes script "install", passing all values as env vars
   uninstall:
     - exec: uninstall # executes script "uninstall", passing all values as env vars
