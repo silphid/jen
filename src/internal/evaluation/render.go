@@ -1,11 +1,7 @@
 package evaluation
 
 import (
-	"bytes"
-	"fmt"
 	"regexp"
-	"strings"
-	"text/template"
 )
 
 var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
@@ -70,47 +66,3 @@ var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 //	}
 //	return f.Close()
 //}
-
-func evalName(values Values, name string) (string, bool, error) {
-	// Double-bracket expression (ie: "[[.option]]") in names are evaluated to determine
-	// whether the file/folder should be rendered and that expression then gets stripped
-	// from the name
-	for {
-		// Find expression
-		loc := doubleBracketRegexp.FindStringIndex(name)
-		if loc == nil {
-			break
-		}
-		exp := name[loc[0]+2 : loc[1]-2]
-
-		// Evaluate expression
-		value, err := EvalBoolExpression(values, exp)
-		if err != nil {
-			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %w", name, err)
-		}
-
-		// Should we exclude file/folder?
-		if !value {
-			return "", false, nil
-		}
-
-		// Remove expression from name
-		name = name[:loc[0]] + name[loc[1]:]
-	}
-
-	// Double-brace expression (ie: "{{.name}}") in names get interpolated as expected
-	if strings.Index(name, "{{") != -1 {
-		tmpl, err := template.New("base").Parse(name)
-		if err != nil {
-			return "", false, fmt.Errorf("parse double-brace expression in name %q: %w", name, err)
-		}
-		var buffer bytes.Buffer
-		err = tmpl.Execute(&buffer, values)
-		if err != nil {
-			return "", false, fmt.Errorf("render double-brace expression in name %q: %w", name, err)
-		}
-		return buffer.String(), true, nil
-	}
-
-	return name, true, nil
-}
