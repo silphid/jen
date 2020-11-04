@@ -2,10 +2,8 @@ package evaluation
 
 import (
 	"github.com/stretchr/testify/assert"
-	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -75,12 +73,7 @@ func getTempFile() string {
 
 func writeFile(content string) string {
 	file := getTempFile()
-	f, err := os.Create(file)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	_, err = io.Copy(f, strings.NewReader(content))
+	err := ioutil.WriteFile(file, []byte(content), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
