@@ -41,6 +41,11 @@ func TestRenderFile(t *testing.T) {
 			Input:    "abc\n{{if .UNDEFINED_VAR}}def\n{{end}}ghi",
 			Expected: "abc\nghi",
 		},
+		{
+			Name:     "with sprig func",
+			Input:    "{{ .VAR1 | upper }}",
+			Expected: "VALUE1",
+		},
 	}
 
 	for _, f := range fixtures {
