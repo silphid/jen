@@ -50,7 +50,7 @@ func evalFileName(values Values, name string) (string, bool, error) {
 		// Evaluate expression
 		value, err := EvalBoolExpression(values, exp)
 		if err != nil {
-			return "", false, fmt.Errorf("eval double-bracket expression in name %q: %w", name, err)
+			return "", false, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
 		}
 
 		// Should we exclude file/folder?
@@ -66,12 +66,12 @@ func evalFileName(values Values, name string) (string, bool, error) {
 	if strings.Index(name, "{{") != -1 {
 		tmpl, err := template.New("base").Parse(name)
 		if err != nil {
-			return "", false, fmt.Errorf("parse double-brace expression in name %q: %w", name, err)
+			return "", false, fmt.Errorf("failed to parse double-brace expression in name %q: %w", name, err)
 		}
 		var buffer bytes.Buffer
 		err = tmpl.Execute(&buffer, values)
 		if err != nil {
-			return "", false, fmt.Errorf("render double-brace expression in name %q: %w", name, err)
+			return "", false, fmt.Errorf("failed to render double-brace expression in name %q: %w", name, err)
 		}
 		return buffer.String(), true, nil
 	}

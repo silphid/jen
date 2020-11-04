@@ -2,8 +2,6 @@ package evaluation
 
 import (
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
@@ -50,7 +48,7 @@ func TestRenderFile(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			inputFile := writeFile(f.Input)
+			inputFile := writeTempFile(f.Input)
 			outputFile := getTempFile()
 			defer deleteFile(inputFile)
 			defer deleteFile(outputFile)
@@ -65,36 +63,5 @@ func TestRenderFile(t *testing.T) {
 				assert.Equal(t, f.Expected, actual)
 			}
 		})
-	}
-}
-
-func getTempFile() string {
-	file, err := ioutil.TempFile("/tmp", "render")
-	if err != nil {
-		panic(err)
-	}
-	return file.Name()
-}
-
-func writeFile(content string) string {
-	file := getTempFile()
-	err := ioutil.WriteFile(file, []byte(content), os.ModePerm)
-	if err != nil {
-		panic(err)
-	}
-	return file
-}
-
-func readFile(file string) string {
-	content, err := ioutil.ReadFile(file)
-	if err != nil {
-		panic(err)
-	}
-	return string(content)
-}
-
-func deleteFile(file string) {
-	if err := os.Remove(file); err != nil {
-		panic(err)
 	}
 }
