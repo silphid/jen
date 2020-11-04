@@ -1,10 +1,13 @@
 package evaluation
 
 import (
-	"regexp"
+	"fmt"
+	"github.com/Masterminds/sprig"
+	"github.com/Samasource/jen/internal"
+	"os"
+	"path"
+	"text/template"
 )
-
-var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 
 //func render(context Context, relativeInputDir string) error {
 //	inputDir, err := filepath.Abs(path.Join(context.TemplateDir, relativeInputDir))
@@ -49,20 +52,20 @@ var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 //	}
 //	return nil
 //}
-//
-//func renderFile(context Context, inputPath, outputPath string) error {
-//	Logf("Rendering file %q -> %q", inputPath, outputPath)
-//	tmpl, err := template.New(path.Base(inputPath)).Funcs(sprig.TxtFuncMap()).ParseFiles(inputPath)
-//	if err != nil {
-//		return err
-//	}
-//	f, err := os.Create(outputPath)
-//	if err != nil {
-//		return fmt.Errorf("create output file for template %v: %w", inputPath, err)
-//	}
-//	err = tmpl.Execute(f, context.Values)
-//	if err != nil {
-//		return fmt.Errorf("render template %v: %w", inputPath, err)
-//	}
-//	return f.Close()
-//}
+
+func renderFile(values Values, inputPath, outputPath string) error {
+	internal.Logf("Rendering file %q -> %q", inputPath, outputPath)
+	tmpl, err := template.New(path.Base(inputPath)).Funcs(sprig.TxtFuncMap()).ParseFiles(inputPath)
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("create output file for template %v: %w", inputPath, err)
+	}
+	err = tmpl.Execute(f, values)
+	if err != nil {
+		return fmt.Errorf("render template %v: %w", inputPath, err)
+	}
+	return f.Close()
+}

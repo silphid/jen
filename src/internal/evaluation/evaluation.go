@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Masterminds/sprig"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -31,6 +32,8 @@ func EvalTemplate(values Values, text string) (string, error) {
 	}
 	return buffer.String(), nil
 }
+
+var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 
 func evalFileName(values Values, name string) (string, bool, error) {
 	// Double-bracket expression (ie: "[[.option]]") in names are evaluated to determine
