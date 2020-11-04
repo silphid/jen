@@ -7,10 +7,12 @@ import (
 
 func TestRenderFile(t *testing.T) {
 	values := Values{
-		"VAR1":      "value1",
-		"VAR2":      "value2",
-		"TRUE_VAR":  "true",
-		"EMPTY_VAR": "",
+		Variables: map[string]interface{}{
+			"VAR1":      "value1",
+			"VAR2":      "value2",
+			"TRUE_VAR":  "true",
+			"EMPTY_VAR": "",
+		},
 	}
 
 	fixtures := []struct {

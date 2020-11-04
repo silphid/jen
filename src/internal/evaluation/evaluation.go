@@ -9,7 +9,10 @@ import (
 	"text/template"
 )
 
-type Values map[string]interface{}
+type Values struct {
+	Variables    map[string]interface{}
+	Replacements map[string]string
+}
 
 func EvalBoolExpression(values Values, expression string) (bool, error) {
 	ifExpr := "{{if " + expression + "}}true{{end}}"
@@ -26,7 +29,7 @@ func EvalTemplate(values Values, text string) (string, error) {
 		return "", fmt.Errorf("parse template %q: %w", text, err)
 	}
 	var buffer bytes.Buffer
-	err = tmpl.Execute(&buffer, values)
+	err = tmpl.Execute(&buffer, values.Variables)
 	if err != nil {
 		return "", fmt.Errorf("evaluate template %q: %w", text, err)
 	}
@@ -35,8 +38,10 @@ func EvalTemplate(values Values, text string) (string, error) {
 
 var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 
+// evalFileName interpolates the double-brace expressions, evaluates and removes the conditionals in double-bracket
+// expressions and returns the final file/dir name and whether it should be included in template rendering.
 func evalFileName(values Values, name string) (string, bool, error) {
-	// Double-bracket expression (ie: "[[.option]]") in names are evaluated to determine
+	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine
 	// whether the file/folder should be rendered and that expression then gets stripped
 	// from the name
 	for {
@@ -62,14 +67,14 @@ func evalFileName(values Values, name string) (string, bool, error) {
 		name = name[:loc[0]] + name[loc[1]:]
 	}
 
-	// Double-brace expression (ie: "{{.name}}") in names get interpolated as expected
+	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
 	if strings.Index(name, "{{") != -1 {
 		tmpl, err := template.New("base").Parse(name)
 		if err != nil {
 			return "", false, fmt.Errorf("failed to parse double-brace expression in name %q: %w", name, err)
 		}
 		var buffer bytes.Buffer
-		err = tmpl.Execute(&buffer, values)
+		err = tmpl.Execute(&buffer, values.Variables)
 		if err != nil {
 			return "", false, fmt.Errorf("failed to render double-brace expression in name %q: %w", name, err)
 		}

@@ -103,7 +103,7 @@ func renderFile(values Values, inputPath, outputPath string) error {
 	if err != nil {
 		return fmt.Errorf("create output file for template %v: %w", inputPath, err)
 	}
-	err = tmpl.Execute(f, values)
+	err = tmpl.Execute(f, values.Variables)
 	if err != nil {
 		return fmt.Errorf("render template %v: %w", inputPath, err)
 	}
