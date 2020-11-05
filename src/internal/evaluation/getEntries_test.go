@@ -14,6 +14,10 @@ func TestGetEntries(t *testing.T) {
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
+		Replacements: map[string]string{
+			"projekt": "myproject",
+			"PROJEKT": "MYPROJECT",
+		},
 	}
 
 	fixtures := []struct {
@@ -78,7 +82,18 @@ func TestGetEntries(t *testing.T) {
 			Files: []string{
 				"file1{{..}}.txt",
 			},
-			Error: `failed to parse double-brace expression in name "file1{{..}}.txt": template: base:1: unexpected <.> in operand`,
+			Error: `failed to evaluate double-brace expression in name "file1{{..}}.txt": parse template "file1{{..}}.txt": template: base:1: unexpected <.> in operand`,
+		},
+		{
+			Name: "replacements",
+			Files: []string{
+				"ABC_PROJEKT_DEF.txt",
+				"abcprojektdef.txt",
+			},
+			Expected: []entry{
+				{input: "ABC_PROJEKT_DEF.txt", output: "ABC_MYPROJECT_DEF.txt"},
+				{input: "abcprojektdef.txt", output: "abcmyprojectdef.txt"},
+			},
 		},
 	}
 

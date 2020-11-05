@@ -2,12 +2,10 @@ package evaluation
 
 import (
 	"fmt"
-	"github.com/Masterminds/sprig"
 	"github.com/Samasource/jen/internal"
 	"io/ioutil"
 	"os"
 	"path"
-	"text/template"
 )
 
 //func render(context Context, relativeInputDir string) error {
@@ -95,17 +93,17 @@ func getEntries(values Values, inputDir, outputDir string) ([]entry, error) {
 
 func renderFile(values Values, inputPath, outputPath string) error {
 	internal.Logf("Rendering file %q -> %q", inputPath, outputPath)
-	tmpl, err := template.New(path.Base(inputPath)).Funcs(sprig.TxtFuncMap()).ParseFiles(inputPath)
+	inputText, err := ioutil.ReadFile(inputPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read template file: %w", err)
 	}
-	f, err := os.Create(outputPath)
+	outputText, err := EvalTemplate(values, string(inputText))
 	if err != nil {
-		return fmt.Errorf("create output file for template %v: %w", inputPath, err)
+		return fmt.Errorf("failed to render template %v: %w", inputPath, err)
 	}
-	err = tmpl.Execute(f, values.Variables)
+	err = ioutil.WriteFile(outputPath, []byte(outputText), os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("render template %v: %w", inputPath, err)
+		return fmt.Errorf("failed to write rendered output file for template %v: %w", inputPath, err)
 	}
-	return f.Close()
+	return nil
 }

@@ -98,6 +98,10 @@ func TestEvalFileName(t *testing.T) {
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
+		Replacements: map[string]string{
+			"projekt": "myproject",
+			"PROJEKT": "MYPROJECT",
+		},
 	}
 
 	fixtures := []struct {
@@ -125,6 +129,11 @@ func TestEvalFileName(t *testing.T) {
 			Name:            `Plain name`,
 			ExpectedInclude: true,
 			ExpectedName:    `Plain name`,
+		},
+		{
+			Name:            "abcprojektdef {{.VAR1}} ABC_PROJEKT_DEF",
+			ExpectedInclude: true,
+			ExpectedName:    "abcmyprojectdef value1 ABC_MYPROJECT_DEF",
 		},
 	}
 

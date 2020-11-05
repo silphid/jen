@@ -24,6 +24,12 @@ func EvalBoolExpression(values Values, expression string) (bool, error) {
 }
 
 func EvalTemplate(values Values, text string) (string, error) {
+	// Perform replacements
+	for search, replace := range values.Replacements {
+		text = strings.ReplaceAll(text, search, replace)
+	}
+
+	// Render go template
 	tmpl, err := template.New("base").Funcs(sprig.TxtFuncMap()).Parse(text)
 	if err != nil {
 		return "", fmt.Errorf("parse template %q: %w", text, err)
@@ -68,18 +74,9 @@ func evalFileName(values Values, name string) (string, bool, error) {
 	}
 
 	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
-	if strings.Index(name, "{{") != -1 {
-		tmpl, err := template.New("base").Parse(name)
-		if err != nil {
-			return "", false, fmt.Errorf("failed to parse double-brace expression in name %q: %w", name, err)
-		}
-		var buffer bytes.Buffer
-		err = tmpl.Execute(&buffer, values.Variables)
-		if err != nil {
-			return "", false, fmt.Errorf("failed to render double-brace expression in name %q: %w", name, err)
-		}
-		return buffer.String(), true, nil
+	result, err := EvalTemplate(values, name)
+	if err != nil {
+		return "", false, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
 	}
-
-	return name, true, nil
+	return result, true, nil
 }

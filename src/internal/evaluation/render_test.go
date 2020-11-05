@@ -13,6 +13,10 @@ func TestRenderFile(t *testing.T) {
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
+		Replacements: map[string]string{
+			"projekt": "myproject",
+			"PROJEKT": "MYPROJECT",
+		},
 	}
 
 	fixtures := []struct {
@@ -43,8 +47,13 @@ func TestRenderFile(t *testing.T) {
 		},
 		{
 			Name:     "with sprig func",
-			Input:    "{{ .VAR1 | upper }}",
+			Input:    "{{.VAR1 | upper}}",
 			Expected: "VALUE1",
+		},
+		{
+			Name:     "replacements",
+			Input:    "abcprojektdef {{.VAR1}} ABC_PROJEKT_DEF",
+			Expected: "abcmyprojectdef value1 ABC_MYPROJECT_DEF",
 		},
 	}
 
