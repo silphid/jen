@@ -2,7 +2,8 @@ package do
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/specification/executable"
+	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/specification/steps"
 )
 
 type Do struct {
@@ -10,6 +11,15 @@ type Do struct {
 	Action string
 }
 
-func (p Do) Execute(context executable.Context) error {
+func (d Do) String() string {
+	return "do"
+}
+
+func (d Do) Execute(context specification.Context) error {
+	ok, err := steps.ShouldExecute(d.String(), d.If, context.Values)
+	if !ok || err != nil {
+		return err
+	}
+
 	return fmt.Errorf("not implemented")
 }

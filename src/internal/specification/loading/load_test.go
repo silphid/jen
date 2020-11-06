@@ -2,10 +2,9 @@ package loading
 
 import (
 	"github.com/Samasource/jen/internal/specification"
-	"github.com/Samasource/jen/internal/specification/executable"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
-	"github.com/Samasource/jen/internal/specification/steps/execute"
+	"github.com/Samasource/jen/internal/specification/steps/exec"
 	"github.com/Samasource/jen/internal/specification/steps/input"
 	"github.com/Samasource/jen/internal/specification/steps/option"
 	"github.com/Samasource/jen/internal/specification/steps/options"
@@ -212,7 +211,7 @@ render:
 if: Condition
 exec:
   command: Command`,
-			Expected: execute.Execute{
+			Expected: exec.Exec{
 				If:      "Condition",
 				Command: "Command",
 			},
@@ -249,10 +248,10 @@ action2:
   - input:
       question: Question 2
       var: Variable 2`,
-			Expected: []specification.Action{
-				{
+			Expected: map[string]specification.Action{
+				"action1": {
 					Name: "action1",
-					Steps: []executable.Executable{
+					Steps: []specification.Executable{
 						input.Prompt{
 							If:       "Condition 1",
 							Question: "Question 1",
@@ -260,9 +259,9 @@ action2:
 						},
 					},
 				},
-				{
+				"action2": {
 					Name: "action2",
-					Steps: []executable.Executable{
+					Steps: []specification.Executable{
 						input.Prompt{
 							Question: "Question 2",
 							Var:      "Variable 2",
@@ -304,10 +303,10 @@ actions:
 				Name:        "Name",
 				Description: "Description",
 				Version:     "0.0.1",
-				Actions: []specification.Action{
-					{
+				Actions: map[string]specification.Action{
+					"action1": {
 						Name: "action1",
-						Steps: []executable.Executable{
+						Steps: []specification.Executable{
 							input.Prompt{
 								If:       "Condition 1",
 								Question: "Question 1",
@@ -315,9 +314,9 @@ actions:
 							},
 						},
 					},
-					{
+					"action2": {
 						Name: "action2",
-						Steps: []executable.Executable{
+						Steps: []specification.Executable{
 							input.Prompt{
 								Question: "Question 2",
 								Var:      "Variable 2",

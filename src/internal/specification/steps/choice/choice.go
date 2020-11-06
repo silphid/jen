@@ -2,7 +2,8 @@ package choice
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/specification/executable"
+	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/specification/steps"
 )
 
 type Item struct {
@@ -18,6 +19,15 @@ type Prompt struct {
 	Items    []Item
 }
 
-func (p Prompt) Execute(context executable.Context) error {
+func (p Prompt) String() string {
+	return "choice"
+}
+
+func (p Prompt) Execute(context specification.Context) error {
+	ok, err := steps.ShouldExecute(p.String(), p.If, context.Values)
+	if !ok || err != nil {
+		return err
+	}
+
 	return fmt.Errorf("not implemented")
 }

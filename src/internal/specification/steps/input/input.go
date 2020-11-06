@@ -2,7 +2,8 @@ package input
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/specification/executable"
+	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/specification/steps"
 )
 
 type Prompt struct {
@@ -12,6 +13,11 @@ type Prompt struct {
 	Default  string
 }
 
-func (p Prompt) Execute(context executable.Context) error {
+func (p Prompt) Execute(context specification.Context) error {
+	ok, err := steps.ShouldExecute("input", p.If, context.Values)
+	if !ok || err != nil {
+		return err
+	}
+
 	return fmt.Errorf("not implemented")
 }

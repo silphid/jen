@@ -4,5 +4,6 @@ type Spec struct {
 	Name        string
 	Description string
 	Version     string
-	Actions     []Action
+	InputDir    string
+	Actions     map[string]Action
 }

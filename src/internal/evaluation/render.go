@@ -21,7 +21,7 @@ import (
 //}
 //
 //func renderDir(context Context, inputPath, outputPath string) error {
-//	Logf("Rendering dir %q -> %q", inputPath, outputPath)
+//	Log("Rendering dir %q -> %q", inputPath, outputPath)
 //	infos, err := ioutil.ReadDir(inputPath)
 //	if err != nil {
 //		return err
@@ -37,7 +37,7 @@ import (
 //		fullInput := path.Join(inputPath, info.Name())
 //		fullOutput := path.Join(outputPath, outputName)
 //		if !include {
-//			Logf("Skipping %q because conditional evaluates to false", fullInput)
+//			Log("Skipping %q because conditional evaluates to false", fullInput)
 //			continue
 //		}
 //		if info.IsDir() {
@@ -92,7 +92,7 @@ func getEntries(values Values, inputDir, outputDir string) ([]entry, error) {
 }
 
 func renderFile(values Values, inputPath, outputPath string) error {
-	internal.Logf("Rendering file %q -> %q", inputPath, outputPath)
+	internal.Log("Rendering file %q -> %q", inputPath, outputPath)
 	inputText, err := ioutil.ReadFile(inputPath)
 	if err != nil {
 		return fmt.Errorf("failed to read template file: %w", err)

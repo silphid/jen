@@ -3,16 +3,14 @@ package loading
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal/specification"
-	"github.com/Samasource/jen/internal/specification/executable"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
-	"github.com/Samasource/jen/internal/specification/steps/execute"
+	"github.com/Samasource/jen/internal/specification/steps/exec"
 	"github.com/Samasource/jen/internal/specification/steps/input"
 	"github.com/Samasource/jen/internal/specification/steps/option"
 	"github.com/Samasource/jen/internal/specification/steps/options"
 	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
-	"sort"
 )
 
 func LoadSpec(node yaml.Map) (*specification.Spec, error) {
@@ -49,7 +47,7 @@ func LoadSpec(node yaml.Map) (*specification.Spec, error) {
 	return spec, nil
 }
 
-func loadActions(node yaml.Map) ([]specification.Action, error) {
+func loadActions(node yaml.Map) (map[string]specification.Action, error) {
 	var actions []specification.Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
@@ -62,14 +60,17 @@ func loadActions(node yaml.Map) ([]specification.Action, error) {
 		}
 		actions = append(actions, specification.Action{Name: name, Steps: steps})
 	}
-	sort.Slice(actions, func(i, j int) bool {
-		return actions[i].Name < actions[j].Name
-	})
-	return actions, nil
+
+	// Convert to map
+	m := make(map[string]specification.Action)
+	for _, action := range actions {
+		m[action.Name] = action
+	}
+	return m, nil
 }
 
-func loadSteps(list yaml.List) ([]executable.Executable, error) {
-	var steps []executable.Executable
+func loadSteps(list yaml.List) ([]specification.Executable, error) {
+	var steps []specification.Executable
 	for idx, value := range list {
 		stepMap, ok := value.(yaml.Map)
 		if !ok {
@@ -84,7 +85,7 @@ func loadSteps(list yaml.List) ([]executable.Executable, error) {
 	return steps, nil
 }
 
-func loadStep(node yaml.Map) (executable.Executable, error) {
+func loadStep(node yaml.Map) (specification.Executable, error) {
 	ifCondition, err := getOptionalString(node, "if", "")
 	if err != nil {
 		return nil, err
@@ -92,7 +93,7 @@ func loadStep(node yaml.Map) (executable.Executable, error) {
 
 	items := []struct {
 		name string
-		fct  func(node yaml.Map, ifCondition string) (executable.Executable, error)
+		fct  func(node yaml.Map, ifCondition string) (specification.Executable, error)
 	}{
 		{
 			name: "input",
@@ -137,7 +138,7 @@ func loadStep(node yaml.Map) (executable.Executable, error) {
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadInputStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadInputStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -158,7 +159,7 @@ func loadInputStep(node yaml.Map, ifCondition string) (executable.Executable, er
 	}, nil
 }
 
-func loadOptionStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadOptionStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -179,7 +180,7 @@ func loadOptionStep(node yaml.Map, ifCondition string) (executable.Executable, e
 	}, nil
 }
 
-func loadOptionsStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadOptionsStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -222,7 +223,7 @@ func loadOptionsStep(node yaml.Map, ifCondition string) (executable.Executable, 
 	}, nil
 }
 
-func loadChoiceStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadChoiceStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	question, err := getRequiredString(node, "question")
 	if err != nil {
 		return nil, err
@@ -270,7 +271,7 @@ func loadChoiceStep(node yaml.Map, ifCondition string) (executable.Executable, e
 	}, nil
 }
 
-func loadRenderStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadRenderStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	source, err := getRequiredString(node, "source")
 	if err != nil {
 		return nil, err
@@ -282,19 +283,19 @@ func loadRenderStep(node yaml.Map, ifCondition string) (executable.Executable, e
 	}, nil
 }
 
-func loadExecStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadExecStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	command, err := getRequiredString(node, "command")
 	if err != nil {
 		return nil, err
 	}
 
-	return execute.Execute{
+	return exec.Exec{
 		If:      ifCondition,
 		Command: command,
 	}, nil
 }
 
-func loadDoStep(node yaml.Map, ifCondition string) (executable.Executable, error) {
+func loadDoStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
 	action, err := getRequiredString(node, "action")
 	if err != nil {
 		return nil, err
