@@ -1,13 +1,14 @@
 package evaluation
 
 import (
+	"github.com/Samasource/jen/internal/specification"
 	"github.com/stretchr/testify/assert"
 	"path"
 	"testing"
 )
 
 func TestGetEntries(t *testing.T) {
-	values := Values{
+	values := specification.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
@@ -93,6 +94,16 @@ func TestGetEntries(t *testing.T) {
 			Expected: []entry{
 				{input: "ABC_PROJEKT_DEF.txt", output: "ABC_MYPROJECT_DEF.txt"},
 				{input: "abcprojektdef.txt", output: "abcmyprojectdef.txt"},
+			},
+		},
+		{
+			Name: "empty folder names are collapsed in path",
+			Files: []string{
+				"dir1/[[.TRUE_VAR]]/dir2/file1.txt",
+				"dir3/[[.UNDEFINED_VAR]]/dir4/file2.txt",
+			},
+			Expected: []entry{
+				{input: "dir1/[[.TRUE_VAR]]/dir2/file1.txt", output: "dir1/dir2/file1.txt"},
 			},
 		},
 	}

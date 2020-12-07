@@ -1,12 +1,13 @@
 package evaluation
 
 import (
+	"github.com/Samasource/jen/internal/specification"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestEvalBoolExpression(t *testing.T) {
-	values := Values{
+	values := specification.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
@@ -91,7 +92,7 @@ func TestEvalBoolExpression(t *testing.T) {
 }
 
 func TestEvalFileName(t *testing.T) {
-	values := Values{
+	values := specification.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",

@@ -357,3 +357,13 @@ if err != nil {
 
 ```
 
+# Innovation Week 2.0
+
+* Finish refactoring/clean-up/unit tests
+* Support for:
+  * Save values to yaml file and reuse them
+  * `shell`
+  * `exec`
+  * `export`
+* Use `kaguya` service to create first template
+* Automate `jen` builds/releases

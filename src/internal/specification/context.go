@@ -1,9 +1,8 @@
 package specification
 
-import "github.com/Samasource/jen/internal/evaluation"
-
 type Context struct {
 	Spec      Spec
+	InputDir  string
 	OutputDir string
-	Values    evaluation.Values
+	Values    Values
 }

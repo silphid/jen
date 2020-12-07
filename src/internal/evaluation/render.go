@@ -3,61 +3,34 @@ package evaluation
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal"
+	"github.com/Samasource/jen/internal/specification"
 	"io/ioutil"
 	"os"
 	"path"
 )
 
-//func render(context Context, relativeInputDir string) error {
-//	inputDir, err := filepath.Abs(path.Join(context.TemplateDir, relativeInputDir))
-//	if err != nil {
-//		return err
-//	}
-//	outputDir, err := filepath.Abs(context.OutputDir)
-//	if err != nil {
-//		return err
-//	}
-//	return renderDir(context, inputDir, outputDir)
-//}
-//
-//func renderDir(context Context, inputPath, outputPath string) error {
-//	Log("Rendering dir %q -> %q", inputPath, outputPath)
-//	infos, err := ioutil.ReadDir(inputPath)
-//	if err != nil {
-//		return err
-//	}
-//	if err := createOutputDir(outputPath); err != nil {
-//		return err
-//	}
-//	for _, info := range infos {
-//		outputName, include, err := resolveName(context, info.Name())
-//		if err != nil {
-//			return err
-//		}
-//		fullInput := path.Join(inputPath, info.Name())
-//		fullOutput := path.Join(outputPath, outputName)
-//		if !include {
-//			Log("Skipping %q because conditional evaluates to false", fullInput)
-//			continue
-//		}
-//		if info.IsDir() {
-//			err = renderDir(context, fullInput, fullOutput)
-//		} else {
-//			err = renderFile(context, fullInput, fullOutput)
-//		}
-//		if err != nil {
-//			return err
-//		}
-//	}
-//	return nil
-//}
+func Render(values specification.Values, inputDir, outputDir string) error {
+	entries, err := getEntries(values, inputDir, outputDir)
+	if err != nil {
+		return fmt.Errorf("failed to determine entries to render: %w", err)
+	}
+
+	for _, entry := range entries {
+		err = renderFile(values, entry.input, entry.output)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 type entry struct {
 	input  string
 	output string
 }
 
-func getEntries(values Values, inputDir, outputDir string) ([]entry, error) {
+func getEntries(values specification.Values, inputDir, outputDir string) ([]entry, error) {
 	var entries []entry
 	infos, err := ioutil.ReadDir(inputDir)
 	if err != nil {
@@ -91,16 +64,29 @@ func getEntries(values Values, inputDir, outputDir string) ([]entry, error) {
 	return entries, nil
 }
 
-func renderFile(values Values, inputPath, outputPath string) error {
+func renderFile(values specification.Values, inputPath, outputPath string) error {
 	internal.Log("Rendering file %q -> %q", inputPath, outputPath)
+
+	// Read input file
 	inputText, err := ioutil.ReadFile(inputPath)
 	if err != nil {
 		return fmt.Errorf("failed to read template file: %w", err)
 	}
+
+	// Render template
 	outputText, err := EvalTemplate(values, string(inputText))
 	if err != nil {
 		return fmt.Errorf("failed to render template %v: %w", inputPath, err)
 	}
+
+	// Create output dir
+	outputDir := path.Dir(outputPath)
+	err = os.MkdirAll(outputDir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
+	}
+
+	// Write file
 	err = ioutil.WriteFile(outputPath, []byte(outputText), os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to write rendered output file for template %v: %w", inputPath, err)

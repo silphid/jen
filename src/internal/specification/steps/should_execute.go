@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/Samasource/jen/internal"
 	"github.com/Samasource/jen/internal/evaluation"
+	"github.com/Samasource/jen/internal/specification"
 )
 
-func ShouldExecute(name, condition string, values evaluation.Values) (bool, error) {
+func ShouldExecute(name, condition string, values specification.Values) (bool, error) {
 	if condition != "" {
 		result, err := evaluation.EvalBoolExpression(values, condition)
 		if err != nil {
