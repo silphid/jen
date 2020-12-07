@@ -1,9 +1,12 @@
 package evaluation
 
 import (
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path"
+	"testing"
 )
 
 func getTempDir() string {
@@ -61,5 +64,23 @@ func createEmptyFile(filePath string) {
 	err = ioutil.WriteFile(filePath, []byte(""), os.ModePerm)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func compareDirsRecursively(t *testing.T, expectedDir, actualDir string) {
+	expectedInfos, err := ioutil.ReadDir(expectedDir)
+	assert.NoError(t, err)
+	actualInfos, err := ioutil.ReadDir(actualDir)
+	assert.NoError(t, err)
+
+	assert.Equal(t, len(expectedInfos), len(actualInfos), "number of items must match")
+	for i, expectedInfo := range expectedInfos {
+		actualInfo := actualInfos[i]
+		require.Equal(t, expectedInfo.Name(), actualInfo.Name(), "names must match")
+		require.Equal(t, expectedInfo.IsDir(), actualInfo.IsDir(), "is directory must match")
+
+		if expectedInfo.IsDir() {
+			compareDirsRecursively(t, path.Join(expectedDir, expectedInfo.Name()), path.Join(actualDir, actualInfo.Name()))
+		}
 	}
 }

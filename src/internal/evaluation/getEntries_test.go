@@ -121,7 +121,6 @@ func TestGetEntries(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-
 			inputDir := getTempDir()
 			outputDir := "/output"
 			defer removeAll(inputDir)
