@@ -3,6 +3,7 @@ package loading
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/specification/steps"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
 	"github.com/Samasource/jen/internal/specification/steps/exec"
@@ -21,15 +22,15 @@ func LoadSpec(node yaml.Map) (*specification.Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	spec.Name, err = getRequiredString(metadata, "Name")
+	spec.Name, err = getRequiredStringFromMap(metadata, "Name")
 	if err != nil {
 		return nil, err
 	}
-	spec.Description, err = getRequiredString(metadata, "description")
+	spec.Description, err = getRequiredStringFromMap(metadata, "description")
 	if err != nil {
 		return nil, err
 	}
-	spec.Version, err = getRequiredString(metadata, "version")
+	spec.Version, err = getRequiredStringFromMap(metadata, "version")
 	if err != nil {
 		return nil, err
 	}
@@ -47,53 +48,55 @@ func LoadSpec(node yaml.Map) (*specification.Spec, error) {
 	return spec, nil
 }
 
-func loadActions(node yaml.Map) (map[string]specification.Action, error) {
+func loadActions(node yaml.Map) (specification.ActionMap, error) {
 	var actions []specification.Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
 			return nil, fmt.Errorf("value of action %q must be a list", name)
 		}
-		steps, err := loadSteps(stepList)
+		executables, err := loadExecutables(stepList)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
-		actions = append(actions, specification.Action{Name: name, Steps: steps})
+		actions = append(actions, specification.Action{Name: name, Steps: executables})
 	}
 
 	// Convert to map
-	m := make(map[string]specification.Action)
+	m := make(specification.ActionMap)
 	for _, action := range actions {
 		m[action.Name] = action
 	}
 	return m, nil
 }
 
-func loadSteps(list yaml.List) ([]specification.Executable, error) {
-	var steps []specification.Executable
+func loadExecutables(list yaml.List) (specification.Executables, error) {
+	var executables specification.Executables
 	for idx, value := range list {
-		stepMap, ok := value.(yaml.Map)
-		if !ok {
-			return nil, fmt.Errorf("value of step #%d must be an object", idx+1)
-		}
-		step, err := loadStep(stepMap)
+		step, err := loadExecutable(value)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load step #%d: %w", idx+1, err)
 		}
-		steps = append(steps, step)
+		executables = append(executables, step)
 	}
-	return steps, nil
+	return executables, nil
 }
 
-func loadStep(node yaml.Map) (specification.Executable, error) {
-	ifCondition, err := getOptionalString(node, "if", "")
-	if err != nil {
-		return nil, err
+func loadExecutable(node yaml.Node) (specification.Executable, error) {
+	// Special case for if step
+	_map, ok := node.(yaml.Map)
+	if ok {
+		_, ok = _map["if"]
+		if ok {
+			return loadIfStep(_map)
+		}
 	}
 
+	// Other steps
 	items := []struct {
-		name string
-		fct  func(node yaml.Map, ifCondition string) (specification.Executable, error)
+		name          string
+		defaultSubKey string
+		fct           func(node yaml.Map) (specification.Executable, error)
 	}{
 		{
 			name: "input",
@@ -112,82 +115,102 @@ func loadStep(node yaml.Map) (specification.Executable, error) {
 			fct:  loadChoiceStep,
 		},
 		{
-			name: "render",
-			fct:  loadRenderStep,
+			name:          "render",
+			defaultSubKey: "source",
+			fct:           loadRenderStep,
 		},
 		{
-			name: "exec",
-			fct:  loadExecStep,
+			name:          "exec",
+			defaultSubKey: "command",
+			fct:           loadExecStep,
 		},
 		{
-			name: "do",
-			fct:  loadDoStep,
+			name:          "do",
+			defaultSubKey: "action",
+			fct:           loadDoStep,
 		},
 	}
 
 	for _, x := range items {
-		child, ok, err := getOptionalMap(node, x.name)
+		_map, ok, err := getOptionalMapOrRawString(node, x.name, x.defaultSubKey)
 		if err != nil {
 			return nil, err
 		}
 		if ok {
-			return x.fct(child, ifCondition)
+			return x.fct(_map)
 		}
 	}
 
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadInputStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	question, err := getRequiredString(node, "question")
+func loadIfStep(_map yaml.Map) (specification.Executable, error) {
+	condition, err := getRequiredStringFromMap(_map, "if")
 	if err != nil {
 		return nil, err
 	}
-	variable, err := getRequiredString(node, "var")
+	list, err := getRequiredList(_map, "then")
 	if err != nil {
 		return nil, err
 	}
-	defaultValue, err := getOptionalString(node, "default", "")
+	executables, err := loadExecutables(list)
+	if err != nil {
+		return nil, err
+	}
+	return steps.If{
+		Condition: condition,
+		Then:      executables,
+	}, nil
+}
+
+func loadInputStep(_map yaml.Map) (specification.Executable, error) {
+	question, err := getRequiredStringFromMap(_map, "question")
+	if err != nil {
+		return nil, err
+	}
+	variable, err := getRequiredStringFromMap(_map, "var")
+	if err != nil {
+		return nil, err
+	}
+	defaultValue, err := getOptionalStringFromMap(_map, "default", "")
 	if err != nil {
 		return nil, err
 	}
 	return input.Prompt{
-		If:       ifCondition,
-		Question: question,
-		Var:      variable,
-		Default:  defaultValue,
+		Message: question,
+		Var:     variable,
+		Default: defaultValue,
 	}, nil
 }
 
-func loadOptionStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	question, err := getRequiredString(node, "question")
+func loadOptionStep(_map yaml.Map) (specification.Executable, error) {
+	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
 	}
-	variable, err := getRequiredString(node, "var")
+	variable, err := getRequiredStringFromMap(_map, "var")
 	if err != nil {
 		return nil, err
 	}
-	defaultValue, err := getOptionalBool(node, "default", false)
+	defaultValue, err := getOptionalBool(_map, "default", false)
 	if err != nil {
 		return nil, err
 	}
 	return option.Prompt{
-		If:       ifCondition,
-		Question: question,
-		Var:      variable,
-		Default:  defaultValue,
+		Message: question,
+		Var:     variable,
+		Default: defaultValue,
 	}, nil
 }
 
-func loadOptionsStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	question, err := getRequiredString(node, "question")
+func loadOptionsStep(_map yaml.Map) (specification.Executable, error) {
+	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
 	}
 
 	// Load children
-	list, err := getRequiredList(node, "items")
+	list, err := getRequiredList(_map, "items")
 	if err != nil {
 		return nil, err
 	}
@@ -197,11 +220,11 @@ func loadOptionsStep(node yaml.Map, ifCondition string) (specification.Executabl
 		if !ok {
 			return nil, fmt.Errorf("items of %q property must be objects", "options")
 		}
-		question, err := getRequiredString(childMap, "text")
+		question, err := getRequiredStringFromMap(childMap, "text")
 		if err != nil {
 			return nil, err
 		}
-		variable, err := getRequiredString(childMap, "var")
+		variable, err := getRequiredStringFromMap(childMap, "var")
 		if err != nil {
 			return nil, err
 		}
@@ -217,28 +240,27 @@ func loadOptionsStep(node yaml.Map, ifCondition string) (specification.Executabl
 	}
 
 	return options.Prompt{
-		If:       ifCondition,
-		Question: question,
-		Items:    items,
+		Message: question,
+		Items:   items,
 	}, nil
 }
 
-func loadChoiceStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	question, err := getRequiredString(node, "question")
+func loadChoiceStep(_map yaml.Map) (specification.Executable, error) {
+	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
 	}
-	variable, err := getRequiredString(node, "var")
+	variable, err := getRequiredStringFromMap(_map, "var")
 	if err != nil {
 		return nil, err
 	}
-	defaultValue, err := getOptionalString(node, "default", "")
+	defaultValue, err := getOptionalStringFromMap(_map, "default", "")
 	if err != nil {
 		return nil, err
 	}
 
 	// Load children
-	list, err := getRequiredList(node, "items")
+	list, err := getRequiredList(_map, "items")
 	if err != nil {
 		return nil, err
 	}
@@ -248,11 +270,11 @@ func loadChoiceStep(node yaml.Map, ifCondition string) (specification.Executable
 		if !ok {
 			return nil, fmt.Errorf("items of %q property must be objects", "options")
 		}
-		text, err := getRequiredString(childMap, "text")
+		text, err := getRequiredStringFromMap(childMap, "text")
 		if err != nil {
 			return nil, err
 		}
-		value, err := getRequiredString(childMap, "value")
+		value, err := getRequiredStringFromMap(childMap, "value")
 		if err != nil {
 			return nil, err
 		}
@@ -263,46 +285,42 @@ func loadChoiceStep(node yaml.Map, ifCondition string) (specification.Executable
 	}
 
 	return choice.Prompt{
-		If:       ifCondition,
-		Question: question,
-		Var:      variable,
-		Default:  defaultValue,
-		Items:    items,
+		Message: question,
+		Var:     variable,
+		Default: defaultValue,
+		Items:   items,
 	}, nil
 }
 
-func loadRenderStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	source, err := getRequiredString(node, "source")
+func loadRenderStep(_map yaml.Map) (specification.Executable, error) {
+	source, err := getRequiredStringFromMap(_map, "source")
 	if err != nil {
 		return nil, err
 	}
 
 	return render.Render{
-		If:     ifCondition,
 		Source: source,
 	}, nil
 }
 
-func loadExecStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	command, err := getRequiredString(node, "command")
+func loadExecStep(_map yaml.Map) (specification.Executable, error) {
+	command, err := getRequiredStringFromMap(_map, "command")
 	if err != nil {
 		return nil, err
 	}
 
 	return exec.Exec{
-		If:      ifCondition,
 		Command: command,
 	}, nil
 }
 
-func loadDoStep(node yaml.Map, ifCondition string) (specification.Executable, error) {
-	action, err := getRequiredString(node, "action")
+func loadDoStep(_map yaml.Map) (specification.Executable, error) {
+	action, err := getRequiredStringFromMap(_map, "action")
 	if err != nil {
 		return nil, err
 	}
 
 	return do.Do{
-		If:     ifCondition,
 		Action: action,
 	}, nil
 }

@@ -2,6 +2,7 @@ package loading
 
 import (
 	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/specification/steps"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
 	"github.com/Samasource/jen/internal/specification/steps/exec"
@@ -52,29 +53,34 @@ func run(t *testing.T, fixtures []fixture, load func(yaml.Map) (interface{}, err
 func TestLoadStep(t *testing.T) {
 	fixtures := []fixture{
 		{
-			Name: "input prompt",
+			Name: "if",
 			Buffer: `
 if: Condition
-input:
-  question: Question
-  var: Variable
-  default: Default`,
-			Expected: input.Prompt{
-				If:       "Condition",
-				Question: "Question",
-				Var:      "Variable",
-				Default:  "Default",
+then:
+  - input:
+      question: Message
+      var: Variable
+      default: Default`,
+			Expected: steps.If{
+				Condition: "Condition",
+				Then: specification.Executables{
+					input.Prompt{
+						Message: "Message",
+						Var:     "Variable",
+						Default: "Default",
+					},
+				},
 			},
 		},
 		{
-			Name: "input prompt without if or default",
+			Name: "input prompt",
 			Buffer: `
 input:
-  question: Question
+  question: Message
   var: Variable`,
 			Expected: input.Prompt{
-				Question: "Question",
-				Var:      "Variable",
+				Message: "Message",
+				Var:     "Variable",
 			},
 		},
 		{
@@ -88,39 +94,39 @@ input:
 			Name: "missing required var property",
 			Buffer: `
 input:
-  question: Question`,
+  question: Message`,
 			Error: `missing required property "var"`,
 		},
 		{
 			Name: "option prompt",
 			Buffer: `
 option:
-  question: Question
+  question: Message
   var: Variable
   default: true`,
 			Expected: option.Prompt{
-				Question: "Question",
-				Var:      "Variable",
-				Default:  true,
+				Message: "Message",
+				Var:     "Variable",
+				Default: true,
 			},
 		},
 		{
 			Name: "option prompt with default default value",
 			Buffer: `
 option:
-  question: Question
+  question: Message
   var: Variable`,
 			Expected: option.Prompt{
-				Question: "Question",
-				Var:      "Variable",
-				Default:  false,
+				Message: "Message",
+				Var:     "Variable",
+				Default: false,
 			},
 		},
 		{
 			Name: "option prompt with invalid default value",
 			Buffer: `
 option:
-  question: Question
+  question: Message
   var: Variable
   default: Whatever`,
 			Error: `invalid bool value: "Whatever"`,
@@ -129,7 +135,7 @@ option:
 			Name: "options prompt",
 			Buffer: `
 options:
-  question: Question
+  question: Message
   items:
     - text: Text 1
       var: Variable 1
@@ -140,7 +146,7 @@ options:
     - text: Text 3
       var: Variable 3`,
 			Expected: options.Prompt{
-				Question: "Question",
+				Message: "Message",
 				Items: []options.Item{
 					{
 						Text:    "Text 1",
@@ -164,7 +170,7 @@ options:
 			Name: "choice prompt",
 			Buffer: `
 choice:
-  question: Question
+  question: Message
   var: Variable
   default: Default
   items:
@@ -175,9 +181,9 @@ choice:
     - text: Text 3
       value: Value 3`,
 			Expected: choice.Prompt{
-				Question: "Question",
-				Var:      "Variable",
-				Default:  "Default",
+				Message: "Message",
+				Var:     "Variable",
+				Default: "Default",
 				Items: []choice.Item{
 					{
 						Text:  "Text 1",
@@ -195,42 +201,60 @@ choice:
 			},
 		},
 		{
-			Name: "render step",
+			Name: "render step long-hand",
 			Buffer: `
-if: Condition
 render:
   source: Source`,
 			Expected: render.Render{
-				If:     "Condition",
 				Source: "Source",
 			},
 		},
 		{
-			Name: "exec step",
+			Name: "render step short-hand",
 			Buffer: `
-if: Condition
+render: Source`,
+			Expected: render.Render{
+				Source: "Source",
+			},
+		},
+		{
+			Name: "exec step long-hand",
+			Buffer: `
 exec:
   command: Command`,
 			Expected: exec.Exec{
-				If:      "Condition",
 				Command: "Command",
 			},
 		},
 		{
-			Name: "do step",
+			Name: "exec step short-hand",
 			Buffer: `
-if: Condition
+exec: Command`,
+			Expected: exec.Exec{
+				Command: "Command",
+			},
+		},
+		{
+			Name: "do step long-hand",
+			Buffer: `
 do:
   action: Action`,
 			Expected: do.Do{
-				If:     "Condition",
+				Action: "Action",
+			},
+		},
+		{
+			Name: "do step short-hand",
+			Buffer: `
+do: Action`,
+			Expected: do.Do{
 				Action: "Action",
 			},
 		},
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadStep(m)
+		return loadExecutable(m)
 	})
 }
 
@@ -241,30 +265,35 @@ func TestLoadActions(t *testing.T) {
 			Buffer: `
 action1:
   - if: Condition 1
-    input:
-      question: Question 1
-      var: Variable 1
+    then:
+      - input:
+          question: Message 1
+          var: Variable 1
 action2:
   - input:
-      question: Question 2
+      question: Message 2
       var: Variable 2`,
-			Expected: map[string]specification.Action{
+			Expected: specification.ActionMap{
 				"action1": {
 					Name: "action1",
-					Steps: []specification.Executable{
-						input.Prompt{
-							If:       "Condition 1",
-							Question: "Question 1",
-							Var:      "Variable 1",
+					Steps: specification.Executables{
+						steps.If{
+							Condition: "Condition 1",
+							Then: specification.Executables{
+								input.Prompt{
+									Message: "Message 1",
+									Var:     "Variable 1",
+								},
+							},
 						},
 					},
 				},
 				"action2": {
 					Name: "action2",
-					Steps: []specification.Executable{
+					Steps: specification.Executables{
 						input.Prompt{
-							Question: "Question 2",
-							Var:      "Variable 2",
+							Message: "Message 2",
+							Var:     "Variable 2",
 						},
 					},
 				},
@@ -292,34 +321,39 @@ import:
 actions:
   action1:
     - if: Condition 1
-      input:
-        question: Question 1
-        var: Variable 1
+      then:
+        - input:
+            question: Message 1
+            var: Variable 1
   action2:
     - input:
-        question: Question 2
+        question: Message 2
         var: Variable 2`,
 			Expected: &specification.Spec{
 				Name:        "Name",
 				Description: "Description",
 				Version:     "0.0.1",
-				Actions: map[string]specification.Action{
+				Actions: specification.ActionMap{
 					"action1": {
 						Name: "action1",
-						Steps: []specification.Executable{
-							input.Prompt{
-								If:       "Condition 1",
-								Question: "Question 1",
-								Var:      "Variable 1",
+						Steps: specification.Executables{
+							steps.If{
+								Condition: "Condition 1",
+								Then: specification.Executables{
+									input.Prompt{
+										Message: "Message 1",
+										Var:     "Variable 1",
+									},
+								},
 							},
 						},
 					},
 					"action2": {
 						Name: "action2",
-						Steps: []specification.Executable{
+						Steps: specification.Executables{
 							input.Prompt{
-								Question: "Question 2",
-								Var:      "Variable 2",
+								Message: "Message 2",
+								Var:     "Variable 2",
 							},
 						},
 					},

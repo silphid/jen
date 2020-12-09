@@ -18,8 +18,12 @@ func getRequiredMap(node yaml.Map, key string) (yaml.Map, error) {
 	return m, nil
 }
 
-func getOptionalMap(node yaml.Map, key string) (yaml.Map, bool, error) {
-	child, ok := node[key]
+func getOptionalMap(node yaml.Node, key string) (yaml.Map, bool, error) {
+	_map, ok := node.(yaml.Map)
+	if !ok {
+		return nil, false, nil
+	}
+	child, ok := _map[key]
 	if !ok {
 		return nil, false, nil
 	}
@@ -27,6 +31,43 @@ func getOptionalMap(node yaml.Map, key string) (yaml.Map, bool, error) {
 	if !ok {
 		return nil, false, fmt.Errorf("property %q must be an object", key)
 	}
+	return m, true, nil
+}
+
+// getOptionalMapOrRawString retrieves the child map with given key or, if child is a raw string, it returns a map with
+// raw string stored in a property keyed with defaultSubKey. This is to support steps that have two alternate syntaxes,
+// a long-hand syntax using a map with multiple properties and a short-hand syntax with a raw string that specifies
+// only the value of defaultSubKey. If defaultSubKey is an empty string, then only the long-hand map syntax is tried.
+func getOptionalMapOrRawString(node yaml.Node, key, defaultSubKey string) (yaml.Map, bool, error) {
+	_map, ok := node.(yaml.Map)
+	if !ok {
+		return nil, false, nil
+	}
+	child, ok := _map[key]
+	if !ok {
+		return nil, false, nil
+	}
+
+	if defaultSubKey != "" {
+		// Try raw string
+		scalar, ok := child.(yaml.Scalar)
+		if ok {
+			_map = yaml.Map{
+				defaultSubKey: scalar,
+			}
+			return _map, true, nil
+		}
+	}
+
+	// Try map
+	m, ok := child.(yaml.Map)
+	if !ok {
+		if defaultSubKey != "" {
+			return nil, false, fmt.Errorf("property %q must be an object or raw string", key)
+		}
+		return nil, false, fmt.Errorf("property %q must be an object", key)
+	}
+
 	return m, true, nil
 }
 
@@ -42,8 +83,12 @@ func getRequiredList(node yaml.Map, key string) (yaml.List, error) {
 	return list, nil
 }
 
-func getRequiredString(node yaml.Map, key string) (string, error) {
-	value, ok, err := getString(node, key)
+func getRequiredStringFromMap(node yaml.Node, key string) (string, error) {
+	_map, ok := node.(yaml.Map)
+	if !ok {
+		return "", fmt.Errorf("expected object")
+	}
+	value, ok, err := getStringInternal(_map, key)
 	if err != nil {
 		return "", err
 	}
@@ -53,8 +98,12 @@ func getRequiredString(node yaml.Map, key string) (string, error) {
 	return value, nil
 }
 
-func getOptionalString(node yaml.Map, key string, defaultValue string) (string, error) {
-	value, ok, err := getString(node, key)
+func getOptionalStringFromMap(node yaml.Node, key string, defaultValue string) (string, error) {
+	_map, ok := node.(yaml.Map)
+	if !ok {
+		return defaultValue, nil
+	}
+	value, ok, err := getStringInternal(_map, key)
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +113,7 @@ func getOptionalString(node yaml.Map, key string, defaultValue string) (string, 
 	return value, nil
 }
 
-func getString(node yaml.Map, key string) (string, bool, error) {
+func getStringInternal(node yaml.Map, key string) (string, bool, error) {
 	value, ok := node[key]
 	if !ok {
 		return "", false, nil
@@ -77,7 +126,7 @@ func getString(node yaml.Map, key string) (string, bool, error) {
 }
 
 func getOptionalBool(node yaml.Map, key string, defaultValue bool) (bool, error) {
-	value, ok, err := getString(node, key)
+	value, ok, err := getStringInternal(node, key)
 	if err != nil {
 		return false, err
 	}

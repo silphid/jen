@@ -1,9 +1,8 @@
 package options
 
 import (
-	"fmt"
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/internal/specification"
-	"github.com/Samasource/jen/internal/specification/steps"
 )
 
 type Item struct {
@@ -13,9 +12,8 @@ type Item struct {
 }
 
 type Prompt struct {
-	If       string
-	Question string
-	Items    []Item
+	Message string
+	Items   []Item
 }
 
 func (p Prompt) String() string {
@@ -23,10 +21,32 @@ func (p Prompt) String() string {
 }
 
 func (p Prompt) Execute(context specification.Context) error {
-	ok, err := steps.ShouldExecute(p.String(), p.If, context.Values)
-	if !ok || err != nil {
+	// Collect option texts
+	var options []string
+	for _, item := range p.Items {
+		options = append(options, item.Text)
+	}
+
+	// Show prompt
+	prompt := &survey.MultiSelect{
+		Message: p.Message,
+		Options: options,
+	}
+	var indices []int
+	if err := survey.AskOne(prompt, &indices); err != nil {
 		return err
 	}
 
-	return fmt.Errorf("not implemented")
+	// Clear all options
+	for i := range p.Items {
+		name := p.Items[i].Var
+		context.Values.Variables[name] = false
+	}
+
+	// Enable selected options
+	for _, index := range indices {
+		name := p.Items[index].Var
+		context.Values.Variables[name] = true
+	}
+	return nil
 }
