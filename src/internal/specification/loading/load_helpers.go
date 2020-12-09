@@ -98,6 +98,34 @@ func getRequiredStringFromMap(node yaml.Node, key string) (string, error) {
 	return value, nil
 }
 
+func getRequiredStringsOrStringFromMap(_map yaml.Map, key string) ([]string, error) {
+	value, ok := _map[key]
+	if !ok {
+		return nil, fmt.Errorf("missing required property %q", key)
+	}
+
+	// If value is scalar, return a slice with just itself
+	scalar, ok := value.(yaml.Scalar)
+	if ok {
+		return []string{scalar.String()}, nil
+	}
+
+	// Otherwise, value should be a list of raw strings
+	list, ok := value.(yaml.List)
+	if !ok {
+		return nil, fmt.Errorf("property %q is expected to be either a raw string or a list of strings", key)
+	}
+	values := make([]string, 0, list.Len())
+	for _, item := range list {
+		value, ok := item.(yaml.Scalar)
+		if !ok {
+			return nil, fmt.Errorf("property %q is expected to be either a raw string or a list of strings", key)
+		}
+		values = append(values, value.String())
+	}
+	return values, nil
+}
+
 func getOptionalStringFromMap(node yaml.Node, key string, defaultValue string) (string, error) {
 	_map, ok := node.(yaml.Map)
 	if !ok {
@@ -113,8 +141,8 @@ func getOptionalStringFromMap(node yaml.Node, key string, defaultValue string) (
 	return value, nil
 }
 
-func getStringInternal(node yaml.Map, key string) (string, bool, error) {
-	value, ok := node[key]
+func getStringInternal(_map yaml.Map, key string) (string, bool, error) {
+	value, ok := _map[key]
 	if !ok {
 		return "", false, nil
 	}
@@ -125,8 +153,8 @@ func getStringInternal(node yaml.Map, key string) (string, bool, error) {
 	return scalar.String(), true, nil
 }
 
-func getOptionalBool(node yaml.Map, key string, defaultValue bool) (bool, error) {
-	value, ok, err := getStringInternal(node, key)
+func getOptionalBool(_map yaml.Map, key string, defaultValue bool) (bool, error) {
+	value, ok, err := getStringInternal(_map, key)
 	if err != nil {
 		return false, err
 	}

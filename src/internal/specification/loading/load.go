@@ -121,7 +121,7 @@ func loadExecutable(node yaml.Node) (specification.Executable, error) {
 		},
 		{
 			name:          "exec",
-			defaultSubKey: "command",
+			defaultSubKey: "commands",
 			fct:           loadExecStep,
 		},
 		{
@@ -304,13 +304,13 @@ func loadRenderStep(_map yaml.Map) (specification.Executable, error) {
 }
 
 func loadExecStep(_map yaml.Map) (specification.Executable, error) {
-	command, err := getRequiredStringFromMap(_map, "command")
+	commands, err := getRequiredStringsOrStringFromMap(_map, "commands")
 	if err != nil {
 		return nil, err
 	}
 
 	return exec.Exec{
-		Command: command,
+		Commands: commands,
 	}, nil
 }
 

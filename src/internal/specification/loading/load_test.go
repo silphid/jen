@@ -221,17 +221,22 @@ render: Source`,
 			Name: "exec step long-hand",
 			Buffer: `
 exec:
-  command: Command`,
+  commands:
+    - Command 1
+    - Command 2`,
 			Expected: exec.Exec{
-				Command: "Command",
+				Commands: []string{
+					"Command 1",
+					"Command 2",
+				},
 			},
 		},
 		{
 			Name: "exec step short-hand",
 			Buffer: `
-exec: Command`,
+exec: Command 1`,
 			Expected: exec.Exec{
-				Command: "Command",
+				Commands: []string{"Command 1"},
 			},
 		},
 		{
