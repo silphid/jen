@@ -306,35 +306,22 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 ## Wishlist (if time allows)
 
-- Manually invoke actions (`jen do <action>`)
-  - `jen gen` must save values to jen.yaml
-    - Automatically save `template` property for current template
-  - pseudo-code:
-    - load values from `jen.yaml`
-    - determine template
-    - load proper template
-    - execute given action
-- When name omitted (because of sub-steps), do not store value with empty key
-- Ensure output dir does not already exist
-- Save values to `jen.yaml`
-- Load values from existing spec file
-- Override values at command-line level (`--set myValue=value`)
-- Sub-steps and sub-values
-- Enqueuing all actual commands for execution at the end
+- Only treat as templates files ending with `.gotmpl` (and remove extension)
 - Reusable modules
-- Explicitly customizable env var names
-- Set extra variables (not prompted) based on expressions
-- Resolve relative templates dir in config file relatively to config file's location
+- Add `set` step to set multiple variables (are those saved to `jen.yaml`?)
+- Override values at command-line level (`--set myValue=value`)
 - Factotum Dockerfile should specify explicit jen version number in `go get`
-- Escape templating using something like `{{{...}}}` or `\{{...}}`
-- Default/initial values for all prompts
-- `script` config to add custom scripts bin dir to PATH during exec
-- Only treat specific files as templates (either inclusively or exclusively)
-- Action to remove/clean-up project completely (maybe prompt for what to remove)
-  - unpromote from stg
-  - remove triggers
-  - remove ECR repository
-  - remove git repository
+- Escape templating:
+    - Exceptionally within any file, using `{{{` and `}}}` to represent `{{` and `}}`
+    - Exclude an entire directory if it's named `_RAW_` (and collapse that level)
+- Per-template/module scripts in `bin` dir, which are automatically included in `PATH`
+- `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
+- Custom placeholders:
+```
+placeholders:
+  projekt: {{.PROJECT | lower}}
+  PROJEKT: {{.PROJECT | upper}}
+```
 
 ## Out of scope
 
@@ -357,13 +344,36 @@ if err != nil {
 
 ```
 
+# Structure of JEN_HOME directory
+
+- bin
+- modules
+  - NAME
+    - spec.yaml
+    - template
+    - bin
+- templates
+  - NAME
+    - spec.yaml
+    - src
+    - bin
+
 # Innovation Week 2.0
 
-* Finish refactoring/clean-up/unit tests
-* Support for:
-  * Save values to yaml file and reuse them
-  * `shell`
-  * `exec`
-  * `export`
-* Use `kaguya` service to create first template
-* Automate `jen` builds/releases
+- Finish refactoring/clean-up/unit tests
+- Baked-in placeholders
+- `JEN_HOME` env var to define templates location?  
+- Upon `jen do <action>`, automatically find and load existing `jen.yaml` if any
+  - File should contain:
+    - Template name used
+    - Input values
+  - If file not found, prompt for template and then save `jen.yaml` with selected template.
+- Each prompt should immediately save all values to `jen.yaml`
+- `jen do <action>`
+- Use `kaguya` service to create first template
+- Automate `jen` builds/releases
+- `shell`
+- `exec`
+- `export`
+
+

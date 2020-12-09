@@ -1,4 +1,4 @@
-package specification
+package model
 
 type Spec struct {
 	Name        string

@@ -1,7 +1,7 @@
 package loading
 
 import (
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/specification/steps"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
@@ -63,7 +63,7 @@ then:
       default: Default`,
 			Expected: steps.If{
 				Condition: "Condition",
-				Then: specification.Executables{
+				Then: model.Executables{
 					input.Prompt{
 						Message: "Message",
 						Var:     "Variable",
@@ -278,13 +278,13 @@ action2:
   - input:
       question: Message 2
       var: Variable 2`,
-			Expected: specification.ActionMap{
+			Expected: model.ActionMap{
 				"action1": {
 					Name: "action1",
-					Steps: specification.Executables{
+					Steps: model.Executables{
 						steps.If{
 							Condition: "Condition 1",
-							Then: specification.Executables{
+							Then: model.Executables{
 								input.Prompt{
 									Message: "Message 1",
 									Var:     "Variable 1",
@@ -295,7 +295,7 @@ action2:
 				},
 				"action2": {
 					Name: "action2",
-					Steps: specification.Executables{
+					Steps: model.Executables{
 						input.Prompt{
 							Message: "Message 2",
 							Var:     "Variable 2",
@@ -334,17 +334,17 @@ actions:
     - input:
         question: Message 2
         var: Variable 2`,
-			Expected: &specification.Spec{
+			Expected: &model.Spec{
 				Name:        "Name",
 				Description: "Description",
 				Version:     "0.0.1",
-				Actions: specification.ActionMap{
+				Actions: model.ActionMap{
 					"action1": {
 						Name: "action1",
-						Steps: specification.Executables{
+						Steps: model.Executables{
 							steps.If{
 								Condition: "Condition 1",
-								Then: specification.Executables{
+								Then: model.Executables{
 									input.Prompt{
 										Message: "Message 1",
 										Var:     "Variable 1",
@@ -355,7 +355,7 @@ actions:
 					},
 					"action2": {
 						Name: "action2",
-						Steps: specification.Executables{
+						Steps: model.Executables{
 							input.Prompt{
 								Message: "Message 2",
 								Var:     "Variable 2",
@@ -368,6 +368,6 @@ actions:
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return LoadSpec(m)
+		return loadSpecFromMap(m)
 	})
 }

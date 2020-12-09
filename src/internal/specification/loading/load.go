@@ -2,7 +2,8 @@ package loading
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/specification"
+	. "github.com/Samasource/jen/internal/constant"
+	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/specification/steps"
 	"github.com/Samasource/jen/internal/specification/steps/choice"
 	"github.com/Samasource/jen/internal/specification/steps/do"
@@ -12,13 +13,28 @@ import (
 	"github.com/Samasource/jen/internal/specification/steps/options"
 	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
+	"path"
 )
 
-func LoadSpec(node yaml.Map) (*specification.Spec, error) {
-	spec := new(specification.Spec)
+func LoadSpecFromDir(templateDir string) (*model.Spec, error) {
+	specFilePath := path.Join(templateDir, SpecFileName)
+	yamlFile, err := yaml.ReadFile(specFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	_map, ok := yamlFile.Root.(yaml.Map)
+	if !ok {
+		return nil, fmt.Errorf("spec file root is expected to be an object")
+	}
+	return loadSpecFromMap(_map)
+}
+
+func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
+	spec := new(model.Spec)
 
 	// Load metadata
-	metadata, err := getRequiredMap(node, "metadata")
+	metadata, err := getRequiredMap(_map, "metadata")
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +52,7 @@ func LoadSpec(node yaml.Map) (*specification.Spec, error) {
 	}
 
 	// Load actions
-	actions, err := getRequiredMap(node, "actions")
+	actions, err := getRequiredMap(_map, "actions")
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +64,8 @@ func LoadSpec(node yaml.Map) (*specification.Spec, error) {
 	return spec, nil
 }
 
-func loadActions(node yaml.Map) (specification.ActionMap, error) {
-	var actions []specification.Action
+func loadActions(node yaml.Map) (model.ActionMap, error) {
+	var actions []model.Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
@@ -59,19 +75,19 @@ func loadActions(node yaml.Map) (specification.ActionMap, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
-		actions = append(actions, specification.Action{Name: name, Steps: executables})
+		actions = append(actions, model.Action{Name: name, Steps: executables})
 	}
 
 	// Convert to map
-	m := make(specification.ActionMap)
+	m := make(model.ActionMap)
 	for _, action := range actions {
 		m[action.Name] = action
 	}
 	return m, nil
 }
 
-func loadExecutables(list yaml.List) (specification.Executables, error) {
-	var executables specification.Executables
+func loadExecutables(list yaml.List) (model.Executables, error) {
+	var executables model.Executables
 	for idx, value := range list {
 		step, err := loadExecutable(value)
 		if err != nil {
@@ -82,7 +98,7 @@ func loadExecutables(list yaml.List) (specification.Executables, error) {
 	return executables, nil
 }
 
-func loadExecutable(node yaml.Node) (specification.Executable, error) {
+func loadExecutable(node yaml.Node) (model.Executable, error) {
 	// Special case for if step
 	_map, ok := node.(yaml.Map)
 	if ok {
@@ -96,7 +112,7 @@ func loadExecutable(node yaml.Node) (specification.Executable, error) {
 	items := []struct {
 		name          string
 		defaultSubKey string
-		fct           func(node yaml.Map) (specification.Executable, error)
+		fct           func(node yaml.Map) (model.Executable, error)
 	}{
 		{
 			name: "input",
@@ -144,7 +160,7 @@ func loadExecutable(node yaml.Node) (specification.Executable, error) {
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadIfStep(_map yaml.Map) (specification.Executable, error) {
+func loadIfStep(_map yaml.Map) (model.Executable, error) {
 	condition, err := getRequiredStringFromMap(_map, "if")
 	if err != nil {
 		return nil, err
@@ -163,7 +179,7 @@ func loadIfStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadInputStep(_map yaml.Map) (specification.Executable, error) {
+func loadInputStep(_map yaml.Map) (model.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -183,7 +199,7 @@ func loadInputStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadOptionStep(_map yaml.Map) (specification.Executable, error) {
+func loadOptionStep(_map yaml.Map) (model.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -203,7 +219,7 @@ func loadOptionStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadOptionsStep(_map yaml.Map) (specification.Executable, error) {
+func loadOptionsStep(_map yaml.Map) (model.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -245,7 +261,7 @@ func loadOptionsStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadChoiceStep(_map yaml.Map) (specification.Executable, error) {
+func loadChoiceStep(_map yaml.Map) (model.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -292,7 +308,7 @@ func loadChoiceStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadRenderStep(_map yaml.Map) (specification.Executable, error) {
+func loadRenderStep(_map yaml.Map) (model.Executable, error) {
 	source, err := getRequiredStringFromMap(_map, "source")
 	if err != nil {
 		return nil, err
@@ -303,7 +319,7 @@ func loadRenderStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadExecStep(_map yaml.Map) (specification.Executable, error) {
+func loadExecStep(_map yaml.Map) (model.Executable, error) {
 	commands, err := getRequiredStringsOrStringFromMap(_map, "commands")
 	if err != nil {
 		return nil, err
@@ -314,7 +330,7 @@ func loadExecStep(_map yaml.Map) (specification.Executable, error) {
 	}, nil
 }
 
-func loadDoStep(_map yaml.Map) (specification.Executable, error) {
+func loadDoStep(_map yaml.Map) (model.Executable, error) {
 	action, err := getRequiredStringFromMap(_map, "action")
 	if err != nil {
 		return nil, err

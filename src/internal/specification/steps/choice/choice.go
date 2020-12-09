@@ -2,7 +2,7 @@ package choice
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
 )
 
 type Item struct {
@@ -21,7 +21,7 @@ func (p Prompt) String() string {
 	return "choice"
 }
 
-func (p Prompt) Execute(context specification.Context) error {
+func (p Prompt) Execute(config model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
@@ -38,6 +38,6 @@ func (p Prompt) Execute(context specification.Context) error {
 		return err
 	}
 
-	context.Values.Variables[p.Var] = p.Items[value].Value
+	config.Values.Variables[p.Var] = p.Items[value].Value
 	return nil
 }

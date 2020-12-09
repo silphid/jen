@@ -1,6 +1,6 @@
-package specification
+package model
 
 type Values struct {
 	Variables    map[string]interface{}
-	Replacements map[string]string
+	Placeholders map[string]string
 }

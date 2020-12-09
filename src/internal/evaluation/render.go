@@ -9,7 +9,7 @@ import (
 	"path"
 )
 
-func Render(values specification.Values, inputDir, outputDir string) error {
+func Render(values model.Values, inputDir, outputDir string) error {
 	entries, err := getEntries(values, inputDir, outputDir)
 	if err != nil {
 		return fmt.Errorf("failed to determine entries to render: %w", err)
@@ -30,7 +30,7 @@ type entry struct {
 	output string
 }
 
-func getEntries(values specification.Values, inputDir, outputDir string) ([]entry, error) {
+func getEntries(values model.Values, inputDir, outputDir string) ([]entry, error) {
 	var entries []entry
 	infos, err := ioutil.ReadDir(inputDir)
 	if err != nil {
@@ -64,7 +64,7 @@ func getEntries(values specification.Values, inputDir, outputDir string) ([]entr
 	return entries, nil
 }
 
-func renderFile(values specification.Values, inputPath, outputPath string) error {
+func renderFile(values model.Values, inputPath, outputPath string) error {
 	internal.Log("Rendering file %q -> %q", inputPath, outputPath)
 
 	// Read input file

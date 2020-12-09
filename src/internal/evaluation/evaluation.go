@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Masterminds/sprig"
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
 	"regexp"
 	"strings"
 	"text/template"
 )
 
-func EvalBoolExpression(values specification.Values, expression string) (bool, error) {
+func EvalBoolExpression(values model.Values, expression string) (bool, error) {
 	ifExpr := "{{if " + expression + "}}true{{end}}"
 	result, err := EvalTemplate(values, ifExpr)
 	if err != nil {
@@ -19,9 +19,9 @@ func EvalBoolExpression(values specification.Values, expression string) (bool, e
 	return result == "true", nil
 }
 
-func EvalTemplate(values specification.Values, text string) (string, error) {
-	// Perform replacements
-	for search, replace := range values.Replacements {
+func EvalTemplate(values model.Values, text string) (string, error) {
+	// Perform replacement of placeholders
+	for search, replace := range values.Placeholders {
 		text = strings.ReplaceAll(text, search, replace)
 	}
 
@@ -42,7 +42,7 @@ var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 
 // evalFileName interpolates the double-brace expressions, evaluates and removes the conditionals in double-bracket
 // expressions and returns the final file/dir name and whether it should be included in template rendering.
-func evalFileName(values specification.Values, name string) (string, bool, error) {
+func evalFileName(values model.Values, name string) (string, bool, error) {
 	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine
 	// whether the file/folder should be rendered and that expression then gets stripped
 	// from the name

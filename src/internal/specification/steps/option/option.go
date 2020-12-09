@@ -15,7 +15,7 @@ func (p Prompt) String() string {
 	return "option"
 }
 
-func (p Prompt) Execute(context specification.Context) error {
+func (p Prompt) Execute(config model.Config) error {
 	// Show prompt
 	prompt := &survey.Confirm{
 		Message: p.Message,
@@ -26,6 +26,6 @@ func (p Prompt) Execute(context specification.Context) error {
 		return err
 	}
 
-	context.Values.Variables[p.Var] = value
+	config.Values.Variables[p.Var] = value
 	return nil
 }

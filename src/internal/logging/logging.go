@@ -1,10 +1,9 @@
-package internal
+package logging
 
 import "fmt"
 
 var (
-	TemplatesDir string
-	Verbose      bool
+	Verbose bool
 )
 
 func Log(message string, a ...interface{}) {

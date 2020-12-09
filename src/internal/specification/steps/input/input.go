@@ -2,7 +2,7 @@ package input
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
 )
 
 type Prompt struct {
@@ -11,7 +11,7 @@ type Prompt struct {
 	Default string
 }
 
-func (p Prompt) Execute(context specification.Context) error {
+func (p Prompt) Execute(config model.Config) error {
 	// Show prompt
 	prompt := &survey.Input{
 		Message: p.Message,
@@ -22,6 +22,6 @@ func (p Prompt) Execute(context specification.Context) error {
 		return err
 	}
 
-	context.Values.Variables[p.Var] = value
+	config.Values.Variables[p.Var] = value
 	return nil
 }

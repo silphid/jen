@@ -2,7 +2,8 @@ package render
 
 import (
 	"github.com/Samasource/jen/internal/evaluation"
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
+	"path"
 )
 
 type Render struct {
@@ -13,6 +14,7 @@ func (r Render) String() string {
 	return "render"
 }
 
-func (r Render) Execute(context specification.Context) error {
-	return evaluation.Render(context.Values, context.InputDir, context.OutputDir)
+func (r Render) Execute(config model.Config) error {
+	inputDir := path.Join(config.TemplateDir, r.Source)
+	return evaluation.Render(config.Values, inputDir, config.ProjectDir)
 }

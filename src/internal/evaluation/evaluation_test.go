@@ -7,7 +7,7 @@ import (
 )
 
 func TestEvalBoolExpression(t *testing.T) {
-	values := specification.Values{
+	values := model.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
@@ -92,14 +92,14 @@ func TestEvalBoolExpression(t *testing.T) {
 }
 
 func TestEvalFileName(t *testing.T) {
-	values := specification.Values{
+	values := model.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Replacements: map[string]string{
+		Placeholders: map[string]string{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},

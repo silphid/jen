@@ -8,7 +8,7 @@ import (
 )
 
 func TestRender(t *testing.T) {
-	values := specification.Values{
+	values := model.Values{
 		Variables: map[string]interface{}{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
