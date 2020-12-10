@@ -39,5 +39,5 @@ func (p Prompt) Execute(config model.Config) error {
 	}
 
 	config.Values.Variables[p.Var] = p.Items[value].Value
-	return nil
+	return config.SaveJenFile()
 }

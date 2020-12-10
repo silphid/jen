@@ -2,7 +2,8 @@ package option
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
+	"strconv"
 )
 
 type Prompt struct {
@@ -26,6 +27,6 @@ func (p Prompt) Execute(config model.Config) error {
 		return err
 	}
 
-	config.Values.Variables[p.Var] = value
-	return nil
+	config.Values.Variables[p.Var] = strconv.FormatBool(value)
+	return config.SaveJenFile()
 }

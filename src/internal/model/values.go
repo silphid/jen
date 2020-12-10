@@ -1,6 +1,8 @@
 package model
 
+type VarMap map[string]string
+
 type Values struct {
-	Variables    map[string]interface{}
-	Placeholders map[string]string
+	Variables    VarMap
+	Placeholders VarMap
 }

@@ -2,8 +2,8 @@ package evaluation
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal"
-	"github.com/Samasource/jen/internal/specification"
+	. "github.com/Samasource/jen/internal/logging"
+	"github.com/Samasource/jen/internal/model"
 	"io/ioutil"
 	"os"
 	"path"
@@ -65,7 +65,7 @@ func getEntries(values model.Values, inputDir, outputDir string) ([]entry, error
 }
 
 func renderFile(values model.Values, inputPath, outputPath string) error {
-	internal.Log("Rendering file %q -> %q", inputPath, outputPath)
+	Log("Rendering file %q -> %q", inputPath, outputPath)
 
 	// Read input file
 	inputText, err := ioutil.ReadFile(inputPath)

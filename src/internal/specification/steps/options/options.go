@@ -40,13 +40,13 @@ func (p Prompt) Execute(config model.Config) error {
 	// Clear all options
 	for i := range p.Items {
 		name := p.Items[i].Var
-		config.Values.Variables[name] = false
+		config.Values.Variables[name] = "false"
 	}
 
 	// Enable selected options
 	for _, index := range indices {
 		name := p.Items[index].Var
-		config.Values.Variables[name] = true
+		config.Values.Variables[name] = "true"
 	}
-	return nil
+	return config.SaveJenFile()
 }

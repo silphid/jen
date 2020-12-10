@@ -1,4 +1,4 @@
-package loading
+package persist
 
 import (
 	"fmt"
@@ -38,7 +38,7 @@ func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	spec.Name, err = getRequiredStringFromMap(metadata, "Name")
+	spec.Name, err = getRequiredStringFromMap(metadata, "name")
 	if err != nil {
 		return nil, err
 	}
@@ -49,6 +49,9 @@ func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
 	spec.Version, err = getRequiredStringFromMap(metadata, "version")
 	if err != nil {
 		return nil, err
+	}
+	if spec.Version != SpecFileVersion {
+		return nil, fmt.Errorf("unsupported spec file version %s (expected %s)", spec.Version, SpecFileVersion)
 	}
 
 	// Load actions
