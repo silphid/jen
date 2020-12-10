@@ -1,9 +1,10 @@
 package persist
 
 import (
+	"strings"
+
 	. "github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
-	"strings"
 )
 
 func LoadJenFile(config *model.Config) error {
@@ -12,7 +13,9 @@ func LoadJenFile(config *model.Config) error {
 		return err
 	}
 
-	config.TemplateName = jenfile.TemplateName
+	if config.TemplateName == "" {
+		config.TemplateName = jenfile.TemplateName
+	}
 	config.Values.Variables = jenfile.Variables
 
 	InitDefaultPlaceholders(config)

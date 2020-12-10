@@ -1,0 +1,22 @@
+{
+  // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+  // Pointez pour afficher la description des attributs existants.
+  // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "/Users/mathieu/Dev/sama/jen/src",
+      "env": {
+        "JEN_HOME": "/Users/mathieu/Dev/sama/jen/dev/jenHome"
+      },
+      "args": [
+        "-v", "-y", "-t", "template1", "do", "create"
+      ],
+      "cwd": "/Users/mathieu/Dev/sama/jen/dev/output"
+    }
+  ]
+}

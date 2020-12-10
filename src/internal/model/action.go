@@ -16,6 +16,6 @@ func (a Action) String() string {
 }
 
 func (a Action) Execute(config *Config) error {
-	Log("Executing sub-steps of action %q", a.Name)
+	Log("Executing action %q", a.Name)
 	return a.Steps.Execute(config)
 }

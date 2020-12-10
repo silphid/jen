@@ -1,0 +1,27 @@
+metadata:
+  name: template2
+  description: A second dummy test template
+  version: 0.0.1
+actions:
+  create:
+    - do: prompt
+    - render: src
+    - do: install
+  prompt:
+    - input:
+        question: Project name
+        var: PROJECT
+        default: $(basename $(pwd))
+    - options:
+        question: Select desired features
+        items:
+          - text: PostgreSQL database
+            var: WITH_DB
+            default: true
+          - text: NewRelic instrumentation
+            var: WITH_NEWRELIC
+            default: false
+  install:
+    - exec: "echo Installing project: $PROJECT"
+  uninstall:
+    - exec: "echo Uninstalling project: $PROJECT"

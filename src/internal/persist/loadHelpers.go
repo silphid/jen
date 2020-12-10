@@ -2,8 +2,9 @@ package persist
 
 import (
 	"fmt"
-	"github.com/kylelemons/go-gypsy/yaml"
 	"strings"
+
+	"github.com/kylelemons/go-gypsy/yaml"
 )
 
 func getRequiredMap(node yaml.Map, key string) (yaml.Map, error) {
@@ -13,6 +14,11 @@ func getRequiredMap(node yaml.Map, key string) (yaml.Map, error) {
 	}
 	m, ok := child.(yaml.Map)
 	if !ok {
+		// WORKAROUND: go-gypsy lib incorrectly loads "{}" empty object as a literal string
+		scalar, ok := child.(yaml.Scalar)
+		if ok && scalar.String() == "{}" {
+			return yaml.Map{}, nil
+		}
 		return nil, fmt.Errorf("property %q must be an object", key)
 	}
 	return m, nil
@@ -150,7 +156,12 @@ func getStringInternal(_map yaml.Map, key string) (string, bool, error) {
 	if !ok {
 		return "", false, fmt.Errorf("property %q must be a string", key)
 	}
-	return scalar.String(), true, nil
+	str := scalar.String()
+	// WORKAROUND: go-gypsy lib incorrectly loads `""` empty string as a literal of two double-quotes
+	if str == `""` {
+		return "", true, nil
+	}
+	return str, true, nil
 }
 
 func getOptionalBool(_map yaml.Map, key string, defaultValue bool) (bool, error) {

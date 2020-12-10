@@ -2,18 +2,20 @@ package do
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
+	"strings"
+
 	"github.com/AlecAivazis/survey/v2"
 	. "github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/persist"
 	"github.com/spf13/cobra"
-	"io/ioutil"
-	"os"
-	"path"
 )
 
 func New(config *model.Config) *cobra.Command {
-	c := &cobra.Command{
+	return &cobra.Command{
 		Use:   "do",
 		Short: "Executes an action from a template's spec.yaml",
 		Args:  cobra.ExactArgs(1),
@@ -21,17 +23,14 @@ func New(config *model.Config) *cobra.Command {
 			return run(config, args[0])
 		},
 	}
-
-	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
-
-	c.PersistentPreRunE = func(*cobra.Command, []string) error {
-		return initialize(config)
-	}
-
-	return c
 }
 
 func run(config *model.Config, actionName string) error {
+	err := initialize(config)
+	if err != nil {
+		return fmt.Errorf("initializing config: %w", err)
+	}
+
 	action, ok := config.Spec.Actions[actionName]
 	if !ok {
 		return fmt.Errorf("action %q not found in spec file", actionName)
@@ -54,7 +53,7 @@ func initialize(config *model.Config) error {
 	if config.TemplateName == "" {
 		config.TemplateName, err = promptTemplate(config.TemplatesDir)
 		if err != nil {
-			return err
+			return fmt.Errorf("prompting for template: %w", err)
 		}
 	}
 
@@ -65,11 +64,13 @@ func initialize(config *model.Config) error {
 
 func loadOrCreateJenFile(config *model.Config) error {
 	if config.ProjectDir == "" {
-		err := confirmCreateJenFile()
-		if err != nil {
-			return err
+		if !config.SkipConfirm {
+			err := confirmCreateJenFile()
+			if err != nil {
+				return err
+			}
 		}
-		err = persist.SaveJenFile(config)
+		err := persist.SaveJenFile(config)
 		if err != nil {
 			return err
 		}
@@ -112,10 +113,10 @@ func findProjectDirUpFromWorkDir() (string, error) {
 		if exists {
 			return dir, nil
 		}
-		dir = path.Dir(dir)
-		if dir == "" {
+		if dir == "/" {
 			return "", nil
 		}
+		dir = path.Dir(dir)
 	}
 }
 
@@ -134,7 +135,7 @@ func promptTemplate(templatesDir string) (string, error) {
 	// Read templates dir
 	infos, err := ioutil.ReadDir(templatesDir)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("reading templates directory %q: %w", templatesDir, err)
 	}
 
 	// Build list of choices
@@ -142,12 +143,16 @@ func promptTemplate(templatesDir string) (string, error) {
 	var titles []string
 	for _, info := range infos {
 		template := info.Name()
+		if strings.HasPrefix(template, ".") {
+			continue
+		}
 		templateDir := path.Join(templatesDir, template)
 		spec, err := persist.LoadSpecFromDir(templateDir)
-		if err == nil {
-			templates = append(templates, template)
-			titles = append(titles, fmt.Sprintf("%s - %s", template, spec.Description))
+		if err != nil {
+			return "", nil
 		}
+		templates = append(templates, template)
+		titles = append(titles, fmt.Sprintf("%s - %s", template, spec.Description))
 	}
 
 	// Any templates found?

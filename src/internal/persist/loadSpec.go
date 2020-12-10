@@ -2,6 +2,8 @@ package persist
 
 import (
 	"fmt"
+	"path"
+
 	. "github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/specification/steps"
@@ -13,7 +15,6 @@ import (
 	"github.com/Samasource/jen/internal/specification/steps/options"
 	"github.com/Samasource/jen/internal/specification/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
-	"path"
 )
 
 func LoadSpecFromDir(templateDir string) (*model.Spec, error) {
