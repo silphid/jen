@@ -15,8 +15,8 @@ func getRequiredMap(node yaml.Map, key string) (yaml.Map, error) {
 	m, ok := child.(yaml.Map)
 	if !ok {
 		// WORKAROUND: go-gypsy lib incorrectly loads "{}" empty object as a literal string
-		scalar, ok := child.(yaml.Scalar)
-		if ok && scalar.String() == "{}" {
+		str, _ := getString(child)
+		if str == "{}" {
 			return yaml.Map{}, nil
 		}
 		return nil, fmt.Errorf("property %q must be an object", key)
@@ -56,10 +56,10 @@ func getOptionalMapOrRawString(node yaml.Node, key, defaultSubKey string) (yaml.
 
 	if defaultSubKey != "" {
 		// Try raw string
-		scalar, ok := child.(yaml.Scalar)
+		str, ok := getString(child)
 		if ok {
 			_map = yaml.Map{
-				defaultSubKey: scalar,
+				defaultSubKey: yaml.Scalar(str),
 			}
 			return _map, true, nil
 		}
@@ -111,9 +111,9 @@ func getRequiredStringsOrStringFromMap(_map yaml.Map, key string) ([]string, err
 	}
 
 	// If value is scalar, return a slice with just itself
-	scalar, ok := value.(yaml.Scalar)
+	str, ok := getString(value)
 	if ok {
-		return []string{scalar.String()}, nil
+		return []string{str}, nil
 	}
 
 	// Otherwise, value should be a list of raw strings
@@ -123,11 +123,11 @@ func getRequiredStringsOrStringFromMap(_map yaml.Map, key string) ([]string, err
 	}
 	values := make([]string, 0, list.Len())
 	for _, item := range list {
-		value, ok := item.(yaml.Scalar)
+		str, ok := getString(item)
 		if !ok {
 			return nil, fmt.Errorf("property %q is expected to be either a raw string or a list of strings", key)
 		}
-		values = append(values, value.String())
+		values = append(values, str)
 	}
 	return values, nil
 }
@@ -152,16 +152,24 @@ func getStringInternal(_map yaml.Map, key string) (string, bool, error) {
 	if !ok {
 		return "", false, nil
 	}
-	scalar, ok := value.(yaml.Scalar)
+	str, ok := getString(value)
 	if !ok {
 		return "", false, fmt.Errorf("property %q must be a string", key)
 	}
+	return str, true, nil
+}
+
+func getString(node yaml.Node) (string, bool) {
+	scalar, ok := node.(yaml.Scalar)
+	if !ok {
+		return "", false
+	}
 	str := scalar.String()
 	// WORKAROUND: go-gypsy lib incorrectly loads `""` empty string as a literal of two double-quotes
-	if str == `""` {
-		return "", true, nil
+	if strings.HasPrefix(str, `"`) && strings.HasSuffix(str, `"`) {
+		return str[1 : len(str)-1], true
 	}
-	return str, true, nil
+	return str, true
 }
 
 func getOptionalBool(_map yaml.Map, key string, defaultValue bool) (bool, error) {

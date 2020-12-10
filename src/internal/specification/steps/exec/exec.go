@@ -2,12 +2,13 @@ package exec
 
 import (
 	"fmt"
-	. "github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	. "github.com/Samasource/jen/internal/logging"
+	"github.com/Samasource/jen/internal/model"
 )
 
 type Exec struct {
@@ -26,19 +27,24 @@ func (e Exec) Execute(config *model.Config) error {
 
 	// Concatenate commands
 	builder := strings.Builder{}
-	for _, command := range e.Commands {
+	for i, command := range e.Commands {
+		if i > 0 {
+			builder.WriteString("; ")
+		}
 		builder.WriteString(command)
-		builder.WriteString("; ")
 	}
 	commands := builder.String()
 
 	// Configure command struct
-	cmd := exec.Command("bash", "-c", "set -e; "+commands)
-	cmd.Env = getEnvFromValues(config.Values)
-	cmd.Dir = dir
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd := &exec.Cmd{
+		Path:   "/bin/bash",
+		Args:   []string{"/bin/bash", "-c", "set -e; " + commands},
+		Dir:    dir,
+		Env:    getEnvFromValues(config.Values),
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
 
 	// Execute
 	Log("Executing commands %q in directory %q", commands, dir)

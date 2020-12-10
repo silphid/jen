@@ -1,5 +1,7 @@
-Project name: {{.NAME}}
-Project name in uppercase: {{.NAME | upper}}
+Project name: {{.PROJECT}}
+Project name in uppercase: {{.PROJECT | upper}}
+Placeholder lowercase: projekt
+Placeholder uppercase: PROJEKT
 
 myOption: {{.MY_OPTION}}
 {{if .MY_OPTION -}}
