@@ -18,7 +18,7 @@ func (e Exec) String() string {
 	return "exec"
 }
 
-func (e Exec) Execute(config model.Config) error {
+func (e Exec) Execute(config *model.Config) error {
 	dir, err := filepath.Abs(config.ProjectDir)
 	if err != nil {
 		return err

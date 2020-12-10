@@ -16,7 +16,7 @@ func (p Prompt) String() string {
 	return "option"
 }
 
-func (p Prompt) Execute(config model.Config) error {
+func (p Prompt) Execute(config *model.Config) error {
 	// Show prompt
 	prompt := &survey.Confirm{
 		Message: p.Message,
@@ -28,5 +28,5 @@ func (p Prompt) Execute(config model.Config) error {
 	}
 
 	config.Values.Variables[p.Var] = strconv.FormatBool(value)
-	return config.SaveJenFile()
+	return config.OnValuesChanged()
 }

@@ -20,7 +20,7 @@ func (p Prompt) String() string {
 	return "options"
 }
 
-func (p Prompt) Execute(config model.Config) error {
+func (p Prompt) Execute(config *model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
@@ -48,5 +48,5 @@ func (p Prompt) Execute(config model.Config) error {
 		name := p.Items[index].Var
 		config.Values.Variables[name] = "true"
 	}
-	return config.SaveJenFile()
+	return config.OnValuesChanged()
 }

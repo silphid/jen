@@ -41,7 +41,7 @@ func run(t *testing.T, fixtures []fixture, load func(yaml.Map) (interface{}, err
 				assert.NotNil(t, err)
 				assert.Equal(t, f.Error, err.Error())
 			} else {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				if diff := deep.Equal(f.Expected, actual); diff != nil {
 					t.Error(diff)
 				}
@@ -317,7 +317,7 @@ func TestLoadSpec(t *testing.T) {
 			Name: "",
 			Buffer: `
 metadata:
-  Name: Name
+  name: Name
   description: Description
   version: 0.0.1
 import:

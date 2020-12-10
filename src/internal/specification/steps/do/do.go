@@ -13,7 +13,7 @@ func (d Do) String() string {
 	return "do"
 }
 
-func (d Do) Execute(config model.Config) error {
+func (d Do) Execute(config *model.Config) error {
 	action, ok := config.Spec.Actions[d.Action]
 	if !ok {
 		return fmt.Errorf("action %q not found for do step", d.Action)

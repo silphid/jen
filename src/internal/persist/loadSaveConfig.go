@@ -14,6 +14,7 @@ func LoadJenFile(config *model.Config) error {
 
 	config.TemplateName = jenfile.TemplateName
 	config.Values.Variables = jenfile.Variables
+
 	InitDefaultPlaceholders(config)
 	return nil
 }
@@ -24,7 +25,14 @@ func SaveJenFile(config *model.Config) error {
 		TemplateName: config.TemplateName,
 		Variables:    config.Values.Variables,
 	}
-	return SaveJenFileToDir(config.ProjectDir, jenfile)
+
+	err := SaveJenFileToDir(config.ProjectDir, jenfile)
+	if err != nil {
+		return err
+	}
+
+	InitDefaultPlaceholders(config)
+	return nil
 }
 
 func InitDefaultPlaceholders(config *model.Config) {

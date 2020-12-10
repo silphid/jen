@@ -14,7 +14,7 @@ func (r Render) String() string {
 	return "render"
 }
 
-func (r Render) Execute(config model.Config) error {
+func (r Render) Execute(config *model.Config) error {
 	inputDir := path.Join(config.TemplateDir, r.Source)
 	return evaluation.Render(config.Values, inputDir, config.ProjectDir)
 }

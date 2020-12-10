@@ -17,8 +17,8 @@ func New(config *model.Config) *cobra.Command {
 		Use:   "do",
 		Short: "Executes an action from a template's spec.yaml",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(*cobra.Command, []string) error {
-			return run()
+		RunE: func(_ *cobra.Command, args []string) error {
+			return run(config, args[0])
 		},
 	}
 
@@ -31,9 +31,12 @@ func New(config *model.Config) *cobra.Command {
 	return c
 }
 
-func run() error {
-	// TODO: Do action
-	return nil
+func run(config *model.Config, actionName string) error {
+	action, ok := config.Spec.Actions[actionName]
+	if !ok {
+		return fmt.Errorf("action %q not found in spec file", actionName)
+	}
+	return action.Execute(config)
 }
 
 func initialize(config *model.Config) error {

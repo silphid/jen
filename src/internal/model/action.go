@@ -15,7 +15,7 @@ func (a Action) String() string {
 	return a.Name
 }
 
-func (a Action) Execute(config Config) error {
+func (a Action) Execute(config *Config) error {
 	Log("Executing sub-steps of action %q", a.Name)
 	return a.Steps.Execute(config)
 }

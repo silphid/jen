@@ -306,14 +306,13 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 
 ## Wishlist (if time allows)
 
-- Only treat as templates files ending with `.gotmpl` (and remove extension)
 - Reusable modules
 - Add `set` step to set multiple variables (are those saved to `jen.yaml`?)
 - Override values at command-line level (`--set myValue=value`)
 - Factotum Dockerfile should specify explicit jen version number in `go get`
 - Escape templating:
-    - Exceptionally within any file, using `{{{` and `}}}` to represent `{{` and `}}`
-    - Exclude an entire directory if it's named `_RAW_` (and collapse that level)
+    - Only treat as templates files ending with `.gotmpl` (and remove extension)
+    - Exceptionally escape within any file, using `{{{` and `}}}` to represent `{{` and `}}`
 - Per-template/module scripts in `bin` dir, which are automatically included in `PATH`
 - `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
 - Custom placeholders:
@@ -321,27 +320,6 @@ Double-bracket part can be specified anywhere within name (start, middle or end)
 placeholders:
   projekt: {{.PROJECT | lower}}
   PROJEKT: {{.PROJECT | upper}}
-```
-
-## Out of scope
-
-- Importing existing project 
-
-# Best practices to document
-
-## Go
-
-### Wrap errors
-
-Only add info that was not already passed into method that returned error
-
-``` go
-f, err := os.Create(outputPath)
-if err != nil {
-  // ouputPath is already included in error message, only adding inputPath info
-	return fmt.Errorf("create output file for template %v: %w", inputPath, err)
-}
-
 ```
 
 # Structure of JEN_HOME directory

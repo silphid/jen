@@ -21,7 +21,7 @@ func (p Prompt) String() string {
 	return "choice"
 }
 
-func (p Prompt) Execute(config model.Config) error {
+func (p Prompt) Execute(config *model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
@@ -39,5 +39,5 @@ func (p Prompt) Execute(config model.Config) error {
 	}
 
 	config.Values.Variables[p.Var] = p.Items[value].Value
-	return config.SaveJenFile()
+	return config.OnValuesChanged()
 }

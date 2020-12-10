@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"github.com/Samasource/jen/internal/specification"
+	"github.com/Samasource/jen/internal/model"
 	"github.com/stretchr/testify/assert"
 	"path"
 	"testing"
@@ -9,13 +9,13 @@ import (
 
 func TestGetEntries(t *testing.T) {
 	values := model.Values{
-		Variables: map[string]interface{}{
+		Variables: model.VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: map[string]string{
+		Placeholders: model.VarMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},

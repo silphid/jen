@@ -11,7 +11,7 @@ type Prompt struct {
 	Default string
 }
 
-func (p Prompt) Execute(config model.Config) error {
+func (p Prompt) Execute(config *model.Config) error {
 	// Show prompt
 	prompt := &survey.Input{
 		Message: p.Message,
@@ -23,5 +23,5 @@ func (p Prompt) Execute(config model.Config) error {
 	}
 
 	config.Values.Variables[p.Var] = value
-	return config.SaveJenFile()
+	return config.OnValuesChanged()
 }

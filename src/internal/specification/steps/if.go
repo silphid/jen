@@ -16,7 +16,7 @@ func (i If) String() string {
 	return "do"
 }
 
-func (i If) Execute(config model.Config) error {
+func (i If) Execute(config *model.Config) error {
 	result, err := evaluation.EvalBoolExpression(config.Values, i.Condition)
 	if err != nil {
 		return fmt.Errorf("evaluating if conditional: %w", err)
