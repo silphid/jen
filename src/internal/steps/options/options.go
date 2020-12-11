@@ -33,8 +33,12 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, p.Message)
+	if err != nil {
+		return err
+	}
 	prompt := &survey.MultiSelect{
-		Message: p.Message,
+		Message: message,
 		Options: options,
 	}
 	var indices []int
