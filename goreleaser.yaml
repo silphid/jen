@@ -2,7 +2,8 @@
 # Make sure to check the documentation at http://goreleaser.com
 project_name: jen
 builds:
-  - env:
+  - dir: src
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
