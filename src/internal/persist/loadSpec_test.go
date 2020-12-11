@@ -319,7 +319,7 @@ func TestLoadSpec(t *testing.T) {
 metadata:
   name: Name
   description: Description
-  version: 0.0.1
+  version: 0.2.0
 import:
   common: common
   go: go/common
@@ -337,7 +337,7 @@ actions:
 			Expected: &model.Spec{
 				Name:        "Name",
 				Description: "Description",
-				Version:     "0.0.1",
+				Version:     "0.2.0",
 				Actions: model.ActionMap{
 					"action1": {
 						Name: "action1",
