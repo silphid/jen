@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/cmd/exec"
-	"github.com/Samasource/jen/internal/persist"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/Samasource/jen/cmd/exec"
+	"github.com/Samasource/jen/internal/persist"
 
 	"github.com/Samasource/jen/cmd/do"
 	. "github.com/Samasource/jen/internal/constant"
@@ -94,13 +95,8 @@ func loadOrCreateJenFile(config *model.Config) error {
 		if err != nil {
 			return err
 		}
-	} else {
-		err := persist.LoadJenFile(config)
-		if err != nil {
-			return err
-		}
 	}
-	return nil
+	return persist.LoadJenFile(config)
 }
 
 func confirmCreateJenFile() error {
@@ -169,7 +165,7 @@ func promptTemplate(templatesDir string) (string, error) {
 		templateDir := path.Join(templatesDir, template)
 		spec, err := persist.LoadSpecFromDir(templateDir)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 		templates = append(templates, template)
 		titles = append(titles, fmt.Sprintf("%s - %s", template, spec.Description))

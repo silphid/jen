@@ -14,9 +14,9 @@
         "JEN_HOME": "/Users/mathieu/Dev/sama/jen/dev/jenHome"
       },
       "args": [
-        "-v", "-y", "-t", "template1", "do", "install"
+        "-v", "-y", "do", "create"
       ],
-      "cwd": "/Users/mathieu/Dev/sama/jen/dev/output"
+      "cwd": "/Users/mathieu/Dev/sama/jen/dev/output3"
     }
   ]
 }

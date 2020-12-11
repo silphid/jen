@@ -1,7 +1,7 @@
 metadata:
   name: template1
   description: A first dummy test template
-  version: 0.0.1
+  version: 0.2.0
 actions:
   create:
     - do: prompt
