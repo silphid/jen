@@ -339,20 +339,20 @@ placeholders:
 
 # Innovation Week 2.0
 
-- Finish refactoring/clean-up/unit tests
-- Baked-in placeholders
-- `JEN_HOME` env var to define templates location?  
-- Upon `jen do <action>`, automatically find and load existing `jen.yaml` if any
-  - File should contain:
-    - Template name used
-    - Input values
-  - If file not found, prompt for template and then save `jen.yaml` with selected template.
-- Each prompt should immediately save all values to `jen.yaml`
-- `jen do <action>`
-- Use `kaguya` service to create first template
+- ~~Finish refactoring/clean-up/unit tests~~
+- ~~Baked-in placeholders~~
+- ~~JEN_HOME env var to define templates location~~
+- ~~Upon jen do <action>, automatically find and load existing jen.yaml if any
+  File should contain:
+    Template name used
+    Input values
+  If file not found, prompt for template and then save jen.yaml with selected template.~~
+- ~~Each prompt should immediately save all values to jen.yaml~~
+- ~~jen do action~~
+- ~~exec command~~
 - Automate `jen` builds/releases
-- `shell`
-- `exec`
-- `export`
+- Integrate into factotum
+- Use `kaguya` service to create first template
+- export command
 
 
