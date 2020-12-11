@@ -6,14 +6,14 @@ import (
 
 	. "github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
-	"github.com/Samasource/jen/internal/specification/steps"
-	"github.com/Samasource/jen/internal/specification/steps/choice"
-	"github.com/Samasource/jen/internal/specification/steps/do"
-	"github.com/Samasource/jen/internal/specification/steps/exec"
-	"github.com/Samasource/jen/internal/specification/steps/input"
-	"github.com/Samasource/jen/internal/specification/steps/option"
-	"github.com/Samasource/jen/internal/specification/steps/options"
-	"github.com/Samasource/jen/internal/specification/steps/render"
+	"github.com/Samasource/jen/internal/steps"
+	"github.com/Samasource/jen/internal/steps/choice"
+	"github.com/Samasource/jen/internal/steps/do"
+	"github.com/Samasource/jen/internal/steps/exec"
+	"github.com/Samasource/jen/internal/steps/input"
+	"github.com/Samasource/jen/internal/steps/option"
+	"github.com/Samasource/jen/internal/steps/options"
+	"github.com/Samasource/jen/internal/steps/render"
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 

@@ -2,6 +2,7 @@ package option
 
 import (
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/Samasource/jen/internal/evaluation"
 	"github.com/Samasource/jen/internal/model"
 	"strconv"
 )
@@ -18,8 +19,12 @@ func (p Prompt) String() string {
 
 func (p Prompt) Execute(config *model.Config) error {
 	// Show prompt
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, p.Message)
+	if err != nil {
+		return err
+	}
 	prompt := &survey.Confirm{
-		Message: p.Message,
+		Message: message,
 		Default: p.Default,
 	}
 	value := false

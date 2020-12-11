@@ -15,7 +15,7 @@ func Execute(vars model.VarMap, dir string, commands ...string) error {
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", "set -e; " + strings.Join(commands, "; ")},
 		Dir:    dir,
-		Env:    getEnvFromValues(vars),
+		Env:    GetEnvFromValues(vars),
 		Stdin:  os.Stdin,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -28,7 +28,7 @@ func Execute(vars model.VarMap, dir string, commands ...string) error {
 	return cmd.Run()
 }
 
-func getEnvFromValues(vars model.VarMap) []string {
+func GetEnvFromValues(vars model.VarMap) []string {
 	// Pass current process env vars
 	var env []string
 	for _, entry := range os.Environ() {

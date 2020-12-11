@@ -61,6 +61,7 @@ func initialize(config *model.Config) error {
 		if err != nil {
 			return fmt.Errorf("prompting for template: %w", err)
 		}
+		config.OnValuesChanged()
 	}
 
 	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
@@ -105,7 +106,7 @@ func loadOrCreateJenFile(config *model.Config) error {
 func confirmCreateJenFile() error {
 	var result bool
 	err := survey.AskOne(&survey.Confirm{
-		Message: "Do you want jen to initialize current directory as your project root?",
+		Message: "Jen project not found. Do you want to initialize current directory as your project root?",
 		Default: false,
 	}, &result)
 	if err != nil {

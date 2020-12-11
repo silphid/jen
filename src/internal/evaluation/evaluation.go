@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/Masterminds/sprig"
 	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/internal/shell"
+	"os/exec"
 	"regexp"
 	"strings"
 	"text/template"
@@ -17,6 +19,31 @@ func EvalBoolExpression(values model.Values, expression string) (bool, error) {
 		return false, fmt.Errorf("evaluate expression %q: %w", expression, err)
 	}
 	return result == "true", nil
+}
+
+func EvalPromptValueTemplate(values model.Values, text string) (string, error) {
+	// Interpolate go templating
+	str, err := EvalTemplate(values, text)
+	if err != nil {
+		return "", err
+	}
+
+	if !strings.Contains(str, "$") {
+		return str, nil
+	}
+
+	// Interpolates env vars
+	buf := &bytes.Buffer{}
+	cmd := &exec.Cmd{
+		Path:   "/bin/bash",
+		Args:   []string{"/bin/bash", "-c", `echo -n "` + str + `"`},
+		Env:    shell.GetEnvFromValues(values.Variables),
+		Stdout: buf,
+	}
+	if err = cmd.Run(); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
 func EvalTemplate(values model.Values, text string) (string, error) {

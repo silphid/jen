@@ -2,6 +2,7 @@ package options
 
 import (
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/Samasource/jen/internal/evaluation"
 	"github.com/Samasource/jen/internal/model"
 )
 
@@ -24,7 +25,11 @@ func (p Prompt) Execute(config *model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
-		options = append(options, item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(config.Values, item.Text)
+		if err != nil {
+			return err
+		}
+		options = append(options, text)
 	}
 
 	// Show prompt
