@@ -321,6 +321,7 @@ placeholders:
   projekt: {{.PROJECT | lower}}
   PROJEKT: {{.PROJECT | upper}}
 ```
+- Reuse existing values when running prompts a second time
 
 # Structure of JEN_HOME directory
 
