@@ -6,12 +6,10 @@ Code generator and script runner.
 
 ## Wishlist (if time allows)
 
-- Download templates from git repo
-- Only treat as templates files ending with `.gotmpl` (and remove extension)
+- Only treat as templates files (or entire directories) ending with `.gotmpl` (and remove extension)
 - When prompting again, reuse existing values as defaults
 - Per-template/module scripts in `bin` dir, which are automatically included in `PATH`
   - `jen exec` and `jen export` should alter `PATH` to include `bin` dir(s)
-- `jen pull`
 - `jen do` alone to prompt for action
 - `jen export` to list env variables
 - Reusable modules
