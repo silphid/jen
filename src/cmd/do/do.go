@@ -3,6 +3,7 @@ package do
 import (
 	"fmt"
 	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/internal/persist"
 	"github.com/spf13/cobra"
 )
 
@@ -18,9 +19,15 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config, actionName string) error {
+	err := persist.LoadOrCreateJenFile(config)
+	if err != nil {
+		return err
+	}
+
 	action, ok := config.Spec.Actions[actionName]
 	if !ok {
 		return fmt.Errorf("action %q not found in spec file", actionName)
 	}
+
 	return action.Execute(config)
 }

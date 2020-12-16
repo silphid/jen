@@ -2,17 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/Samasource/jen/cmd/pull"
 	"github.com/Samasource/jen/internal/shell"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/cmd/exec"
-	"github.com/Samasource/jen/internal/persist"
-
 	"github.com/Samasource/jen/cmd/do"
+	"github.com/Samasource/jen/cmd/exec"
 	. "github.com/Samasource/jen/internal/constant"
 	. "github.com/Samasource/jen/internal/logging"
 	"github.com/Samasource/jen/internal/model"
@@ -33,6 +31,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "display verbose messages")
 	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
 	c.PersistentFlags().BoolVarP(&config.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
+	c.AddCommand(pull.New(config))
 	c.AddCommand(do.New(config))
 	c.AddCommand(exec.New(config))
 	c.PersistentPreRunE = func(*cobra.Command, []string) error {
@@ -60,30 +59,11 @@ func initialize(config *model.Config) error {
 
 	config.TemplatesDir = path.Join(config.JenDir, TemplatesDirName)
 	config.ProjectDir, err = findProjectDirUpFromWorkDir()
-	if err != nil {
-		return err
-	}
-
-	err = loadOrCreateJenFile(config)
-	if err != nil {
-		return err
-	}
-
-	if config.TemplateName == "" {
-		config.TemplateName, err = promptTemplate(config.TemplatesDir)
-		if err != nil {
-			return fmt.Errorf("prompting for template: %w", err)
-		}
-		config.OnValuesChanged()
-	}
-
-	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
-	config.Spec, err = persist.LoadSpecFromDir(config.TemplateDir)
 	return err
 }
 
 func cloneJenRepo(jenHomeDir, jenRepo string) error {
-	// Jen home dir already exists and is a valid git working copy?
+	// Jen dir already exists and is a valid git working copy?
 	homeExists, err := pathExists(jenHomeDir)
 	if err != nil {
 		return err
@@ -95,22 +75,22 @@ func cloneJenRepo(jenHomeDir, jenRepo string) error {
 			return err
 		}
 		if dotGitExists {
-			// Jen home dir is a valid git repo
+			// Jen dir is a valid git repo
 			return nil
 		} else {
 			// Not a valid git repo, therefore must be empty, so we can clone into it
 			infos, err := ioutil.ReadDir(jenHomeDir)
 			if err != nil {
-				return fmt.Errorf("listing content of jen home dir %q to ensure it's empty before cloning into it: %w", jenHomeDir, err)
+				return fmt.Errorf("listing content of jen dir %q to ensure it's empty before cloning into it: %w", jenHomeDir, err)
 			}
 			if len(infos) > 0 {
-				return fmt.Errorf("jen home dir %q already exists, is not a valid git working copy and already contains files so we cannot clone into it (please delete or empty it)", jenHomeDir)
+				return fmt.Errorf("jen dir %q already exists, is not a valid git working copy and already contains files so we cannot clone into it (please delete or empty it)", jenHomeDir)
 			}
 		}
 	}
 
 	// Clone jen repo
-	Log("Cloning jen templates repo %q into jen home dir %q", jenRepo, jenHomeDir)
+	Log("Cloning jen templates repo %q into jen dir %q", jenRepo, jenHomeDir)
 	return shell.Execute(nil, "", fmt.Sprintf("git clone %s %s", jenRepo, jenHomeDir))
 }
 
@@ -133,37 +113,6 @@ func getJenHomeDir() (string, error) {
 	}
 	Log("Using jen home dir: %s", jenHomeDir)
 	return strings.ReplaceAll(jenHomeDir, "~", home), nil
-}
-
-func loadOrCreateJenFile(config *model.Config) error {
-	if config.ProjectDir == "" {
-		if !config.SkipConfirm {
-			err := confirmCreateJenFile()
-			if err != nil {
-				return err
-			}
-		}
-		err := persist.SaveJenFile(config)
-		if err != nil {
-			return err
-		}
-	}
-	return persist.LoadJenFile(config)
-}
-
-func confirmCreateJenFile() error {
-	var result bool
-	err := survey.AskOne(&survey.Confirm{
-		Message: "Jen project not found. Do you want to initialize current directory as your project root?",
-		Default: false,
-	}, &result)
-	if err != nil {
-		return err
-	}
-	if !result {
-		return fmt.Errorf("cancelled by user")
-	}
-	return nil
 }
 
 func findProjectDirUpFromWorkDir() (string, error) {
@@ -197,46 +146,4 @@ func pathExists(path string) (bool, error) {
 		return false, fmt.Errorf("checking if %q path exists: %w", path, err)
 	}
 	return true, nil
-}
-
-func promptTemplate(templatesDir string) (string, error) {
-	// Read templates dir
-	infos, err := ioutil.ReadDir(templatesDir)
-	if err != nil {
-		return "", fmt.Errorf("reading templates directory %q: %w", templatesDir, err)
-	}
-
-	// Build list of choices
-	var templates []string
-	var titles []string
-	for _, info := range infos {
-		template := info.Name()
-		if strings.HasPrefix(template, ".") {
-			continue
-		}
-		templateDir := path.Join(templatesDir, template)
-		spec, err := persist.LoadSpecFromDir(templateDir)
-		if err != nil {
-			return "", err
-		}
-		templates = append(templates, template)
-		titles = append(titles, fmt.Sprintf("%s - %s", template, spec.Description))
-	}
-
-	// Any templates found?
-	if len(templates) == 0 {
-		return "", fmt.Errorf("no templates found in %q", templatesDir)
-	}
-
-	// Prompt
-	prompt := &survey.Select{
-		Message: "Select template",
-		Options: titles,
-	}
-	var index int
-	if err := survey.AskOne(prompt, &index); err != nil {
-		return "", err
-	}
-
-	return templates[index], nil
 }

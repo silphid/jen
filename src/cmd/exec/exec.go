@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"github.com/Samasource/jen/internal/persist"
 	"github.com/Samasource/jen/internal/shell"
 	"strings"
 
@@ -20,5 +21,10 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config, args []string) error {
+	err := persist.LoadOrCreateJenFile(config)
+	if err != nil {
+		return err
+	}
+
 	return shell.Execute(config.Values.Variables, "", strings.Join(args, " "))
 }
