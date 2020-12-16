@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/Samasource/jen/internal/shell"
 	"io/ioutil"
 	"os"
 	"path"
@@ -46,6 +47,17 @@ func initialize(config *model.Config) error {
 	if err != nil {
 		return err
 	}
+
+	jenRepo, err := getJenRepo()
+	if err != nil {
+		return err
+	}
+
+	err = cloneJenRepo(config.JenDir, jenRepo)
+	if err != nil {
+		return err
+	}
+
 	config.TemplatesDir = path.Join(config.JenDir, TemplatesDirName)
 	config.ProjectDir, err = findProjectDirUpFromWorkDir()
 	if err != nil {
@@ -68,6 +80,46 @@ func initialize(config *model.Config) error {
 	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
 	config.Spec, err = persist.LoadSpecFromDir(config.TemplateDir)
 	return err
+}
+
+func cloneJenRepo(jenHomeDir, jenRepo string) error {
+	// Jen home dir already exists and is a valid git working copy?
+	homeExists, err := pathExists(jenHomeDir)
+	if err != nil {
+		return err
+	}
+	if homeExists {
+		dotGitDir := path.Join(jenHomeDir, ".git")
+		dotGitExists, err := pathExists(dotGitDir)
+		if err != nil {
+			return err
+		}
+		if dotGitExists {
+			// Jen home dir is a valid git repo
+			return nil
+		} else {
+			// Not a valid git repo, therefore must be empty, so we can clone into it
+			infos, err := ioutil.ReadDir(jenHomeDir)
+			if err != nil {
+				return fmt.Errorf("listing content of jen home dir %q to ensure it's empty before cloning into it: %w", jenHomeDir, err)
+			}
+			if len(infos) > 0 {
+				return fmt.Errorf("jen home dir %q already exists, is not a valid git working copy and already contains files so we cannot clone into it (please delete or empty it)", jenHomeDir)
+			}
+		}
+	}
+
+	// Clone jen repo
+	Log("Cloning jen templates repo %q into jen home dir %q", jenRepo, jenHomeDir)
+	return shell.Execute(nil, "", fmt.Sprintf("git clone %s %s", jenRepo, jenHomeDir))
+}
+
+func getJenRepo() (string, error) {
+	jenRepo, ok := os.LookupEnv("JEN_REPO")
+	if !ok {
+		return "", fmt.Errorf("please specify a JEN_REPO env var pointing to your jen templates git repo")
+	}
+	return jenRepo, nil
 }
 
 func getJenHomeDir() (string, error) {
@@ -122,7 +174,7 @@ func findProjectDirUpFromWorkDir() (string, error) {
 
 	for {
 		filePath := path.Join(dir, JenFileName)
-		exists, err := fileExists(filePath)
+		exists, err := pathExists(filePath)
 		if err != nil {
 			return "", fmt.Errorf("finding project's root dir: %w", err)
 		}
@@ -136,13 +188,13 @@ func findProjectDirUpFromWorkDir() (string, error) {
 	}
 }
 
-func fileExists(path string) (bool, error) {
+func pathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
 		}
-		return false, fmt.Errorf("checking if %q file exists: %w", path, err)
+		return false, fmt.Errorf("checking if %q path exists: %w", path, err)
 	}
 	return true, nil
 }

@@ -58,11 +58,11 @@ func loadJenFileFromMap(_map yaml.Map) (*model.JenFile, error) {
 func loadVariables(_map yaml.Map) (model.VarMap, error) {
 	variables := make(model.VarMap, len(_map))
 	for name, value := range _map {
-		scalar, ok := value.(yaml.Scalar)
+		str, ok := getString(value)
 		if !ok {
 			return nil, fmt.Errorf("value of variable %q must be a raw string", name)
 		}
-		variables[name] = scalar.String()
+		variables[name] = str
 	}
 	return variables, nil
 }
