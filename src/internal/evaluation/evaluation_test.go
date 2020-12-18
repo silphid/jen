@@ -107,48 +107,61 @@ func TestEvalFileName(t *testing.T) {
 
 	fixtures := []struct {
 		Name            string
-		ExpectedInclude bool
 		ExpectedName    string
+		ExpectedInclude bool
+		ExpectedRender  bool
 		Error           string
 	}{
 		{
 			Name:            `Name with true [[ .TRUE_VAR ]]conditional`,
-			ExpectedInclude: true,
 			ExpectedName:    `Name with true conditional`,
+			ExpectedInclude: true,
+			ExpectedRender:  false,
 		},
 		{
 			Name:            `Name with false [[ .EMPTY_VAR ]]conditional`,
-			ExpectedInclude: false,
 			ExpectedName:    ``,
+			ExpectedInclude: false,
+			ExpectedRender:  false,
 		},
 		{
 			Name:            `Name with variable {{ .VAR1 }}`,
-			ExpectedInclude: true,
 			ExpectedName:    `Name with variable value1`,
+			ExpectedInclude: true,
+			ExpectedRender:  false,
 		},
 		{
 			Name:            `Plain name`,
-			ExpectedInclude: true,
 			ExpectedName:    `Plain name`,
+			ExpectedInclude: true,
+			ExpectedRender:  false,
 		},
 		{
 			Name:            "abcprojektdef {{.VAR1}} ABC_PROJEKT_DEF",
-			ExpectedInclude: true,
 			ExpectedName:    "abcmyprojectdef value1 ABC_MYPROJECT_DEF",
+			ExpectedInclude: true,
+			ExpectedRender:  false,
+		},
+		{
+			Name:            "Name of file to render.tmpl",
+			ExpectedName:    "Name of file to render",
+			ExpectedInclude: true,
+			ExpectedRender:  true,
 		},
 	}
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			actualName, actualInclude, err := evalFileName(values, f.Name)
+			actualName, actualInclude, actualRender, err := evalFileName(values, f.Name)
 
 			if f.Error != "" {
 				assert.NotNil(t, err)
 				assert.Equal(t, err.Error(), f.Error)
 			} else {
 				assert.Nil(t, err)
-				assert.Equal(t, f.ExpectedInclude, actualInclude)
 				assert.Equal(t, f.ExpectedName, actualName)
+				assert.Equal(t, f.ExpectedInclude, actualInclude)
+				assert.Equal(t, f.ExpectedRender, actualRender)
 			}
 		})
 	}

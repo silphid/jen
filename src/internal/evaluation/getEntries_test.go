@@ -28,7 +28,7 @@ func TestGetEntries(t *testing.T) {
 		Error    string
 	}{
 		{
-			Name: "plain names",
+			Name: "plain names without rendering",
 			Files: []string{
 				"dir1/file2.txt",
 				"dir2/file3.txt",
@@ -41,13 +41,43 @@ func TestGetEntries(t *testing.T) {
 			},
 		},
 		{
-			Name: "conditional files",
+			Name: "plain names with rendering",
 			Files: []string{
-				"dir1/file1[[.TRUE_VAR]].txt",
-				"dir1/file2[[.UNDEFINED_VAR]].txt",
+				"dir1/file2.txt.tmpl",
+				"dir2/file3.txt",
+				"file1.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1/file1[[.TRUE_VAR]].txt", output: "dir1/file1.txt"},
+				{input: "dir1/file2.txt.tmpl", output: "dir1/file2.txt", render: true},
+				{input: "dir2/file3.txt", output: "dir2/file3.txt", render: false},
+				{input: "file1.txt.tmpl", output: "file1.txt", render: true},
+			},
+		},
+		{
+			Name: "rendering all files in entire dir",
+			Files: []string{
+				"dir1.tmpl/file1.txt",
+				"dir1.tmpl/file2.txt",
+				"dir1.tmpl/file3.txt.tmpl",
+				"dir2/file1.txt",
+				"dir2/file2.txt.tmpl",
+			},
+			Expected: []entry{
+				{input: "dir1.tmpl/file1.txt", output: "dir1/file1.txt", render: true},
+				{input: "dir1.tmpl/file2.txt", output: "dir1/file2.txt", render: true},
+				{input: "dir1.tmpl/file3.txt.tmpl", output: "dir1/file3.txt", render: true},
+				{input: "dir2/file1.txt", output: "dir2/file1.txt", render: false},
+				{input: "dir2/file2.txt.tmpl", output: "dir2/file2.txt", render: true},
+			},
+		},
+		{
+			Name: "conditional files",
+			Files: []string{
+				"dir1/file1[[.TRUE_VAR]].txt.tmpl",
+				"dir1/file2[[.UNDEFINED_VAR]].txt.tmpl",
+			},
+			Expected: []entry{
+				{input: "dir1/file1[[.TRUE_VAR]].txt.tmpl", output: "dir1/file1.txt", render: true},
 			},
 		},
 		{
@@ -63,27 +93,27 @@ func TestGetEntries(t *testing.T) {
 		{
 			Name: "variables",
 			Files: []string{
-				"dir1{{.VAR1}}/file1{{.VAR2}}.txt",
+				"dir1{{.VAR1}}/file1{{.VAR2}}.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1{{.VAR1}}/file1{{.VAR2}}.txt", output: "dir1value1/file1value2.txt"},
+				{input: "dir1{{.VAR1}}/file1{{.VAR2}}.txt.tmpl", output: "dir1value1/file1value2.txt", render: true},
 			},
 		},
 		{
 			Name: "mixed variables and conditionals",
 			Files: []string{
-				"dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt",
+				"dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt", output: "dir1value1/file1value2.txt"},
+				{input: "dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt.tmpl", output: "dir1value1/file1value2.txt", render: true},
 			},
 		},
 		{
 			Name: "invalid double-brace expression",
 			Files: []string{
-				"file1{{..}}.txt",
+				"file1{{..}}.txt.tmpl",
 			},
-			Error: `failed to evaluate double-brace expression in name "file1{{..}}.txt": parse template "file1{{..}}.txt": template: base:1: unexpected <.> in operand`,
+			Error: `failed to evaluate double-brace expression in name "file1{{..}}.txt.tmpl": parse template "file1{{..}}.txt.tmpl": template: base:1: unexpected <.> in operand`,
 		},
 		{
 			Name: "replacements",
@@ -114,6 +144,7 @@ func TestGetEntries(t *testing.T) {
 			results = append(results, entry{
 				input:  path.Join(inputDir, ent.input),
 				output: path.Join("/output", ent.output),
+				render: ent.render,
 			})
 		}
 		return results
@@ -130,7 +161,7 @@ func TestGetEntries(t *testing.T) {
 				createEmptyFile(inputFile)
 			}
 
-			actual, err := getEntries(values, inputDir, outputDir)
+			actual, err := getEntries(values, inputDir, outputDir, false)
 			expected := getExpected(f.Expected, inputDir)
 
 			if f.Error != "" {

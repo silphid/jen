@@ -10,13 +10,14 @@ import (
 )
 
 func Render(values model.Values, inputDir, outputDir string) error {
-	entries, err := getEntries(values, inputDir, outputDir)
+	renderRecursively := HasTmplExtension(inputDir)
+	entries, err := getEntries(values, inputDir, outputDir, renderRecursively)
 	if err != nil {
 		return fmt.Errorf("failed to determine entries to render: %w", err)
 	}
 
 	for _, entry := range entries {
-		err = renderFile(values, entry.input, entry.output)
+		err = renderFile(values, entry.input, entry.output, entry.render)
 		if err != nil {
 			return err
 		}
@@ -28,9 +29,10 @@ func Render(values model.Values, inputDir, outputDir string) error {
 type entry struct {
 	input  string
 	output string
+	render bool
 }
 
-func getEntries(values model.Values, inputDir, outputDir string) ([]entry, error) {
+func getEntries(values model.Values, inputDir, outputDir string, renderRecursively bool) ([]entry, error) {
 	var entries []entry
 	infos, err := ioutil.ReadDir(inputDir)
 	if err != nil {
@@ -39,17 +41,18 @@ func getEntries(values model.Values, inputDir, outputDir string) ([]entry, error
 	for _, info := range infos {
 		inputName := info.Name()
 		inputPath := path.Join(inputDir, inputName)
-		outputName, included, err := evalFileName(values, inputName)
+		outputName, included, render, err := evalFileName(values, inputName)
 		if err != nil {
 			return nil, err
 		}
+		render = render || renderRecursively
 		outputPath := path.Join(outputDir, outputName)
 
 		if !included {
 			continue
 		}
 		if info.IsDir() {
-			children, err := getEntries(values, inputPath, outputPath)
+			children, err := getEntries(values, inputPath, outputPath, render)
 			if err != nil {
 				return nil, err
 			}
@@ -58,13 +61,14 @@ func getEntries(values model.Values, inputDir, outputDir string) ([]entry, error
 			entries = append(entries, entry{
 				input:  inputPath,
 				output: outputPath,
+				render: render,
 			})
 		}
 	}
 	return entries, nil
 }
 
-func renderFile(values model.Values, inputPath, outputPath string) error {
+func renderFile(values model.Values, inputPath, outputPath string, render bool) error {
 	Log("Rendering file %q -> %q", inputPath, outputPath)
 
 	// Read input file
@@ -73,10 +77,13 @@ func renderFile(values model.Values, inputPath, outputPath string) error {
 		return fmt.Errorf("failed to read template file: %w", err)
 	}
 
-	// Render template
-	outputText, err := EvalTemplate(values, string(inputText))
-	if err != nil {
-		return fmt.Errorf("failed to render template %v: %w", inputPath, err)
+	// Render input as template or copy as-is
+	outputText := string(inputText)
+	if render {
+		outputText, err = EvalTemplate(values, outputText)
+		if err != nil {
+			return fmt.Errorf("failed to render template %v: %w", inputPath, err)
+		}
 	}
 
 	// Create output dir

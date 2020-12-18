@@ -66,13 +66,14 @@ func EvalTemplate(values model.Values, text string) (string, error) {
 }
 
 var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
+var gotmplExtensionRegexp = regexp.MustCompile(`\.tmpl$`)
 
 // evalFileName interpolates the double-brace expressions, evaluates and removes the conditionals in double-bracket
-// expressions and returns the final file/dir name and whether it should be included in template rendering.
-func evalFileName(values model.Values, name string) (string, bool, error) {
-	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine
-	// whether the file/folder should be rendered and that expression then gets stripped
-	// from the name
+// expressions and returns the final file/dir name and whether it should be included in output and whether it should be
+// rendered.
+func evalFileName(values model.Values, name string) (string, bool, bool, error) {
+	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine whether the file/folder should be
+	// included in output and that expression then gets stripped from the name
 	for {
 		// Find expression
 		loc := doubleBracketRegexp.FindStringIndex(name)
@@ -84,12 +85,12 @@ func evalFileName(values model.Values, name string) (string, bool, error) {
 		// Evaluate expression
 		value, err := EvalBoolExpression(values, exp)
 		if err != nil {
-			return "", false, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
+			return "", false, false, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
 		}
 
 		// Should we exclude file/folder?
 		if !value {
-			return "", false, nil
+			return "", false, false, nil
 		}
 
 		// Remove expression from name
@@ -99,7 +100,20 @@ func evalFileName(values model.Values, name string) (string, bool, error) {
 	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
 	result, err := EvalTemplate(values, name)
 	if err != nil {
-		return "", false, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
+		return "", false, false, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
 	}
-	return result, true, nil
+
+	// Find .tmpl extension
+	render := false
+	if HasTmplExtension(result) {
+		// Remove .tmpl extension
+		result = result[:len(result)-len(".tmpl")]
+		render = true
+	}
+
+	return result, true, render, nil
+}
+
+func HasTmplExtension(name string) bool {
+	return gotmplExtensionRegexp.MatchString(name)
 }
