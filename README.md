@@ -6,6 +6,7 @@ Code generator and script runner.
 
 ## Wishlist (if time allows)
 
+- Disable recursive rendering by using the `.notmpl` extension
 - When prompting again, reuse existing values as defaults
 - Per-template/module scripts in `bin` dir, which are automatically included in `PATH`
   - `jen exec` and `jen export` should alter `PATH` to include `bin` dir(s)
