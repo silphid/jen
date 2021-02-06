@@ -1,10 +1,12 @@
 package evaluation
 
 import (
+	"path"
+	"sort"
+	"testing"
+
 	"github.com/Samasource/jen/internal/model"
 	"github.com/stretchr/testify/assert"
-	"path"
-	"testing"
 )
 
 func TestGetEntries(t *testing.T) {
@@ -59,15 +61,23 @@ func TestGetEntries(t *testing.T) {
 				"dir1.tmpl/file1.txt",
 				"dir1.tmpl/file2.txt",
 				"dir1.tmpl/file3.txt.tmpl",
+				"dir1.tmpl/dir/file1.txt",
+				"dir1.tmpl/dir/file2.txt.tmpl",
 				"dir2/file1.txt",
 				"dir2/file2.txt.tmpl",
+				"dir2/dir/file1.txt",
+				"dir2/dir/file2.txt.tmpl",
 			},
 			Expected: []entry{
 				{input: "dir1.tmpl/file1.txt", output: "dir1/file1.txt", render: true},
 				{input: "dir1.tmpl/file2.txt", output: "dir1/file2.txt", render: true},
 				{input: "dir1.tmpl/file3.txt.tmpl", output: "dir1/file3.txt", render: true},
+				{input: "dir1.tmpl/dir/file1.txt", output: "dir1/dir/file1.txt", render: true},
+				{input: "dir1.tmpl/dir/file2.txt.tmpl", output: "dir1/dir/file2.txt", render: true},
 				{input: "dir2/file1.txt", output: "dir2/file1.txt", render: false},
 				{input: "dir2/file2.txt.tmpl", output: "dir2/file2.txt", render: true},
+				{input: "dir2/dir/file1.txt", output: "dir2/dir/file1.txt", render: false},
+				{input: "dir2/dir/file2.txt.tmpl", output: "dir2/dir/file2.txt", render: true},
 			},
 		},
 		{
@@ -163,6 +173,13 @@ func TestGetEntries(t *testing.T) {
 
 			actual, err := getEntries(values, inputDir, outputDir, false)
 			expected := getExpected(f.Expected, inputDir)
+
+			sort.SliceStable(actual, func(i, j int) bool {
+				return actual[i].input < actual[j].input
+			})
+			sort.SliceStable(expected, func(i, j int) bool {
+				return expected[i].input < expected[j].input
+			})
 
 			if f.Error != "" {
 				assert.NotNil(t, err)
