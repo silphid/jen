@@ -2,15 +2,22 @@ package evaluation
 
 import (
 	"fmt"
-	. "github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
 	"io/ioutil"
 	"os"
 	"path"
+
+	. "github.com/Samasource/jen/internal/logging"
+	"github.com/Samasource/jen/internal/model"
 )
 
+// Render copies all files from inputDir into outputDir, rendering as templates those for which rendering is enabled
+// interpolating folder and file names appropriately and skipping folders and files for which bracket expressions
+// evaluate to false
 func Render(values model.Values, inputDir, outputDir string) error {
-	renderRecursively := HasTmplExtension(inputDir)
+	// Determine if rendering should be turned on from the start
+	renderMode, _ := getRenderModeAndRemoveExtension(inputDir)
+	renderRecursively := renderMode == EnableRendering
+
 	entries, err := getEntries(values, inputDir, outputDir, renderRecursively)
 	if err != nil {
 		return fmt.Errorf("failed to determine entries to render: %w", err)
@@ -32,27 +39,38 @@ type entry struct {
 	render bool
 }
 
-func getEntries(values model.Values, inputDir, outputDir string, renderRecursively bool) ([]entry, error) {
+func getEntries(values model.Values, inputDir, outputDir string, renderParent bool) ([]entry, error) {
 	var entries []entry
 	infos, err := ioutil.ReadDir(inputDir)
 	if err != nil {
 		return nil, err
 	}
 	for _, info := range infos {
+		// Determine input/output names and render mode
 		inputName := info.Name()
 		inputPath := path.Join(inputDir, inputName)
-		outputName, included, render, err := evalFileName(values, inputName)
+		outputName, included, renderMode, err := evalFileName(values, inputName)
 		if err != nil {
 			return nil, err
 		}
-		render = render || renderRecursively
 		outputPath := path.Join(outputDir, outputName)
 
+		// Determine render enabled/disabled for this item
+		renderItem := renderParent
+		if renderMode == EnableRendering {
+			renderItem = true
+		} else if renderMode == DisableRendering {
+			renderItem = false
+		}
+
+		// Skip item?
 		if !included {
 			continue
 		}
+
+		// Directory?
 		if info.IsDir() {
-			children, err := getEntries(values, inputPath, outputPath, render)
+			children, err := getEntries(values, inputPath, outputPath, renderItem)
 			if err != nil {
 				return nil, err
 			}
@@ -61,7 +79,7 @@ func getEntries(values model.Values, inputDir, outputDir string, renderRecursive
 			entries = append(entries, entry{
 				input:  inputPath,
 				output: outputPath,
-				render: render,
+				render: renderItem,
 			})
 		}
 	}

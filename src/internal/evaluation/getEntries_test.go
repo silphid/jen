@@ -56,7 +56,7 @@ func TestGetEntries(t *testing.T) {
 			},
 		},
 		{
-			Name: "rendering all files in entire dir",
+			Name: "the .tmpl extension enables rendering recursively",
 			Files: []string{
 				"dir1.tmpl/file1.txt",
 				"dir1.tmpl/file2.txt",
@@ -78,6 +78,25 @@ func TestGetEntries(t *testing.T) {
 				{input: "dir2/file2.txt.tmpl", output: "dir2/file2.txt", render: true},
 				{input: "dir2/dir/file1.txt", output: "dir2/dir/file1.txt", render: false},
 				{input: "dir2/dir/file2.txt.tmpl", output: "dir2/dir/file2.txt", render: true},
+			},
+		},
+		{
+			Name: "the .notmpl extension disables rendering recursively",
+			Files: []string{
+				"dir.tmpl/file.txt",
+				"dir.tmpl/dir1/file.txt",
+				"dir.tmpl/dir2.notmpl/file1.txt",
+				"dir.tmpl/dir2.notmpl/file2.txt.tmpl",
+				"dir.tmpl/dir2.notmpl/dir/file1.txt",
+				"dir.tmpl/dir2.notmpl/dir/file2.txt.tmpl",
+			},
+			Expected: []entry{
+				{input: "dir.tmpl/file.txt", output: "dir/file.txt", render: true},
+				{input: "dir.tmpl/dir1/file.txt", output: "dir/dir1/file.txt", render: true},
+				{input: "dir.tmpl/dir2.notmpl/file1.txt", output: "dir/dir2/file1.txt", render: false},
+				{input: "dir.tmpl/dir2.notmpl/file2.txt.tmpl", output: "dir/dir2/file2.txt", render: true},
+				{input: "dir.tmpl/dir2.notmpl/dir/file1.txt", output: "dir/dir2/dir/file1.txt", render: false},
+				{input: "dir.tmpl/dir2.notmpl/dir/file2.txt.tmpl", output: "dir/dir2/dir/file2.txt", render: true},
 			},
 		},
 		{

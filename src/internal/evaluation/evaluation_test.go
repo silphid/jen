@@ -1,9 +1,10 @@
 package evaluation
 
 import (
+	"testing"
+
 	"github.com/Samasource/jen/internal/model"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestEvalBoolExpression(t *testing.T) {
@@ -109,44 +110,50 @@ func TestEvalFileName(t *testing.T) {
 		Name            string
 		ExpectedName    string
 		ExpectedInclude bool
-		ExpectedRender  bool
+		ExpectedRender  RenderMode
 		Error           string
 	}{
 		{
 			Name:            `Name with true [[ .TRUE_VAR ]]conditional`,
 			ExpectedName:    `Name with true conditional`,
 			ExpectedInclude: true,
-			ExpectedRender:  false,
+			ExpectedRender:  UnchangedRendering,
 		},
 		{
 			Name:            `Name with false [[ .EMPTY_VAR ]]conditional`,
 			ExpectedName:    ``,
 			ExpectedInclude: false,
-			ExpectedRender:  false,
+			ExpectedRender:  UnchangedRendering,
 		},
 		{
 			Name:            `Name with variable {{ .VAR1 }}`,
 			ExpectedName:    `Name with variable value1`,
 			ExpectedInclude: true,
-			ExpectedRender:  false,
+			ExpectedRender:  UnchangedRendering,
 		},
 		{
 			Name:            `Plain name`,
 			ExpectedName:    `Plain name`,
 			ExpectedInclude: true,
-			ExpectedRender:  false,
+			ExpectedRender:  UnchangedRendering,
 		},
 		{
 			Name:            "abcprojektdef {{.VAR1}} ABC_PROJEKT_DEF",
 			ExpectedName:    "abcmyprojectdef value1 ABC_MYPROJECT_DEF",
 			ExpectedInclude: true,
-			ExpectedRender:  false,
+			ExpectedRender:  UnchangedRendering,
 		},
 		{
 			Name:            "Name of file to render.tmpl",
 			ExpectedName:    "Name of file to render",
 			ExpectedInclude: true,
-			ExpectedRender:  true,
+			ExpectedRender:  EnableRendering,
+		},
+		{
+			Name:            "Name of file NOT to render.notmpl",
+			ExpectedName:    "Name of file NOT to render",
+			ExpectedInclude: true,
+			ExpectedRender:  DisableRendering,
 		},
 	}
 
