@@ -39,7 +39,7 @@ func EvalBoolExpression(values model.Values, expression string) (bool, error) {
 
 // EvalPromptValueTemplate interpolates a choice or default value string that will be presented to
 // user via a prompt, by evaluating both go template expressions and $... shell expressions
-func EvalPromptValueTemplate(values model.Values, text string) (string, error) {
+func EvalPromptValueTemplate(values model.Values, pathEnvVar, text string) (string, error) {
 	// Interpolate go templating
 	str, err := EvalTemplate(values, text)
 	if err != nil {
@@ -55,7 +55,7 @@ func EvalPromptValueTemplate(values model.Values, text string) (string, error) {
 	cmd := &exec.Cmd{
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", `echo -n "` + str + `"`},
-		Env:    shell.GetEnvFromValues(values.Variables),
+		Env:    shell.GetEnvFromValues(values.Variables, pathEnvVar),
 		Stdout: buf,
 	}
 	if err = cmd.Run(); err != nil {

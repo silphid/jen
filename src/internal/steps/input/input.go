@@ -14,11 +14,11 @@ type Prompt struct {
 
 func (p Prompt) Execute(config *model.Config) error {
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
 	if err != nil {
 		return err
 	}
-	defaultValue, err := evaluation.EvalPromptValueTemplate(config.Values, p.Default)
+	defaultValue, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Default)
 	if err != nil {
 		return err
 	}

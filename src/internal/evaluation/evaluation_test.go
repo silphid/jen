@@ -242,7 +242,7 @@ func TestEvalPromptValueTemplate(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			actual, err := EvalPromptValueTemplate(values, f.Value)
+			actual, err := EvalPromptValueTemplate(values, "", f.Value)
 			assert.NoError(t, err)
 			assert.Equal(t, f.Expected, actual)
 		})

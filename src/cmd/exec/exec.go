@@ -1,9 +1,10 @@
 package exec
 
 import (
+	"strings"
+
 	"github.com/Samasource/jen/internal/persist"
 	"github.com/Samasource/jen/internal/shell"
-	"strings"
 
 	"github.com/Samasource/jen/internal/model"
 	"github.com/spf13/cobra"
@@ -26,5 +27,5 @@ func run(config *model.Config, args []string) error {
 		return err
 	}
 
-	return shell.Execute(config.Values.Variables, "", strings.Join(args, " "))
+	return shell.Execute(config.Values.Variables, "", config.PathEnvVar, strings.Join(args, " "))
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	. "github.com/Samasource/jen/internal/constant"
+	"github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/steps"
 	"github.com/Samasource/jen/internal/steps/choice"
@@ -17,8 +17,9 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
+// LoadSpecFromDir loads spec object from a template directory
 func LoadSpecFromDir(templateDir string) (*model.Spec, error) {
-	specFilePath := path.Join(templateDir, SpecFileName)
+	specFilePath := path.Join(templateDir, constant.SpecFileName)
 	yamlFile, err := yaml.ReadFile(specFilePath)
 	if err != nil {
 		return nil, err
@@ -51,8 +52,8 @@ func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	if spec.Version != SpecFileVersion {
-		return nil, fmt.Errorf("unsupported spec file version %s (expected %s)", spec.Version, SpecFileVersion)
+	if spec.Version != constant.SpecFileVersion {
+		return nil, fmt.Errorf("unsupported spec file version %s (expected %s)", spec.Version, constant.SpecFileVersion)
 	}
 
 	// Load actions

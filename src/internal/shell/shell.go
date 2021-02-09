@@ -2,20 +2,21 @@ package shell
 
 import (
 	"fmt"
-	. "github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
 	"os"
 	"os/exec"
 	"strings"
+
+	. "github.com/Samasource/jen/internal/logging"
+	"github.com/Samasource/jen/internal/model"
 )
 
-func Execute(vars model.VarMap, dir string, commands ...string) error {
+func Execute(vars model.VarMap, dir, pathEnvVar string, commands ...string) error {
 	// Configure command struct
 	cmd := &exec.Cmd{
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", "set -e; " + strings.Join(commands, "; ")},
 		Dir:    dir,
-		Env:    GetEnvFromValues(vars),
+		Env:    GetEnvFromValues(vars, pathEnvVar),
 		Stdin:  os.Stdin,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -28,11 +29,18 @@ func Execute(vars model.VarMap, dir string, commands ...string) error {
 	return cmd.Run()
 }
 
-func GetEnvFromValues(vars model.VarMap) []string {
+func GetEnvFromValues(vars model.VarMap, pathEnvVar string) []string {
 	// Pass current process env vars
 	var env []string
 	for _, entry := range os.Environ() {
-		env = append(env, entry)
+		if pathEnvVar == "" || !strings.HasPrefix(entry, "PATH=") {
+			env = append(env, entry)
+		}
+	}
+
+	// Overriden PATH env var
+	if pathEnvVar != "" {
+		env = append(env, "PATH="+pathEnvVar)
 	}
 
 	// Then values env vars

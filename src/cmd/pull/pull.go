@@ -18,5 +18,5 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config) error {
-	return shell.Execute(nil, config.JenDir, "git pull")
+	return shell.Execute(nil, config.JenDir, "", "git pull")
 }

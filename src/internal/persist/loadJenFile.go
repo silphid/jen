@@ -2,14 +2,16 @@ package persist
 
 import (
 	"fmt"
-	. "github.com/Samasource/jen/internal/constant"
+	"path"
+
+	"github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
 	"github.com/kylelemons/go-gypsy/yaml"
-	"path"
 )
 
+// LoadJenFileFromDir loads the jen file from given project directory
 func LoadJenFileFromDir(projectDir string) (*model.JenFile, error) {
-	specFilePath := path.Join(projectDir, JenFileName)
+	specFilePath := path.Join(projectDir, constant.JenFileName)
 	yamlFile, err := yaml.ReadFile(specFilePath)
 	if err != nil {
 		return nil, err
@@ -38,8 +40,8 @@ func loadJenFileFromMap(_map yaml.Map) (*model.JenFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	if jenfile.Version != JenFileVersion {
-		return nil, fmt.Errorf("unsupported jenfile version %s (expected %s)", jenfile.Version, JenFileVersion)
+	if jenfile.Version != constant.JenFileVersion {
+		return nil, fmt.Errorf("unsupported jenfile version %s (expected %s)", jenfile.Version, constant.JenFileVersion)
 	}
 
 	// Load variables

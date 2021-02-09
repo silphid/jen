@@ -26,7 +26,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
-		text, err := evaluation.EvalPromptValueTemplate(config.Values, item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, item.Text)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
 	if err != nil {
 		return err
 	}

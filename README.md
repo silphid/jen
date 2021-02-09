@@ -1,12 +1,11 @@
 # Jen
 
-> Jen - *noun* (in Chinese philosophy) a compassionate love for humanity or for the world as a whole.
+> Jen - _noun_ (in Chinese philosophy) a compassionate love for humanity or for the world as a whole.
 
 Code generator and script runner.
 
 ## Wishlist (if time allows)
 
-- Disable recursive rendering by using the `.notmpl` extension
 - When prompting again, reuse existing values as defaults
 - Per-template/module scripts in `bin` dir, which are automatically included in `PATH`
   - `jen exec` and `jen export` should alter `PATH` to include `bin` dir(s)
@@ -18,11 +17,13 @@ Code generator and script runner.
 - Exceptionally escape within any file, using `{{{` and `}}}` to represent `{{` and `}}`
 - `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
 - Custom placeholders:
+
 ```
 placeholders:
   projekt: {{.PROJECT | lower}}
   PROJEKT: {{.PROJECT | upper}}
 ```
+
 - `--dry-run` flag (automatically turns on `--verbose`?)
 
 # Structure of JEN_HOME directory

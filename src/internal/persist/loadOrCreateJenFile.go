@@ -2,13 +2,18 @@ package persist
 
 import (
 	"fmt"
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/model"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/Samasource/jen/internal/helpers"
+	"github.com/Samasource/jen/internal/model"
 )
 
+// LoadOrCreateJenFile loads the current project's jen file and, if it doesn't
+// exists, it prompts users whether to create it.
 func LoadOrCreateJenFile(config *model.Config) error {
 	if config.ProjectDir == "" {
 		if !config.SkipConfirm {
@@ -17,13 +22,13 @@ func LoadOrCreateJenFile(config *model.Config) error {
 				return err
 			}
 		}
-		err := SaveJenFile(config)
+		err := SaveConfig(config)
 		if err != nil {
 			return err
 		}
 	}
 
-	err := LoadJenFile(config)
+	err := LoadConfig(config)
 	if err != nil {
 		return err
 	}
@@ -38,7 +43,28 @@ func LoadOrCreateJenFile(config *model.Config) error {
 
 	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
 	config.Spec, err = LoadSpecFromDir(config.TemplateDir)
-	return err
+	if err != nil {
+		return err
+	}
+
+	config.PathEnvVar = getPathEnvVar(config.JenDir, config.TemplateDir)
+	return nil
+}
+
+func getPathEnvVar(jenDir, templateDir string) string {
+	pathEnv := os.Getenv("PATH")
+	pathEnv = appendPathForBinDirIn(jenDir, pathEnv)
+	pathEnv = appendPathForBinDirIn(templateDir, pathEnv)
+	return pathEnv
+}
+
+func appendPathForBinDirIn(parentDir, pathEnv string) string {
+	dir := path.Join(parentDir, "bin")
+	exists := helpers.PathExists(dir)
+	if exists {
+		return dir + ":" + pathEnv
+	}
+	return pathEnv
 }
 
 func confirmCreateJenFile() error {

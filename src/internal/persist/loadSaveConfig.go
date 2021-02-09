@@ -3,11 +3,12 @@ package persist
 import (
 	"strings"
 
-	. "github.com/Samasource/jen/internal/constant"
+	"github.com/Samasource/jen/internal/constant"
 	"github.com/Samasource/jen/internal/model"
 )
 
-func LoadJenFile(config *model.Config) error {
+// LoadConfig loads config object from jen file
+func LoadConfig(config *model.Config) error {
 	jenfile, err := LoadJenFileFromDir(config.ProjectDir)
 	if err != nil {
 		return err
@@ -18,13 +19,14 @@ func LoadJenFile(config *model.Config) error {
 	}
 	config.Values.Variables = jenfile.Variables
 
-	InitDefaultPlaceholders(config)
+	initDefaultPlaceholders(config)
 	return nil
 }
 
-func SaveJenFile(config *model.Config) error {
+// SaveConfig saves config object to jen file
+func SaveConfig(config *model.Config) error {
 	jenfile := model.JenFile{
-		Version:      JenFileVersion,
+		Version:      constant.JenFileVersion,
 		TemplateName: config.TemplateName,
 		Variables:    config.Values.Variables,
 	}
@@ -34,11 +36,11 @@ func SaveJenFile(config *model.Config) error {
 		return err
 	}
 
-	InitDefaultPlaceholders(config)
+	initDefaultPlaceholders(config)
 	return nil
 }
 
-func InitDefaultPlaceholders(config *model.Config) {
+func initDefaultPlaceholders(config *model.Config) {
 	config.Values.Placeholders = make(model.VarMap, 2)
 
 	project, ok := config.Values.Variables["PROJECT"]

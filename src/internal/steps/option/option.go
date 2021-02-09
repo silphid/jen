@@ -1,10 +1,11 @@
 package option
 
 import (
+	"strconv"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/internal/evaluation"
 	"github.com/Samasource/jen/internal/model"
-	"strconv"
 )
 
 type Prompt struct {
@@ -19,7 +20,7 @@ func (p Prompt) String() string {
 
 func (p Prompt) Execute(config *model.Config) error {
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
 	if err != nil {
 		return err
 	}

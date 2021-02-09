@@ -8,6 +8,7 @@ type Config struct {
 	ProjectDir      string
 	Spec            *Spec
 	Values          Values
+	PathEnvVar      string
 	SkipConfirm     bool
 	OnValuesChanged func() error
 }

@@ -1,9 +1,10 @@
 package exec
 
 import (
+	"path/filepath"
+
 	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/shell"
-	"path/filepath"
 )
 
 type Exec struct {
@@ -20,5 +21,5 @@ func (e Exec) Execute(config *model.Config) error {
 		return err
 	}
 
-	return shell.Execute(config.Values.Variables, dir, e.Commands...)
+	return shell.Execute(config.Values.Variables, dir, config.PathEnvVar, e.Commands...)
 }
