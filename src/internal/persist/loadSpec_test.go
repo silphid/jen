@@ -1,20 +1,21 @@
 package persist
 
 import (
-	"github.com/Samasource/jen/internal/model"
-	"github.com/Samasource/jen/internal/steps"
-	"github.com/Samasource/jen/internal/steps/choice"
-	"github.com/Samasource/jen/internal/steps/do"
-	"github.com/Samasource/jen/internal/steps/exec"
-	"github.com/Samasource/jen/internal/steps/input"
-	"github.com/Samasource/jen/internal/steps/option"
-	"github.com/Samasource/jen/internal/steps/options"
-	"github.com/Samasource/jen/internal/steps/render"
+	"strings"
+	"testing"
+
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/steps"
+	"github.com/Samasource/jen/src/internal/steps/choice"
+	"github.com/Samasource/jen/src/internal/steps/do"
+	"github.com/Samasource/jen/src/internal/steps/exec"
+	"github.com/Samasource/jen/src/internal/steps/input"
+	"github.com/Samasource/jen/src/internal/steps/option"
+	"github.com/Samasource/jen/src/internal/steps/options"
+	"github.com/Samasource/jen/src/internal/steps/render"
 	"github.com/go-test/deep"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
 type fixture struct {

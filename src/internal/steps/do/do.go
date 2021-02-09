@@ -2,7 +2,8 @@ package do
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/model"
+
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 type Do struct {

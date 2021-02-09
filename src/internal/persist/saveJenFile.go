@@ -5,8 +5,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/Samasource/jen/internal/constant"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/constant"
+	"github.com/Samasource/jen/src/internal/model"
 	"gopkg.in/yaml.v2"
 )
 

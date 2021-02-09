@@ -3,10 +3,10 @@ package exec
 import (
 	"strings"
 
-	"github.com/Samasource/jen/internal/persist"
-	"github.com/Samasource/jen/internal/shell"
+	"github.com/Samasource/jen/src/internal/persist"
+	"github.com/Samasource/jen/src/internal/shell"
 
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/model"
 	"github.com/spf13/cobra"
 )
 

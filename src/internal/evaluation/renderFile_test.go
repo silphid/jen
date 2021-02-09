@@ -1,9 +1,10 @@
 package evaluation
 
 import (
-	"github.com/Samasource/jen/internal/model"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRenderFile(t *testing.T) {

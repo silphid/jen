@@ -1,7 +1,7 @@
 package model
 
 import (
-	. "github.com/Samasource/jen/internal/logging"
+	. "github.com/Samasource/jen/src/internal/logging"
 )
 
 type Action struct {

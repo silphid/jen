@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 

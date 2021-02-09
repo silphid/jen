@@ -6,8 +6,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/logging"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // Render copies all files from inputDir into outputDir, rendering as templates those for which rendering is enabled

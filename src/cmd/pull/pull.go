@@ -1,8 +1,8 @@
 package pull
 
 import (
-	"github.com/Samasource/jen/internal/model"
-	"github.com/Samasource/jen/internal/shell"
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
 
