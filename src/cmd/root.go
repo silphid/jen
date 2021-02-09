@@ -34,7 +34,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
 	c.PersistentFlags().BoolVarP(&config.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
 	c.PersistentFlags().StringSliceVarP(&config.RawVarOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
-	c.AddCommand(pull.New(config))
+	c.AddCommand(pull.New())
 	c.AddCommand(do.New(config))
 	c.AddCommand(exec.New(config))
 	c.PersistentPreRunE = func(*cobra.Command, []string) error {
@@ -55,8 +55,7 @@ func initialize(config *model.Config) error {
 		return err
 	}
 
-	err = cloneJenRepo(config.JenDir, jenRepo)
-	if err != nil {
+	if err := cloneJenRepo(config.JenDir, jenRepo); err != nil {
 		return err
 	}
 
