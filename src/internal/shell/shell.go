@@ -16,7 +16,7 @@ func Execute(vars model.VarMap, dir, pathEnvVar string, commands ...string) erro
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", "set -e; " + strings.Join(commands, "; ")},
 		Dir:    dir,
-		Env:    GetEnvFromValues(vars, pathEnvVar),
+		Env:    GetEnvFromProcessAndProjectVariables(vars, pathEnvVar),
 		Stdin:  os.Stdin,
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
@@ -29,7 +29,8 @@ func Execute(vars model.VarMap, dir, pathEnvVar string, commands ...string) erro
 	return cmd.Run()
 }
 
-func GetEnvFromValues(vars model.VarMap, pathEnvVar string) []string {
+// GetEnvFromProcessAndProjectVariables computes environment variables based on current process environment and project variables
+func GetEnvFromProcessAndProjectVariables(vars model.VarMap, pathEnvVar string) []string {
 	// Pass current process env vars
 	var env []string
 	for _, entry := range os.Environ() {
@@ -40,7 +41,9 @@ func GetEnvFromValues(vars model.VarMap, pathEnvVar string) []string {
 
 	// Overriden PATH env var
 	if pathEnvVar != "" {
-		env = append(env, "PATH="+pathEnvVar)
+		entry := fmt.Sprintf("PATH=%v", pathEnvVar)
+		env = append(env, entry)
+		Log(entry)
 	}
 
 	// Then values env vars

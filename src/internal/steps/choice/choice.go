@@ -6,11 +6,13 @@ import (
 	"github.com/Samasource/jen/internal/model"
 )
 
+// Item represent one of the multiple choices prompted to user
 type Item struct {
 	Text  string
 	Value string
 }
 
+// Prompt represents a user prompt for a single choice among many
 type Prompt struct {
 	Message string
 	Var     string
@@ -22,7 +24,14 @@ func (p Prompt) String() string {
 	return "choice"
 }
 
+// Execute prompts user for choice value
 func (p Prompt) Execute(config *model.Config) error {
+	// Is var already set manually?
+	_, ok := config.SetVars[p.Var]
+	if ok {
+		return nil
+	}
+
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {

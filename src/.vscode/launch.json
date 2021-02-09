@@ -15,7 +15,7 @@
         "JEN_HOME": "/Users/mathieu/Dev/sama/jen/dev/jenHome"
       },
       "args": [
-        "-v", "-y", "-t", "go-service", "-s", "PROJECT=acme100", "do", "create"
+        "-v", "-y", "-t", "go-service", "-s", "PROJECT=acme100,PSQL=true,NEWRELIC=false", "do", "create"
       ],
       "cwd": "/Users/mathieu/Dev/sama/jen/dev/acme100"
     }

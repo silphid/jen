@@ -55,7 +55,7 @@ func EvalPromptValueTemplate(values model.Values, pathEnvVar, text string) (stri
 	cmd := &exec.Cmd{
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", `echo -n "` + str + `"`},
-		Env:    shell.GetEnvFromValues(values.Variables, pathEnvVar),
+		Env:    shell.GetEnvFromProcessAndProjectVariables(values.Variables, pathEnvVar),
 		Stdout: buf,
 	}
 	if err = cmd.Run(); err != nil {

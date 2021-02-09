@@ -6,7 +6,7 @@ import (
 	"github.com/Samasource/jen/internal/model"
 )
 
-// Prompt defines the input step
+// Prompt represents a single text input user prompt
 type Prompt struct {
 	Message string
 	Var     string
