@@ -2,11 +2,13 @@ package do
 
 import (
 	"fmt"
+
 	"github.com/Samasource/jen/internal/model"
 	"github.com/Samasource/jen/internal/persist"
 	"github.com/spf13/cobra"
 )
 
+// New creates the "do" cobra command
 func New(config *model.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "do",

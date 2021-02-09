@@ -11,12 +11,13 @@
       "mode": "auto",
       "program": "/Users/mathieu/Dev/sama/jen/src",
       "env": {
+        "JEN_REPO": "git@github.com:Samasource/jen-templates.git",
         "JEN_HOME": "/Users/mathieu/Dev/sama/jen/dev/jenHome"
       },
       "args": [
-        "-v", "-y", "do", "create"
+        "-v", "-y", "-t", "go-service", "-s", "PROJECT=acme100", "do", "create"
       ],
-      "cwd": "/Users/mathieu/Dev/sama/jen/dev/output3"
+      "cwd": "/Users/mathieu/Dev/sama/jen/dev/acme100"
     }
   ]
 }

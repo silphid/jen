@@ -33,6 +33,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().BoolVarP(&logging.Verbose, "verbose", "v", false, "display verbose messages")
 	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
 	c.PersistentFlags().BoolVarP(&config.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
+	c.PersistentFlags().StringArrayVarP(&config.SetVarsRaw, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
 	c.AddCommand(pull.New(config))
 	c.AddCommand(do.New(config))
 	c.AddCommand(exec.New(config))
