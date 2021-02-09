@@ -1,9 +1,10 @@
 package render
 
 import (
-	"github.com/Samasource/jen/internal/evaluation"
-	"github.com/Samasource/jen/internal/model"
 	"path"
+
+	"github.com/Samasource/jen/src/internal/evaluation"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 type Render struct {

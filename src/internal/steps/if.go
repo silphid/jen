@@ -2,9 +2,10 @@ package steps
 
 import (
 	"fmt"
-	"github.com/Samasource/jen/internal/evaluation"
-	. "github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
+
+	"github.com/Samasource/jen/src/internal/evaluation"
+	. "github.com/Samasource/jen/src/internal/logging"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 type If struct {

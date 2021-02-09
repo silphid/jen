@@ -3,8 +3,8 @@ package exec
 import (
 	"path/filepath"
 
-	"github.com/Samasource/jen/internal/model"
-	"github.com/Samasource/jen/internal/shell"
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/shell"
 )
 
 // Exec represent a set of shell commands

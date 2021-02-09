@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/evaluation"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/evaluation"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // Item represent one of the multiple boolean values prompted to user

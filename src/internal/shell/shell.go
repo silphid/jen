@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Samasource/jen/internal/helpers"
-	"github.com/Samasource/jen/internal/logging"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/helpers"
+	"github.com/Samasource/jen/src/internal/logging"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // Execute executes one or multiple shell commands, while injecting project's environment variables and bin directories path

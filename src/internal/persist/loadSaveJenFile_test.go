@@ -1,11 +1,12 @@
 package persist
 
 import (
-	"github.com/Samasource/jen/internal/model"
-	"github.com/go-test/deep"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
+
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/go-test/deep"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveAndLoad(t *testing.T) {

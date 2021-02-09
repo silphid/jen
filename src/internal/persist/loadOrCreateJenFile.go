@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // LoadOrCreateJenFile loads the current project's jen file and, if it doesn't

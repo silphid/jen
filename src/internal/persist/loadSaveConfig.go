@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Samasource/jen/internal/constant"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/constant"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // LoadConfig loads config object from jen file

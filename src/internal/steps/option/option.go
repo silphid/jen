@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/evaluation"
-	"github.com/Samasource/jen/internal/model"
+	"github.com/Samasource/jen/src/internal/evaluation"
+	"github.com/Samasource/jen/src/internal/model"
 )
 
 // Prompt represents a boolean user prompt

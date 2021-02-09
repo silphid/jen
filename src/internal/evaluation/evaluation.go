@@ -9,8 +9,8 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-	"github.com/Samasource/jen/internal/model"
-	"github.com/Samasource/jen/internal/shell"
+	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/shell"
 )
 
 // RenderMode determines how/if rendering enabled/disabled state should change for an item and all its children recursively, compared to parent's state
