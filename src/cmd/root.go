@@ -33,7 +33,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().BoolVarP(&logging.Verbose, "verbose", "v", false, "display verbose messages")
 	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
 	c.PersistentFlags().BoolVarP(&config.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
-	c.PersistentFlags().StringSliceVarP(&config.SetVarsRaw, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
+	c.PersistentFlags().StringSliceVarP(&config.RawVarOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
 	c.AddCommand(pull.New(config))
 	c.AddCommand(do.New(config))
 	c.AddCommand(exec.New(config))
@@ -87,7 +87,7 @@ func cloneJenRepo(jenHomeDir, jenRepo string) error {
 
 	// Clone jen repo
 	logging.Log("Cloning jen templates repo %q into jen dir %q", jenRepo, jenHomeDir)
-	return shell.Execute(nil, "", "", fmt.Sprintf("git clone %s %s", jenRepo, jenHomeDir))
+	return shell.Execute(nil, "", nil, fmt.Sprintf("git clone %s %s", jenRepo, jenHomeDir))
 }
 
 func getJenRepo() (string, error) {

@@ -27,7 +27,7 @@ func (p Prompt) String() string {
 // Execute prompts user for choice value
 func (p Prompt) Execute(config *model.Config) error {
 	// Is var already set manually?
-	_, ok := config.SetVars[p.Var]
+	_, ok := config.VarOverrides[p.Var]
 	if ok {
 		return nil
 	}
@@ -35,7 +35,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	// Collect option texts
 	var options []string
 	for _, item := range p.Items {
-		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, item.Text)
 		if err != nil {
 			return err
 		}
@@ -43,7 +43,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
 	if err != nil {
 		return err
 	}

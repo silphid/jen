@@ -21,7 +21,7 @@ func LoadConfig(config *model.Config) error {
 	}
 	config.Values.Variables = jenfile.Variables
 
-	parseSetVars(config)
+	parseOverrideVars(config)
 	initDefaultPlaceholders(config)
 	return nil
 }
@@ -53,16 +53,16 @@ func initDefaultPlaceholders(config *model.Config) {
 	}
 }
 
-var setVarRegexp = regexp.MustCompile(`^(\w+)=(.*)$`)
+var overrideVarRegexp = regexp.MustCompile(`^(\w+)=(.*)$`)
 
-func parseSetVars(config *model.Config) error {
-	config.SetVars = make(map[string]string, len(config.SetVarsRaw))
-	for _, raw := range config.SetVarsRaw {
-		submatch := setVarRegexp.FindStringSubmatch(raw)
+func parseOverrideVars(config *model.Config) error {
+	config.VarOverrides = make(map[string]string, len(config.RawVarOverrides))
+	for _, raw := range config.RawVarOverrides {
+		submatch := overrideVarRegexp.FindStringSubmatch(raw)
 		if submatch == nil {
 			return fmt.Errorf("failed to parse set variable %q", raw)
 		}
-		config.SetVars[submatch[1]] = submatch[2]
+		config.VarOverrides[submatch[1]] = submatch[2]
 		config.Values.Variables[submatch[1]] = submatch[2]
 	}
 	return nil

@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// New creates the "jen pull" cobra sub-command
 func New(config *model.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "pull",
@@ -18,5 +19,5 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config) error {
-	return shell.Execute(nil, config.JenDir, "", "git pull")
+	return shell.Execute(nil, config.JenDir, config.BinDirs, "git pull")
 }

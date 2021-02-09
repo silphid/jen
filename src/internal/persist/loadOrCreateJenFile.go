@@ -3,12 +3,10 @@ package persist
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path"
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/internal/helpers"
 	"github.com/Samasource/jen/internal/model"
 )
 
@@ -47,24 +45,11 @@ func LoadOrCreateJenFile(config *model.Config) error {
 		return err
 	}
 
-	config.PathEnvVar = getPathEnvVar(config.JenDir, config.TemplateDir)
-	return nil
-}
-
-func getPathEnvVar(jenDir, templateDir string) string {
-	pathEnv := os.Getenv("PATH")
-	pathEnv = appendPathForBinDirIn(jenDir, pathEnv)
-	pathEnv = appendPathForBinDirIn(templateDir, pathEnv)
-	return pathEnv
-}
-
-func appendPathForBinDirIn(parentDir, pathEnv string) string {
-	dir := path.Join(parentDir, "bin")
-	exists := helpers.PathExists(dir)
-	if exists {
-		return dir + ":" + pathEnv
+	config.BinDirs = []string{
+		path.Join(config.JenDir, "bin"),
+		path.Join(config.TemplateDir, "bin"),
 	}
-	return pathEnv
+	return nil
 }
 
 func confirmCreateJenFile() error {

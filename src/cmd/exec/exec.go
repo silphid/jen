@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// New creates the "jen exec" cobra sub-command
 func New(config *model.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "exec",
@@ -27,5 +28,5 @@ func run(config *model.Config, args []string) error {
 		return err
 	}
 
-	return shell.Execute(config.Values.Variables, "", config.PathEnvVar, strings.Join(args, " "))
+	return shell.Execute(config.Values.Variables, "", config.BinDirs, strings.Join(args, " "))
 }

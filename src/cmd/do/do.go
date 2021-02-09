@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New creates the "do" cobra command
+// New creates the "jen do" cobra sub-command
 func New(config *model.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "do",

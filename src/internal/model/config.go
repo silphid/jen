@@ -9,9 +9,9 @@ type Config struct {
 	ProjectDir      string
 	Spec            *Spec
 	Values          Values
-	PathEnvVar      string
+	BinDirs         []string
 	SkipConfirm     bool
-	SetVarsRaw      []string
-	SetVars         map[string]string
+	RawVarOverrides []string
+	VarOverrides    map[string]string
 	OnValuesChanged func() error
 }

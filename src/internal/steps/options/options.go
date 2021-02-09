@@ -28,12 +28,12 @@ func (p Prompt) String() string {
 
 // Execute prompts user for multiple individual boolean values
 func (p Prompt) Execute(config *model.Config) error {
-	// Are all vars already set manually?
-	allVarsSet := true
+	// Are all vars overriden?
+	allVarsOverriden := true
 	for _, item := range p.Items {
-		value, ok := config.SetVars[item.Var]
+		value, ok := config.VarOverrides[item.Var]
 		if !ok {
-			allVarsSet = false
+			allVarsOverriden = false
 			break
 		}
 		_, err := strconv.ParseBool(value)
@@ -41,7 +41,7 @@ func (p Prompt) Execute(config *model.Config) error {
 			return fmt.Errorf("variable %q value %q failed to parse as boolean: %w", item.Var, value, err)
 		}
 	}
-	if allVarsSet {
+	if allVarsOverriden {
 		return nil
 	}
 
@@ -50,7 +50,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	var options []string
 	for i, item := range p.Items {
 		// Compute message
-		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, item.Text)
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
 	if err != nil {
 		return err
 	}

@@ -15,14 +15,14 @@ type Prompt struct {
 
 // Execute prompts user for input value
 func (p Prompt) Execute(config *model.Config) error {
-	// Is var already set manually?
-	_, ok := config.SetVars[p.Var]
+	// Is var overriden?
+	_, ok := config.VarOverrides[p.Var]
 	if ok {
 		return nil
 	}
 
 	// Compute message
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	// Compute default value
 	defaultValue, ok := config.Values.Variables[p.Var]
 	if !ok {
-		defaultValue, err = evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Default)
+		defaultValue, err = evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Default)
 		if err != nil {
 			return err
 		}

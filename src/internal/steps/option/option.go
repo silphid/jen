@@ -21,8 +21,8 @@ func (p Prompt) String() string {
 
 // Execute prompts user for a boolean value
 func (p Prompt) Execute(config *model.Config) error {
-	// Is var already set manually?
-	_, ok := config.SetVars[p.Var]
+	// Is var overriden?
+	_, ok := config.VarOverrides[p.Var]
 	if ok {
 		return nil
 	}
@@ -39,7 +39,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.PathEnvVar, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
 	if err != nil {
 		return err
 	}
