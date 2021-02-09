@@ -1,8 +1,6 @@
 package persist
 
 import (
-	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/Samasource/jen/src/internal/constant"
@@ -21,7 +19,6 @@ func LoadConfig(config *model.Config) error {
 	}
 	config.Values.Variables = jenfile.Variables
 
-	parseOverrideVars(config)
 	initDefaultPlaceholders(config)
 	return nil
 }
@@ -51,19 +48,4 @@ func initDefaultPlaceholders(config *model.Config) {
 		config.Values.Placeholders["projekt"] = strings.ToLower(project)
 		config.Values.Placeholders["PROJEKT"] = strings.ToUpper(project)
 	}
-}
-
-var overrideVarRegexp = regexp.MustCompile(`^(\w+)=(.*)$`)
-
-func parseOverrideVars(config *model.Config) error {
-	config.VarOverrides = make(map[string]string, len(config.RawVarOverrides))
-	for _, raw := range config.RawVarOverrides {
-		submatch := overrideVarRegexp.FindStringSubmatch(raw)
-		if submatch == nil {
-			return fmt.Errorf("failed to parse set variable %q", raw)
-		}
-		config.VarOverrides[submatch[1]] = submatch[2]
-		config.Values.Variables[submatch[1]] = submatch[2]
-	}
-	return nil
 }

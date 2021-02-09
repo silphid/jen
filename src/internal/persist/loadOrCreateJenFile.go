@@ -39,6 +39,14 @@ func LoadOrCreateJenFile(config *model.Config) error {
 		config.OnValuesChanged()
 	}
 
+	// Apply command-line variable overrides
+	if len(config.VarOverrides) > 0 {
+		for key, value := range config.VarOverrides {
+			config.Values.Variables[key] = value
+		}
+		config.OnValuesChanged()
+	}
+
 	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
 	config.Spec, err = LoadSpecFromDir(config.TemplateDir)
 	if err != nil {

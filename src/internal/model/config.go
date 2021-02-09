@@ -11,7 +11,6 @@ type Config struct {
 	Values          Values
 	BinDirs         []string
 	SkipConfirm     bool
-	RawVarOverrides []string
 	VarOverrides    map[string]string
 	OnValuesChanged func() error
 }

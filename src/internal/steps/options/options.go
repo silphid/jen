@@ -86,9 +86,8 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Clear all options
-	for i := range p.Items {
-		name := p.Items[i].Var
-		config.Values.Variables[name] = "false"
+	for _, item := range p.Items {
+		config.Values.Variables[item.Var] = "false"
 	}
 
 	// Enable selected options

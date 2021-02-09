@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/Samasource/jen/src/cmd/do"
@@ -19,6 +20,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type flags struct {
+	templateName string
+	skipConfirm  bool
+	varOverrides []string
+}
+
 // NewRoot creates the root cobra command
 func NewRoot(config *model.Config) *cobra.Command {
 	c := &cobra.Command{
@@ -30,20 +37,21 @@ continues to support you throughout development in executing project-related com
 		SilenceUsage: true,
 	}
 
+	var flags flags
 	c.PersistentFlags().BoolVarP(&logging.Verbose, "verbose", "v", false, "display verbose messages")
-	c.PersistentFlags().StringVarP(&config.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
-	c.PersistentFlags().BoolVarP(&config.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
-	c.PersistentFlags().StringSliceVarP(&config.RawVarOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
+	c.PersistentFlags().StringVarP(&flags.templateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
+	c.PersistentFlags().BoolVarP(&flags.skipConfirm, "yes", "y", false, "skip all confirmation prompts")
+	c.PersistentFlags().StringSliceVarP(&flags.varOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
 	c.AddCommand(pull.New(config))
 	c.AddCommand(do.New(config))
 	c.AddCommand(exec.New(config))
 	c.PersistentPreRunE = func(*cobra.Command, []string) error {
-		return initialize(config)
+		return initialize(config, flags)
 	}
 	return c
 }
 
-func initialize(config *model.Config) error {
+func initialize(config *model.Config, flags flags) error {
 	var err error
 	config.JenDir, err = getJenHomeDir()
 	if err != nil {
@@ -62,6 +70,12 @@ func initialize(config *model.Config) error {
 
 	config.TemplatesDir = path.Join(config.JenDir, constant.TemplatesDirName)
 	config.ProjectDir, err = findProjectDirUpFromWorkDir()
+	if err != nil {
+		return err
+	}
+	config.VarOverrides, err = parseOverrideVars(flags.varOverrides)
+	config.TemplateName = flags.templateName
+	config.SkipConfirm = flags.skipConfirm
 	return err
 }
 
@@ -127,4 +141,18 @@ func findProjectDirUpFromWorkDir() (string, error) {
 		}
 		dir = path.Dir(dir)
 	}
+}
+
+var varOverrideRegexp = regexp.MustCompile(`^(\w+)=(.*)$`)
+
+func parseOverrideVars(rawVarOverrides []string) (map[string]string, error) {
+	varOverrides := make(map[string]string, len(rawVarOverrides))
+	for _, raw := range rawVarOverrides {
+		submatch := varOverrideRegexp.FindStringSubmatch(raw)
+		if submatch == nil {
+			return nil, fmt.Errorf("failed to parse set variable %q", raw)
+		}
+		varOverrides[submatch[1]] = submatch[2]
+	}
+	return varOverrides, nil
 }
