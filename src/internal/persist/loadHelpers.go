@@ -40,11 +40,11 @@ func getOptionalMap(node yaml.Node, key string) (yaml.Map, bool, error) {
 	return m, true, nil
 }
 
-// getOptionalMapOrRawString retrieves the child map with given key or, if child is a raw string, it returns a map with
+// getOptionalMapOrRawStringOrRawStrings retrieves the child map with given key or, if child is a raw string, it returns a map with
 // raw string stored in a property keyed with defaultSubKey. This is to support steps that have two alternate syntaxes,
 // a long-hand syntax using a map with multiple properties and a short-hand syntax with a raw string that specifies
 // only the value of defaultSubKey. If defaultSubKey is an empty string, then only the long-hand map syntax is tried.
-func getOptionalMapOrRawString(node yaml.Node, key, defaultSubKey string) (yaml.Map, bool, error) {
+func getOptionalMapOrRawStringOrRawStrings(node yaml.Node, key, defaultSubKey string) (yaml.Map, bool, error) {
 	_map, ok := node.(yaml.Map)
 	if !ok {
 		return nil, false, nil
@@ -60,6 +60,15 @@ func getOptionalMapOrRawString(node yaml.Node, key, defaultSubKey string) (yaml.
 		if ok {
 			_map = yaml.Map{
 				defaultSubKey: yaml.Scalar(str),
+			}
+			return _map, true, nil
+		}
+
+		// Try list of raw strings
+		list := getOptionalListOfScalar(child)
+		if list != nil {
+			_map = yaml.Map{
+				defaultSubKey: list,
 			}
 			return _map, true, nil
 		}
@@ -170,6 +179,22 @@ func getString(node yaml.Node) (string, bool) {
 		return str[1 : len(str)-1], true
 	}
 	return str, true
+}
+
+func getOptionalListOfScalar(node yaml.Node) yaml.List {
+	list, ok := node.(yaml.List)
+	if !ok {
+		return nil
+	}
+
+	// Ensure all list children are scalars
+	for _, item := range list {
+		if _, ok := item.(yaml.Scalar); !ok {
+			return nil
+		}
+	}
+
+	return list
 }
 
 func getOptionalBool(_map yaml.Map, key string, defaultValue bool) (bool, error) {

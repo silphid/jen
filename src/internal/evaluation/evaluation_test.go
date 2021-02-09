@@ -238,11 +238,16 @@ func TestEvalPromptValueTemplate(t *testing.T) {
 			Value:    `Hello {{"$VAR1"}} World`,
 			Expected: `Hello value1 World`,
 		},
+		{
+			Name:     "Ignore escaped triple braces",
+			Value:    `Hello {{{ .VAR }}} World`,
+			Expected: `Hello {{ .VAR }} World`,
+		},
 	}
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			actual, err := EvalPromptValueTemplate(values, "", f.Value)
+			actual, err := EvalPromptValueTemplate(values, nil, f.Value)
 			assert.NoError(t, err)
 			assert.Equal(t, f.Expected, actual)
 		})

@@ -153,7 +153,7 @@ func loadExecutable(node yaml.Node) (model.Executable, error) {
 	}
 
 	for _, x := range items {
-		_map, ok, err := getOptionalMapOrRawString(node, x.name, x.defaultSubKey)
+		_map, ok, err := getOptionalMapOrRawStringOrRawStrings(node, x.name, x.defaultSubKey)
 		if err != nil {
 			return nil, err
 		}

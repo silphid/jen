@@ -40,6 +40,14 @@ func EvalBoolExpression(values model.Values, expression string) (bool, error) {
 // EvalPromptValueTemplate interpolates a choice or default value string that will be presented to
 // user via a prompt, by evaluating both go template expressions and $... shell expressions
 func EvalPromptValueTemplate(values model.Values, binDirs []string, text string) (string, error) {
+	// Escape triple braces
+	doubleOpen := strings.Repeat("{", 2)
+	doubleClose := strings.Repeat("}", 2)
+	tripleOpen := strings.Repeat("{", 3)
+	tripleClose := strings.Repeat("}", 3)
+	text = strings.ReplaceAll(text, tripleOpen, doubleOpen+"`"+doubleOpen+"`"+doubleClose)
+	text = strings.ReplaceAll(text, tripleClose, doubleOpen+"`"+doubleClose+"`"+doubleClose)
+
 	// Interpolate go templating
 	str, err := EvalTemplate(values, text)
 	if err != nil {
