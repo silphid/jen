@@ -3,6 +3,7 @@ package do
 import (
 	"fmt"
 
+	"github.com/Samasource/jen/src/internal/home"
 	"github.com/Samasource/jen/src/internal/model"
 	"github.com/Samasource/jen/src/internal/persist"
 	"github.com/spf13/cobra"
@@ -21,7 +22,12 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config, actionName string) error {
-	err := persist.LoadOrCreateJenFile(config)
+	_, err := home.CloneJenRepo()
+	if err != nil {
+		return err
+	}
+
+	err = persist.LoadOrCreateJenFile(config)
 	if err != nil {
 		return err
 	}

@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/Samasource/jen/src/internal/constant"
+	"github.com/Samasource/jen/src/internal/home"
 	"github.com/Samasource/jen/src/internal/model"
 )
 
@@ -31,8 +33,14 @@ func LoadOrCreateJenFile(config *model.Config) error {
 		return err
 	}
 
+	jenHomeDir, err := home.GetJenHomeDir()
+	if err != nil {
+		return err
+	}
+	templatesDir := path.Join(jenHomeDir, constant.TemplatesDirName)
+
 	if config.TemplateName == "" {
-		config.TemplateName, err = promptTemplate(config.TemplatesDir)
+		config.TemplateName, err = promptTemplate(templatesDir)
 		if err != nil {
 			return fmt.Errorf("prompting for template: %w", err)
 		}
@@ -47,14 +55,14 @@ func LoadOrCreateJenFile(config *model.Config) error {
 		config.OnValuesChanged()
 	}
 
-	config.TemplateDir = path.Join(config.TemplatesDir, config.TemplateName)
+	config.TemplateDir = path.Join(templatesDir, config.TemplateName)
 	config.Spec, err = LoadSpecFromDir(config.TemplateDir)
 	if err != nil {
 		return err
 	}
 
 	config.BinDirs = []string{
-		path.Join(config.JenDir, "bin"),
+		path.Join(jenHomeDir, "bin"),
 		path.Join(config.TemplateDir, "bin"),
 	}
 	return nil
