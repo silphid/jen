@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	. "github.com/Samasource/jen/internal/logging"
+	"github.com/Samasource/jen/internal/logging"
 	"github.com/Samasource/jen/internal/model"
 )
 
@@ -87,7 +87,7 @@ func getEntries(values model.Values, inputDir, outputDir string, renderParent bo
 }
 
 func renderFile(values model.Values, inputPath, outputPath string, render bool) error {
-	Log("Rendering file %q -> %q", inputPath, outputPath)
+	logging.Log("Rendering file %q -> %q", inputPath, outputPath)
 
 	// Read input file
 	inputText, err := ioutil.ReadFile(inputPath)
