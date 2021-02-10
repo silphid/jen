@@ -10,12 +10,17 @@ import (
 	"github.com/Samasource/jen/src/internal/constant"
 	"github.com/Samasource/jen/src/internal/home"
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 )
 
 // LoadOrCreateJenFile loads the current project's jen file and, if it doesn't
 // exists, it prompts users whether to create it.
 func LoadOrCreateJenFile(config *model.Config) error {
-	if config.ProjectDir == "" {
+	projectDir, err := project.GetProjectDir()
+	if err != nil {
+		return err
+	}
+	if projectDir == "" {
 		if !config.SkipConfirm {
 			err := confirmCreateJenFile()
 			if err != nil {
@@ -28,7 +33,7 @@ func LoadOrCreateJenFile(config *model.Config) error {
 		}
 	}
 
-	err := LoadConfig(config)
+	err = LoadConfig(config)
 	if err != nil {
 		return err
 	}

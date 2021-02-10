@@ -2,15 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"path"
 	"regexp"
 
 	"github.com/Samasource/jen/src/cmd/do"
 	"github.com/Samasource/jen/src/cmd/exec"
 	"github.com/Samasource/jen/src/cmd/pull"
-	"github.com/Samasource/jen/src/internal/constant"
-	"github.com/Samasource/jen/src/internal/helpers"
 	"github.com/Samasource/jen/src/internal/logging"
 	"github.com/Samasource/jen/src/internal/model"
 	"github.com/spf13/cobra"
@@ -49,32 +45,10 @@ continues to support you throughout development in executing project-related com
 
 func initialize(config *model.Config, flags flags) error {
 	var err error
-	config.ProjectDir, err = findProjectDirUpFromWorkDir()
-	if err != nil {
-		return err
-	}
 	config.VarOverrides, err = parseOverrideVars(flags.varOverrides)
 	config.TemplateName = flags.templateName
 	config.SkipConfirm = flags.skipConfirm
 	return err
-}
-
-func findProjectDirUpFromWorkDir() (string, error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("finding project's root dir: %w", err)
-	}
-
-	for {
-		filePath := path.Join(dir, constant.JenFileName)
-		if helpers.PathExists(filePath) {
-			return dir, nil
-		}
-		if dir == "/" {
-			return "", nil
-		}
-		dir = path.Dir(dir)
-	}
 }
 
 var varOverrideRegexp = regexp.MustCompile(`^(\w+)=(.*)$`)

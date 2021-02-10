@@ -5,11 +5,16 @@ import (
 
 	"github.com/Samasource/jen/src/internal/constant"
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 )
 
 // LoadConfig loads config object from jen file
 func LoadConfig(config *model.Config) error {
-	jenfile, err := LoadJenFileFromDir(config.ProjectDir)
+	projectDir, err := project.GetProjectDir()
+	if err != nil {
+		return err
+	}
+	jenfile, err := LoadJenFileFromDir(projectDir)
 	if err != nil {
 		return err
 	}
@@ -31,7 +36,11 @@ func SaveConfig(config *model.Config) error {
 		Variables:    config.Values.Variables,
 	}
 
-	err := SaveJenFileToDir(config.ProjectDir, jenfile)
+	projectDir, err := project.GetProjectDir()
+	if err != nil {
+		return err
+	}
+	err = SaveJenFileToDir(projectDir, jenfile)
 	if err != nil {
 		return err
 	}

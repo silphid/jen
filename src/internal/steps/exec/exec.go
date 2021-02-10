@@ -1,9 +1,8 @@
 package exec
 
 import (
-	"path/filepath"
-
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 	"github.com/Samasource/jen/src/internal/shell"
 )
 
@@ -16,12 +15,12 @@ func (e Exec) String() string {
 	return "exec"
 }
 
-// Execute executes one or multiple shell commands with project's variables and bin dirs
+// Execute runs one or multiple shell commands with project's variables and bin dirs
 func (e Exec) Execute(config *model.Config) error {
-	dir, err := filepath.Abs(config.ProjectDir)
+	projectDir, err := project.GetProjectDir()
 	if err != nil {
 		return err
 	}
 
-	return shell.Execute(config.Values.Variables, dir, config.BinDirs, e.Commands...)
+	return shell.Execute(config.Values.Variables, projectDir, config.BinDirs, e.Commands...)
 }

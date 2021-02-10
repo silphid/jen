@@ -5,7 +5,6 @@ type Config struct {
 	TemplatesDir    string
 	TemplateName    string
 	TemplateDir     string
-	ProjectDir      string
 	Spec            *Spec
 	Values          Values
 	BinDirs         []string

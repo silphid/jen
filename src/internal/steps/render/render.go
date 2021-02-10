@@ -5,6 +5,7 @@ import (
 
 	"github.com/Samasource/jen/src/internal/evaluation"
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 )
 
 type Render struct {
@@ -16,6 +17,11 @@ func (r Render) String() string {
 }
 
 func (r Render) Execute(config *model.Config) error {
+	projectDir, err := project.GetProjectDir()
+	if err != nil {
+		return err
+	}
+
 	inputDir := path.Join(config.TemplateDir, r.Source)
-	return evaluation.Render(config.Values, inputDir, config.ProjectDir)
+	return evaluation.Render(config.Values, inputDir, projectDir)
 }
