@@ -28,7 +28,7 @@ func run(config *model.Config, args []string) error {
 		return err
 	}
 
-	err = persist.LoadOrCreateJenFile(config)
+	err = persist.LoadOrCreateProject(config)
 	if err != nil {
 		return err
 	}

@@ -12,20 +12,20 @@ import (
 
 func TestSaveAndLoad(t *testing.T) {
 	// Save
-	jenFile := project.JenFile{Variables: model.VarMap{
+	proj := project.Project{Variables: model.VarMap{
 		"VAR1": "true",
 		"VAR2": "abc",
 	}}
 	dir := getTempDir()
-	err := jenFile.Save(dir)
+	err := proj.Save(dir)
 	assert.NoError(t, err)
 
 	// Load
-	actualJenFile, err := project.Load(dir)
+	actualProj, err := project.Load(dir)
 	assert.NoError(t, err)
 
 	// Compare
-	if diff := deep.Equal(jenFile.Variables, actualJenFile.Variables); diff != nil {
+	if diff := deep.Equal(proj.Variables, actualProj.Variables); diff != nil {
 		t.Error(diff)
 	}
 }

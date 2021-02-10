@@ -17,7 +17,7 @@ func (r Render) String() string {
 }
 
 func (r Render) Execute(config *model.Config) error {
-	projectDir, err := project.GetProjectDir()
+	projectDir, err := project.GetDir()
 	if err != nil {
 		return err
 	}

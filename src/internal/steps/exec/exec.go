@@ -17,7 +17,7 @@ func (e Exec) String() string {
 
 // Execute runs one or multiple shell commands with project's variables and bin dirs
 func (e Exec) Execute(config *model.Config) error {
-	projectDir, err := project.GetProjectDir()
+	projectDir, err := project.GetDir()
 	if err != nil {
 		return err
 	}

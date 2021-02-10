@@ -12,7 +12,7 @@ import (
 func main() {
 	config := &model.Config{}
 	config.OnValuesChanged = func() error {
-		projectDir, err := project.GetProjectDir()
+		projectDir, err := project.GetDir()
 		if err != nil {
 			return err
 		}

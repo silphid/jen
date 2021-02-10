@@ -13,16 +13,16 @@ import (
 	"github.com/Samasource/jen/src/internal/project"
 )
 
-// LoadOrCreateJenFile loads the current project's jen file and, if it doesn't
-// exists, it prompts users whether to create it.
-func LoadOrCreateJenFile(config *model.Config) error {
-	projectDir, err := project.GetProjectDir()
+// LoadOrCreateProject loads current project file and, if it doesn't
+// exists, prompts user whether to create it.
+func LoadOrCreateProject(config *model.Config) error {
+	projectDir, err := project.GetDir()
 	if err != nil {
 		return err
 	}
 	if projectDir == "" {
 		if !config.SkipConfirm {
-			err := confirmCreateJenFile()
+			err := confirmCreateProject()
 			if err != nil {
 				return err
 			}
@@ -73,7 +73,7 @@ func LoadOrCreateJenFile(config *model.Config) error {
 	return nil
 }
 
-func confirmCreateJenFile() error {
+func confirmCreateProject() error {
 	var result bool
 	err := survey.AskOne(&survey.Confirm{
 		Message: "Jen project not found. Do you want to initialize current directory as your project root?",

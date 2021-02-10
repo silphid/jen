@@ -7,30 +7,30 @@ import (
 	"github.com/Samasource/jen/src/internal/project"
 )
 
-// LoadConfig loads config object from jen file
+// LoadConfig loads config object from project file
 func LoadConfig(config *model.Config, projectDir string) error {
-	jenfile, err := project.Load(projectDir)
+	proj, err := project.Load(projectDir)
 	if err != nil {
 		return err
 	}
 
 	if config.TemplateName == "" {
-		config.TemplateName = jenfile.TemplateName
+		config.TemplateName = proj.TemplateName
 	}
-	config.Values.Variables = jenfile.Variables
+	config.Values.Variables = proj.Variables
 
 	initDefaultPlaceholders(config)
 	return nil
 }
 
-// SaveConfig saves config object to jen file
+// SaveConfig saves config object to project file
 func SaveConfig(config *model.Config, projectDir string) error {
-	jenfile := project.JenFile{
+	proj := project.Project{
 		TemplateName: config.TemplateName,
 		Variables:    config.Values.Variables,
 	}
 
-	err := jenfile.Save(projectDir)
+	err := proj.Save(projectDir)
 	if err != nil {
 		return err
 	}
