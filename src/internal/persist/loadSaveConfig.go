@@ -3,13 +3,13 @@ package persist
 import (
 	"strings"
 
-	"github.com/Samasource/jen/src/internal/constant"
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 )
 
 // LoadConfig loads config object from jen file
 func LoadConfig(config *model.Config, projectDir string) error {
-	jenfile, err := LoadJenFileFromDir(projectDir)
+	jenfile, err := project.Load(projectDir)
 	if err != nil {
 		return err
 	}
@@ -25,13 +25,12 @@ func LoadConfig(config *model.Config, projectDir string) error {
 
 // SaveConfig saves config object to jen file
 func SaveConfig(config *model.Config, projectDir string) error {
-	jenfile := model.JenFile{
-		Version:      constant.JenFileVersion,
+	jenfile := project.JenFile{
 		TemplateName: config.TemplateName,
 		Variables:    config.Values.Variables,
 	}
 
-	err := SaveJenFileToDir(projectDir, jenfile)
+	err := jenfile.Save(projectDir)
 	if err != nil {
 		return err
 	}

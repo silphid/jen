@@ -5,22 +5,23 @@ import (
 	"testing"
 
 	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/project"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveAndLoad(t *testing.T) {
 	// Save
-	jenFile := model.JenFile{Variables: model.VarMap{
+	jenFile := project.JenFile{Variables: model.VarMap{
 		"VAR1": "true",
 		"VAR2": "abc",
 	}}
 	dir := getTempDir()
-	err := SaveJenFileToDir(dir, jenFile)
+	err := jenFile.Save(dir)
 	assert.NoError(t, err)
 
 	// Load
-	actualJenFile, err := LoadJenFileFromDir(dir)
+	actualJenFile, err := project.Load(dir)
 	assert.NoError(t, err)
 
 	// Compare

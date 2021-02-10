@@ -27,7 +27,7 @@ func GetOrCloneJenRepo() (string, error) {
 	if helpers.PathExists(jenHome) {
 		if helpers.PathExists(filepath.Join(jenHome, ".git")) {
 			// Jen dir is a valid git repo
-			logging.Log("Using jen templates clones at %q", jenHome)
+			logging.Log("Using jen templates clone at %q", jenHome)
 			return jenHome, nil
 		}
 

@@ -21,7 +21,7 @@ func GetProjectDir() (string, error) {
 	for {
 		path := filepath.Join(dir, constant.JenFileName)
 		if helpers.PathExists(path) {
-			return path, nil
+			return dir, nil
 		}
 		if dir == "/" {
 			return "", nil
