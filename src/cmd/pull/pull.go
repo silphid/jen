@@ -13,7 +13,7 @@ func New() *cobra.Command {
 		Short: "Pulls latest templates from git repo",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, args []string) error {
-			jenHome, err := home.CloneJenRepo()
+			jenHome, err := home.GetOrCloneJenRepo()
 			if err != nil {
 				return err
 			}

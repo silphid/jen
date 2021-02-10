@@ -12,8 +12,13 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-// CloneJenRepo clones the jen git repo if it does not exist and returns the path to where it was cloned
-func CloneJenRepo() (string, error) {
+const (
+	jenHomeVar = "JEN_HOME"
+	jenRepoVar = "JEN_REPO"
+)
+
+// GetOrCloneJenRepo clones the jen git repo if it does not exist and returns the path to where it was cloned
+func GetOrCloneJenRepo() (string, error) {
 	jenHome, err := GetJenHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to locate jen home: %w", err)
@@ -47,7 +52,7 @@ func CloneJenRepo() (string, error) {
 
 // getJenRepoDir reads the repoitory value from the environment and returns an error if it is not set
 func getJenRepoDir() (string, error) {
-	jenRepo, ok := os.LookupEnv("JEN_REPO")
+	jenRepo, ok := os.LookupEnv(jenRepoVar)
 	if !ok {
 		return "", fmt.Errorf("please specify a JEN_REPO env var pointing to your jen templates git repo")
 	}
@@ -62,7 +67,7 @@ func GetJenHomeDir() (jenHomeDir string, err error) {
 		}
 	}()
 
-	jenHomeDir, ok := os.LookupEnv("JEN_HOME")
+	jenHomeDir, ok := os.LookupEnv(jenHomeVar)
 	if ok && jenHomeDir != "" {
 		return
 	}
@@ -73,5 +78,6 @@ func GetJenHomeDir() (jenHomeDir string, err error) {
 		return
 	}
 	jenHomeDir = filepath.Join(home, ".jen")
+	os.Setenv(jenHomeVar, jenHomeDir)
 	return
 }

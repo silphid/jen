@@ -23,7 +23,7 @@ func New(config *model.Config) *cobra.Command {
 }
 
 func run(config *model.Config, args []string) error {
-	_, err := home.CloneJenRepo()
+	_, err := home.GetOrCloneJenRepo()
 	if err != nil {
 		return err
 	}
