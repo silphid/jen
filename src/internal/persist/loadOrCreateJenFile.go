@@ -27,13 +27,13 @@ func LoadOrCreateJenFile(config *model.Config) error {
 				return err
 			}
 		}
-		err := SaveConfig(config)
+		err := SaveConfig(config, projectDir)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = LoadConfig(config)
+	err = LoadConfig(config, projectDir)
 	if err != nil {
 		return err
 	}
