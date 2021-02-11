@@ -20,7 +20,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Compute message
-	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	// Compute default value
 	defaultValue, ok := vars[p.Var]
 	if !ok {
-		defaultValue, err = evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Default)
+		defaultValue, err = evaluation.EvalPromptValueTemplate(context, p.Default)
 		if err != nil {
 			return err
 		}

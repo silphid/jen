@@ -26,7 +26,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().BoolVarP(&options.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
 	c.PersistentFlags().StringSliceVarP(&options.VarOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
 	c.AddCommand(pull.New())
-	c.AddCommand(do.New(options))
-	c.AddCommand(exec.New(options))
+	c.AddCommand(do.New(&options))
+	c.AddCommand(exec.New(&options))
 	return c
 }

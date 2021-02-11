@@ -21,7 +21,7 @@ func (i If) String() string {
 
 // Execute executes a child action only when a given condition evaluates to true
 func (i If) Execute(context exec.Context) error {
-	result, err := evaluation.EvalBoolExpression(context.(evaluation.Context), i.Condition)
+	result, err := evaluation.EvalBoolExpression(context, i.Condition)
 	if err != nil {
 		return fmt.Errorf("evaluating if conditional: %w", err)
 	}

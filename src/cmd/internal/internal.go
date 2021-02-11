@@ -22,7 +22,7 @@ type Options struct {
 }
 
 // NewContext creates a context to be used for executing executables
-func (o Options) NewContext() (*exec.Context, error) {
+func (o Options) NewContext() (exec.Context, error) {
 	_, err := home.GetOrCloneJenRepo()
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (o Options) NewContext() (*exec.Context, error) {
 		return nil, err
 	}
 
-	return &Context{
+	return context{
 		jenHomeDir:  jenHomeDir,
 		templateDir: templateDir,
 		project:     *proj,
@@ -56,9 +56,9 @@ func (o Options) NewContext() (*exec.Context, error) {
 	}, nil
 }
 
-// Context contains all the information for implementing both the
-// exec.Context and evaluation.Context interfaces
-type Context struct {
+// context contains all the information for implementing both the
+// exec.context and evaluation.context interfaces
+type context struct {
 	jenHomeDir  string
 	templateDir string
 	project     project.Project
@@ -68,18 +68,18 @@ type Context struct {
 // GetVars returns a dictionary of the project's variable names mapped to
 // their corresponding values. It does not include the process' env var.
 // Whenever you alter this map, you are responsible for later calling SaveProject().
-func (c Context) GetVars() map[string]string {
+func (c context) GetVars() map[string]string {
 	return c.project.Vars
 }
 
 // SaveProject saves all of the project's variables to project file.
-func (c Context) SaveProject() error {
+func (c context) SaveProject() error {
 	return c.project.Save()
 }
 
 // IsVarOverriden returns whether given variable has been overriden via command
 // line. This is used to skip prompting for those variables.
-func (c Context) IsVarOverriden(name string) bool {
+func (c context) IsVarOverriden(name string) bool {
 	for _, x := range c.project.OverridenVars {
 		if x == name {
 			return true
@@ -92,7 +92,7 @@ func (c Context) IsVarOverriden(name string) bool {
 // of go template expression, for lighter weight templating, especially for the
 // project's name, which appears everywhere. For now, the only supported placeholder
 // is PROJECT, but we will eventually make placeholders configurable in spec file.
-func (c Context) GetPlaceholders() map[string]string {
+func (c context) GetPlaceholders() map[string]string {
 	projectName, _ := c.project.Vars["PROJECT"]
 	return map[string]string{
 		"projekt": strings.ToLower(projectName),
@@ -103,7 +103,7 @@ func (c Context) GetPlaceholders() map[string]string {
 // GetShellVars returns all env vars to be used when invoking shell commands,
 // including the current process' env vars, the project's vars and an augmented
 // PATH var including extra bin dirs.
-func (c Context) GetShellVars() []string {
+func (c context) GetShellVars() []string {
 	binDirs := []string{
 		filepath.Join(c.jenHomeDir, "bin"),
 		filepath.Join(c.project.Dir, "bin"),
@@ -142,10 +142,15 @@ func (c Context) GetShellVars() []string {
 
 // GetAction returns action with given name within same
 // spec file or nil if not found.
-func (c Context) GetAction(name string) exec.Executable {
+func (c context) GetAction(name string) exec.Executable {
 	action, ok := c.spec.Actions[name]
 	if !ok {
 		return nil
 	}
 	return action
+}
+
+// GetProjectDir returns the current project's dir
+func (c context) GetProjectDir() string {
+	return c.project.Dir
 }

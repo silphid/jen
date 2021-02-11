@@ -39,7 +39,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 // New creates the "jen do" cobra sub-command
-func New(options internal.Options) *cobra.Command {
+func New(options *internal.Options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "do",
 		Short: "Executes an action from a template's spec.yaml",
@@ -19,7 +19,7 @@ func New(options internal.Options) *cobra.Command {
 	}
 }
 
-func run(options internal.Options, actionName string) error {
+func run(options *internal.Options, actionName string) error {
 	execContext, err := options.NewContext()
 	if err != nil {
 		return err

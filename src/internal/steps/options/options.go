@@ -30,7 +30,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	// Are all vars overriden?
 	allVarsOverriden := true
 	for _, item := range p.Items {
-		if context.IsVarOverriden(item.Var) {
+		if !context.IsVarOverriden(item.Var) {
 			allVarsOverriden = false
 			break
 		}
@@ -46,7 +46,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	var options []string
 	for i, item := range p.Items {
 		// Compute message
-		text, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(context, item.Text)
 		if err != nil {
 			return err
 		}
@@ -68,7 +68,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}

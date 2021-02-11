@@ -18,5 +18,5 @@ func (r Render) String() string {
 // Execute renders a given source sub-folder of the current template's dir
 // into the project's dir.
 func (r Render) Execute(context exec.Context) error {
-	return evaluation.Render(context.(evaluation.Context), r.InputDir, context.GetProjectDir())
+	return evaluation.Render(context, r.InputDir, context.GetProjectDir())
 }
