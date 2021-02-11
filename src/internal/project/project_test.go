@@ -4,27 +4,28 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/project"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 )
 
+type strMap = map[string]string
+
 func TestSaveAndLoad(t *testing.T) {
 	// Save
-	proj := project.Project{Variables: map[string]string{
+	proj := Project{Vars: strMap{
 		"VAR1": "true",
 		"VAR2": "abc",
 	}}
-	dir := getTempDir()
-	err := proj.Save(dir)
+	proj.Dir = getTempDir()
+	err := proj.Save()
 	assert.NoError(t, err)
 
 	// Load
-	actualProj, err := project.Load(dir)
+	actualProj, err := Load(proj.Dir)
 	assert.NoError(t, err)
 
 	// Compare
-	if diff := deep.Equal(proj.Variables, actualProj.Variables); diff != nil {
+	if diff := deep.Equal(proj.Vars, actualProj.Vars); diff != nil {
 		t.Error(diff)
 	}
 }

@@ -11,9 +11,6 @@ import (
 	"github.com/Masterminds/sprig"
 )
 
-// VarMap represents a dictionary of variables names mapped to their values
-type VarMap map[string]string
-
 // Context encapsulates everything required for template evaluation and rendering
 type Context interface {
 	// GetVars returns a dictionary of the project's variable names mapped to

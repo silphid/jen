@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 	"github.com/Samasource/jen/src/internal/steps"
 	"github.com/Samasource/jen/src/internal/steps/choice"
 	"github.com/Samasource/jen/src/internal/steps/do"
-	"github.com/Samasource/jen/src/internal/steps/exec"
+	execstep "github.com/Samasource/jen/src/internal/steps/exec"
 	"github.com/Samasource/jen/src/internal/steps/input"
 	"github.com/Samasource/jen/src/internal/steps/option"
 	"github.com/Samasource/jen/src/internal/steps/options"
@@ -207,7 +207,7 @@ choice:
 render:
   source: Source`,
 			Expected: render.Render{
-				Source: "Source",
+				InputDir: "TEMPLATE_DIR/Source",
 			},
 		},
 		{
@@ -215,7 +215,7 @@ render:
 			Buffer: `
 render: Source`,
 			Expected: render.Render{
-				Source: "Source",
+				InputDir: "TEMPLATE_DIR/Source",
 			},
 		},
 		{
@@ -225,7 +225,7 @@ exec:
   commands:
     - Command 1
     - Command 2`,
-			Expected: exec.Exec{
+			Expected: execstep.Exec{
 				Commands: []string{
 					"Command 1",
 					"Command 2",
@@ -236,7 +236,7 @@ exec:
 			Name: "exec step short-hand",
 			Buffer: `
 exec: Command 1`,
-			Expected: exec.Exec{
+			Expected: execstep.Exec{
 				Commands: []string{"Command 1"},
 			},
 		},
@@ -260,7 +260,7 @@ do: Action`,
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadExecutable(m)
+		return loadExecutable(m, "TEMPLATE_DIR")
 	})
 }
 
@@ -279,8 +279,8 @@ action2:
   - input:
       question: Message 2
       var: Variable 2`,
-			Expected: model.ActionMap{
-				"action1": {
+			Expected: ActionMap{
+				"action1": Action{
 					Name: "action1",
 					Steps: exec.Executables{
 						steps.If{
@@ -294,7 +294,7 @@ action2:
 						},
 					},
 				},
-				"action2": {
+				"action2": Action{
 					Name: "action2",
 					Steps: exec.Executables{
 						input.Prompt{
@@ -308,7 +308,7 @@ action2:
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadActions(m)
+		return loadActions(m, "TEMPLATE_DIR")
 	})
 }
 
@@ -335,12 +335,12 @@ actions:
     - input:
         question: Message 2
         var: Variable 2`,
-			Expected: &model.Spec{
+			Expected: &Spec{
 				Name:        "Name",
 				Description: "Description",
 				Version:     "0.2.0",
-				Actions: model.ActionMap{
-					"action1": {
+				Actions: ActionMap{
+					"action1": Action{
 						Name: "action1",
 						Steps: exec.Executables{
 							steps.If{
@@ -354,7 +354,7 @@ actions:
 							},
 						},
 					},
-					"action2": {
+					"action2": Action{
 						Name: "action2",
 						Steps: exec.Executables{
 							input.Prompt{
@@ -369,6 +369,6 @@ actions:
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadSpecFromMap(m)
+		return loadFromMap(m, "TEMPLATE_DIR")
 	})
 }

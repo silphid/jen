@@ -1,14 +1,39 @@
 package evaluation
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+type strMap = map[string]string
+
+type context struct {
+	vars         strMap
+	placeholders strMap
+}
+
+func (c context) GetVars() map[string]string {
+	return c.vars
+}
+
+func (c context) GetPlaceholders() map[string]string {
+	return c.placeholders
+}
+
+func (c context) GetShellVars() []string {
+	vars := make([]string, len(c.vars))
+	for key, value := range c.vars {
+		entry := fmt.Sprintf("%s=%v", key, value)
+		vars = append(vars, entry)
+	}
+	return vars
+}
+
 func TestEvalBoolExpression(t *testing.T) {
-	context := Context{
-		Variables: VarMap{
+	context := context{
+		vars: strMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
@@ -92,14 +117,14 @@ func TestEvalBoolExpression(t *testing.T) {
 }
 
 func TestEvalFileName(t *testing.T) {
-	context := Context{
-		Variables: VarMap{
+	context := context{
+		vars: strMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: VarMap{
+		placeholders: strMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},
@@ -174,14 +199,14 @@ func TestEvalFileName(t *testing.T) {
 }
 
 func TestEvalPromptValueTemplate(t *testing.T) {
-	context := Context{
-		Variables: VarMap{
+	context := context{
+		vars: strMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: VarMap{
+		placeholders: strMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},

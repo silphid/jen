@@ -9,14 +9,14 @@ import (
 )
 
 func TestGetEntries(t *testing.T) {
-	context := Context{
-		Variables: VarMap{
+	context := context{
+		vars: strMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: VarMap{
+		placeholders: strMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},

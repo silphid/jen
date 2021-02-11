@@ -7,14 +7,14 @@ import (
 )
 
 func TestRenderFile(t *testing.T) {
-	context := Context{
-		Variables: VarMap{
+	context := context{
+		vars: strMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: map[string]string{
+		placeholders: map[string]string{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},
