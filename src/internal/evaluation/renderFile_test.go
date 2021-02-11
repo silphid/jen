@@ -3,13 +3,12 @@ package evaluation
 import (
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRenderFile(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
@@ -84,7 +83,7 @@ func TestRenderFile(t *testing.T) {
 			outputFile := getTempFile()
 			defer deleteFile(inputFile)
 			defer deleteFile(outputFile)
-			err := renderFile(values, inputFile, outputFile, f.Render)
+			err := renderFile(context, inputFile, outputFile, f.Render)
 			actual := readFile(outputFile)
 
 			if f.Error != "" {

@@ -3,7 +3,7 @@ package input
 import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 )
 
 // Prompt represents a single text input user prompt
@@ -14,23 +14,23 @@ type Prompt struct {
 }
 
 // Execute prompts user for input value
-func (p Prompt) Execute(config *model.Config) error {
-	// Is var overriden?
-	_, ok := config.VarOverrides[p.Var]
-	if ok {
+func (p Prompt) Execute(context exec.Context) error {
+	if context.IsVarOverriden(p.Var) {
 		return nil
 	}
 
 	// Compute message
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
 	if err != nil {
 		return err
 	}
 
+	vars := context.GetVars()
+
 	// Compute default value
-	defaultValue, ok := config.Values.Variables[p.Var]
+	defaultValue, ok := vars[p.Var]
 	if !ok {
-		defaultValue, err = evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Default)
+		defaultValue, err = evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Default)
 		if err != nil {
 			return err
 		}
@@ -46,6 +46,6 @@ func (p Prompt) Execute(config *model.Config) error {
 		return err
 	}
 
-	config.Values.Variables[p.Var] = value
-	return config.OnValuesChanged()
+	vars[p.Var] = value
+	return context.SaveProject()
 }

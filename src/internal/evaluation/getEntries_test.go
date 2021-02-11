@@ -5,19 +5,18 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetEntries(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: model.VarMap{
+		Placeholders: VarMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},
@@ -190,7 +189,7 @@ func TestGetEntries(t *testing.T) {
 				createEmptyFile(inputFile)
 			}
 
-			actual, err := getEntries(values, inputDir, outputDir, false)
+			actual, err := getEntries(context, inputDir, outputDir, false)
 			expected := getExpected(f.Expected, inputDir)
 
 			sort.SliceStable(actual, func(i, j int) bool {

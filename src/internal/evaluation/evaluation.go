@@ -3,17 +3,37 @@ package evaluation
 import (
 	"bytes"
 	"fmt"
-	"os/exec"
+	osexec "os/exec"
 	"regexp"
 	"strings"
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-	"github.com/Samasource/jen/src/internal/model"
-	"github.com/Samasource/jen/src/internal/shell"
 )
 
-// RenderMode determines how/if rendering enabled/disabled state should change for an item and all its children recursively, compared to parent's state
+// VarMap represents a dictionary of variables names mapped to their values
+type VarMap map[string]string
+
+// Context encapsulates everything required for template evaluation and rendering
+type Context interface {
+	// GetVars returns a dictionary of the project's variable names mapped to
+	// their corresponding values. It does not include the process' env var.
+	// Do not alter this map, use SetVar() instead.
+	GetVars() map[string]string
+
+	// GetPlaceholders returns a map of special placeholders that can be used instead
+	// of go template expression, for lighter weight templating, especially for the
+	// project's name, which appears everywhere.
+	GetPlaceholders() map[string]string
+
+	// GetShellVars returns all env vars to be used when invoking shell commands,
+	// including the current process' env vars, the project's vars and an augmented
+	// PATH var including extra bin dirs.
+	GetShellVars() []string
+}
+
+// RenderMode determines how/if rendering enabled/disabled state should change for an item
+// and all its children recursively, compared to parent's state
 type RenderMode int
 
 const (
@@ -28,9 +48,9 @@ const (
 )
 
 // EvalBoolExpression determines whether given go template expression evaluates to true or false
-func EvalBoolExpression(values model.Values, expression string) (bool, error) {
+func EvalBoolExpression(context Context, expression string) (bool, error) {
 	ifExpr := "{{if " + expression + "}}true{{end}}"
-	result, err := EvalTemplate(values, ifExpr)
+	result, err := EvalTemplate(context, ifExpr)
 	if err != nil {
 		return false, fmt.Errorf("evaluate expression %q: %w", expression, err)
 	}
@@ -39,17 +59,9 @@ func EvalBoolExpression(values model.Values, expression string) (bool, error) {
 
 // EvalPromptValueTemplate interpolates a choice or default value string that will be presented to
 // user via a prompt, by evaluating both go template expressions and $... shell expressions
-func EvalPromptValueTemplate(values model.Values, binDirs []string, text string) (string, error) {
-	// Escape triple braces
-	doubleOpen := strings.Repeat("{", 2)
-	doubleClose := strings.Repeat("}", 2)
-	tripleOpen := strings.Repeat("{", 3)
-	tripleClose := strings.Repeat("}", 3)
-	text = strings.ReplaceAll(text, tripleOpen, doubleOpen+"`"+doubleOpen+"`"+doubleClose)
-	text = strings.ReplaceAll(text, tripleClose, doubleOpen+"`"+doubleClose+"`"+doubleClose)
-
+func EvalPromptValueTemplate(context Context, text string) (string, error) {
 	// Interpolate go templating
-	str, err := EvalTemplate(values, text)
+	str, err := EvalTemplate(context, text)
 	if err != nil {
 		return "", err
 	}
@@ -60,10 +72,10 @@ func EvalPromptValueTemplate(values model.Values, binDirs []string, text string)
 
 	// Interpolates env vars
 	buf := &bytes.Buffer{}
-	cmd := &exec.Cmd{
+	cmd := &osexec.Cmd{
 		Path:   "/bin/bash",
 		Args:   []string{"/bin/bash", "-c", `echo -n "` + str + `"`},
-		Env:    shell.GetEnvFromProcessAndProjectVariables(values.Variables, binDirs),
+		Env:    context.GetShellVars(),
 		Stdout: buf,
 	}
 	if err = cmd.Run(); err != nil {
@@ -73,9 +85,17 @@ func EvalPromptValueTemplate(values model.Values, binDirs []string, text string)
 }
 
 // EvalTemplate interpolates given template text into a final output string
-func EvalTemplate(values model.Values, text string) (string, error) {
+func EvalTemplate(context Context, text string) (string, error) {
+	// Escape triple braces
+	doubleOpen := strings.Repeat("{", 2)
+	doubleClose := strings.Repeat("}", 2)
+	tripleOpen := strings.Repeat("{", 3)
+	tripleClose := strings.Repeat("}", 3)
+	text = strings.ReplaceAll(text, tripleOpen, doubleOpen+"`"+doubleOpen+"`"+doubleClose)
+	text = strings.ReplaceAll(text, tripleClose, doubleOpen+"`"+doubleClose+"`"+doubleClose)
+
 	// Perform replacement of placeholders
-	for search, replace := range values.Placeholders {
+	for search, replace := range context.GetPlaceholders() {
 		text = strings.ReplaceAll(text, search, replace)
 	}
 
@@ -85,7 +105,7 @@ func EvalTemplate(values model.Values, text string) (string, error) {
 		return "", fmt.Errorf("parse template %q: %w", text, err)
 	}
 	var buffer bytes.Buffer
-	err = tmpl.Execute(&buffer, values.Variables)
+	err = tmpl.Execute(&buffer, context.GetVars())
 	if err != nil {
 		return "", fmt.Errorf("evaluate template %q: %w", text, err)
 	}
@@ -97,7 +117,7 @@ var doubleBracketRegexp = regexp.MustCompile(`\[\[.*]]`)
 // evalFileName interpolates the double-brace expressions, evaluates and removes the conditionals in double-bracket
 // expressions and returns the final file/dir name and whether it should be included in output and whether it should be
 // rendered.
-func evalFileName(values model.Values, name string) (string, bool, RenderMode, error) {
+func evalFileName(context Context, name string) (string, bool, RenderMode, error) {
 	// Double-bracket expressions (ie: "[[.option]]") in names are evaluated to determine whether the file/folder should be
 	// included in output and that expression then gets stripped from the name
 	for {
@@ -109,7 +129,7 @@ func evalFileName(values model.Values, name string) (string, bool, RenderMode, e
 		exp := name[loc[0]+2 : loc[1]-2]
 
 		// Evaluate expression
-		value, err := EvalBoolExpression(values, exp)
+		value, err := EvalBoolExpression(context, exp)
 		if err != nil {
 			return "", false, UnchangedRendering, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
 		}
@@ -124,7 +144,7 @@ func evalFileName(values model.Values, name string) (string, bool, RenderMode, e
 	}
 
 	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
-	outputName, err := EvalTemplate(values, name)
+	outputName, err := EvalTemplate(context, name)
 	if err != nil {
 		return "", false, UnchangedRendering, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
 	}

@@ -18,7 +18,7 @@ func New() *cobra.Command {
 				return err
 			}
 
-			return shell.Execute(nil, jenHome, nil, "git pull")
+			return shell.Execute(nil, jenHome, "git pull")
 		},
 	}
 }

@@ -1,4 +1,4 @@
-package persist
+package spec
 
 import (
 	"strings"
@@ -64,7 +64,7 @@ then:
       default: Default`,
 			Expected: steps.If{
 				Condition: "Condition",
-				Then: model.Executables{
+				Then: exec.Executables{
 					input.Prompt{
 						Message: "Message",
 						Var:     "Variable",
@@ -282,10 +282,10 @@ action2:
 			Expected: model.ActionMap{
 				"action1": {
 					Name: "action1",
-					Steps: model.Executables{
+					Steps: exec.Executables{
 						steps.If{
 							Condition: "Condition 1",
-							Then: model.Executables{
+							Then: exec.Executables{
 								input.Prompt{
 									Message: "Message 1",
 									Var:     "Variable 1",
@@ -296,7 +296,7 @@ action2:
 				},
 				"action2": {
 					Name: "action2",
-					Steps: model.Executables{
+					Steps: exec.Executables{
 						input.Prompt{
 							Message: "Message 2",
 							Var:     "Variable 2",
@@ -342,10 +342,10 @@ actions:
 				Actions: model.ActionMap{
 					"action1": {
 						Name: "action1",
-						Steps: model.Executables{
+						Steps: exec.Executables{
 							steps.If{
 								Condition: "Condition 1",
-								Then: model.Executables{
+								Then: exec.Executables{
 									input.Prompt{
 										Message: "Message 1",
 										Var:     "Variable 1",
@@ -356,7 +356,7 @@ actions:
 					},
 					"action2": {
 						Name: "action2",
-						Steps: model.Executables{
+						Steps: exec.Executables{
 							input.Prompt{
 								Message: "Message 2",
 								Var:     "Variable 2",

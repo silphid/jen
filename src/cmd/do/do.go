@@ -3,39 +3,32 @@ package do
 import (
 	"fmt"
 
-	"github.com/Samasource/jen/src/internal/home"
-	"github.com/Samasource/jen/src/internal/model"
-	"github.com/Samasource/jen/src/internal/persist"
+	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/spf13/cobra"
 )
 
 // New creates the "jen do" cobra sub-command
-func New(config *model.Config) *cobra.Command {
+func New(options internal.Options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "do",
 		Short: "Executes an action from a template's spec.yaml",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
-			return run(config, args[0])
+			return run(options, args[0])
 		},
 	}
 }
 
-func run(config *model.Config, actionName string) error {
-	_, err := home.GetOrCloneJenRepo()
+func run(options internal.Options, actionName string) error {
+	execContext, err := options.NewContext()
 	if err != nil {
 		return err
 	}
 
-	err = persist.LoadOrCreateProject(config)
-	if err != nil {
-		return err
-	}
-
-	action, ok := config.Spec.Actions[actionName]
-	if !ok {
+	action := execContext.GetAction(actionName)
+	if action == nil {
 		return fmt.Errorf("action %q not found in spec file", actionName)
 	}
 
-	return action.Execute(config)
+	return action.Execute(execContext)
 }

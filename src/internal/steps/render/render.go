@@ -1,27 +1,22 @@
 package render
 
 import (
-	"path"
-
 	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/model"
-	"github.com/Samasource/jen/src/internal/project"
+	"github.com/Samasource/jen/src/internal/exec"
 )
 
+// Render represents an executable that renders a given source sub-folder
+// of the current template's dir into the project's dir.
 type Render struct {
-	Source string
+	InputDir string
 }
 
 func (r Render) String() string {
 	return "render"
 }
 
-func (r Render) Execute(config *model.Config) error {
-	projectDir, err := project.GetDir()
-	if err != nil {
-		return err
-	}
-
-	inputDir := path.Join(config.TemplateDir, r.Source)
-	return evaluation.Render(config.Values, inputDir, projectDir)
+// Execute renders a given source sub-folder of the current template's dir
+// into the project's dir.
+func (r Render) Execute(context exec.Context) error {
+	return evaluation.Render(context.(evaluation.Context), r.InputDir, context.GetProjectDir())
 }

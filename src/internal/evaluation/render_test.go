@@ -4,13 +4,12 @@ import (
 	"path"
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRender(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
@@ -32,7 +31,7 @@ func TestRender(t *testing.T) {
 		t.Run(f.Name, func(t *testing.T) {
 			outputDir := getTempDir()
 			defer removeAll(outputDir)
-			err := Render(values, path.Join("testdata", f.DataDir, "input"), outputDir)
+			err := Render(context, path.Join("testdata", f.DataDir, "input"), outputDir)
 			assert.NoError(t, err)
 			compareDirsRecursively(t, path.Join("testdata", f.DataDir, "output"), outputDir)
 		})

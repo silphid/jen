@@ -5,7 +5,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 )
 
 // Prompt represents a boolean user prompt
@@ -20,16 +20,16 @@ func (p Prompt) String() string {
 }
 
 // Execute prompts user for a boolean value
-func (p Prompt) Execute(config *model.Config) error {
-	// Is var overriden?
-	_, ok := config.VarOverrides[p.Var]
-	if ok {
+func (p Prompt) Execute(context exec.Context) error {
+	if context.IsVarOverriden(p.Var) {
 		return nil
 	}
 
+	vars := context.GetVars()
+
 	// Compute default value
 	defaultValue := p.Default
-	defaultString, ok := config.Values.Variables[p.Var]
+	defaultString, ok := vars[p.Var]
 	if ok {
 		var err error
 		defaultValue, err = strconv.ParseBool(defaultString)
@@ -39,7 +39,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
 	if err != nil {
 		return err
 	}
@@ -52,6 +52,6 @@ func (p Prompt) Execute(config *model.Config) error {
 		return err
 	}
 
-	config.Values.Variables[p.Var] = strconv.FormatBool(value)
-	return config.OnValuesChanged()
+	vars[p.Var] = strconv.FormatBool(value)
+	return context.SaveProject()
 }

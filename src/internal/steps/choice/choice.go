@@ -3,7 +3,7 @@ package choice
 import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 )
 
 // Item represent one of the multiple choices prompted to user
@@ -25,37 +25,44 @@ func (p Prompt) String() string {
 }
 
 // Execute prompts user for choice value
-func (p Prompt) Execute(config *model.Config) error {
+func (p Prompt) Execute(context exec.Context) error {
 	// Is var already set manually?
-	_, ok := config.VarOverrides[p.Var]
-	if ok {
+	if context.IsVarOverriden(p.Var) {
 		return nil
 	}
 
-	// Collect option texts
+	// Collect option texts and find default index
+	defaultIndex := 0
+	currentValue, _ := context.GetVars()[p.Var]
 	var options []string
-	for _, item := range p.Items {
-		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, item.Text)
+	for i, item := range p.Items {
+		text, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), item.Text)
 		if err != nil {
 			return err
 		}
 		options = append(options, text)
+
+		// Is this item the current value?
+		if item.Value == currentValue {
+			defaultIndex = i
+		}
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
 	if err != nil {
 		return err
 	}
 	prompt := &survey.Select{
 		Message: message,
 		Options: options,
+		Default: defaultIndex,
 	}
 	var value int
 	if err := survey.AskOne(prompt, &value); err != nil {
 		return err
 	}
 
-	config.Values.Variables[p.Var] = p.Items[value].Value
-	return config.OnValuesChanged()
+	context.GetVars()[p.Var] = p.Items[value].Value
+	return context.SaveProject()
 }

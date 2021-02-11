@@ -3,13 +3,12 @@ package evaluation
 import (
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEvalBoolExpression(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
@@ -79,7 +78,7 @@ func TestEvalBoolExpression(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Condition, func(t *testing.T) {
-			actual, err := EvalBoolExpression(values, f.Condition)
+			actual, err := EvalBoolExpression(context, f.Condition)
 
 			if f.Error != "" {
 				assert.NotNil(t, err)
@@ -93,14 +92,14 @@ func TestEvalBoolExpression(t *testing.T) {
 }
 
 func TestEvalFileName(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: model.VarMap{
+		Placeholders: VarMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},
@@ -159,7 +158,7 @@ func TestEvalFileName(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			actualName, actualInclude, actualRender, err := evalFileName(values, f.Name)
+			actualName, actualInclude, actualRender, err := evalFileName(context, f.Name)
 
 			if f.Error != "" {
 				assert.NotNil(t, err)
@@ -175,14 +174,14 @@ func TestEvalFileName(t *testing.T) {
 }
 
 func TestEvalPromptValueTemplate(t *testing.T) {
-	values := model.Values{
-		Variables: model.VarMap{
+	context := Context{
+		Variables: VarMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",
 			"EMPTY_VAR": "",
 		},
-		Placeholders: model.VarMap{
+		Placeholders: VarMap{
 			"projekt": "myproject",
 			"PROJEKT": "MYPROJECT",
 		},
@@ -247,7 +246,7 @@ func TestEvalPromptValueTemplate(t *testing.T) {
 
 	for _, f := range fixtures {
 		t.Run(f.Name, func(t *testing.T) {
-			actual, err := EvalPromptValueTemplate(values, nil, f.Value)
+			actual, err := EvalPromptValueTemplate(context, f.Value)
 			assert.NoError(t, err)
 			assert.Equal(t, f.Expected, actual)
 		})

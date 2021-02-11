@@ -1,12 +1,11 @@
 package options
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 )
 
 // Item represent one of the multiple boolean values prompted to user
@@ -27,30 +26,27 @@ func (p Prompt) String() string {
 }
 
 // Execute prompts user for multiple individual boolean values
-func (p Prompt) Execute(config *model.Config) error {
+func (p Prompt) Execute(context exec.Context) error {
 	// Are all vars overriden?
 	allVarsOverriden := true
 	for _, item := range p.Items {
-		value, ok := config.VarOverrides[item.Var]
-		if !ok {
+		if context.IsVarOverriden(item.Var) {
 			allVarsOverriden = false
 			break
-		}
-		_, err := strconv.ParseBool(value)
-		if err != nil {
-			return fmt.Errorf("variable %q value %q failed to parse as boolean: %w", item.Var, value, err)
 		}
 	}
 	if allVarsOverriden {
 		return nil
 	}
 
+	vars := context.GetVars()
+
 	// Collect option texts and default values
 	var indices []int
 	var options []string
 	for i, item := range p.Items {
 		// Compute message
-		text, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, item.Text)
+		text, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), item.Text)
 		if err != nil {
 			return err
 		}
@@ -58,7 +54,7 @@ func (p Prompt) Execute(config *model.Config) error {
 
 		// Compute default value
 		defaultValue := item.Default
-		defaultString, ok := config.Values.Variables[item.Var]
+		defaultString, ok := vars[item.Var]
 		if ok {
 			var err error
 			defaultValue, err = strconv.ParseBool(defaultString)
@@ -72,7 +68,7 @@ func (p Prompt) Execute(config *model.Config) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(config.Values, config.BinDirs, p.Message)
+	message, err := evaluation.EvalPromptValueTemplate(context.(evaluation.Context), p.Message)
 	if err != nil {
 		return err
 	}
@@ -87,13 +83,13 @@ func (p Prompt) Execute(config *model.Config) error {
 
 	// Clear all options
 	for _, item := range p.Items {
-		config.Values.Variables[item.Var] = "false"
+		vars[item.Var] = "false"
 	}
 
 	// Enable selected options
 	for _, index := range indices {
 		name := p.Items[index].Var
-		config.Values.Variables[name] = "true"
+		vars[name] = "true"
 	}
-	return config.OnValuesChanged()
+	return context.SaveProject()
 }

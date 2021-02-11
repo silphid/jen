@@ -1,15 +1,15 @@
-package persist
+package spec
 
 import (
 	"fmt"
 	"path"
 
 	"github.com/Samasource/jen/src/internal/constant"
-	"github.com/Samasource/jen/src/internal/model"
+	"github.com/Samasource/jen/src/internal/exec"
 	"github.com/Samasource/jen/src/internal/steps"
 	"github.com/Samasource/jen/src/internal/steps/choice"
 	"github.com/Samasource/jen/src/internal/steps/do"
-	"github.com/Samasource/jen/src/internal/steps/exec"
+	execstep "github.com/Samasource/jen/src/internal/steps/exec"
 	"github.com/Samasource/jen/src/internal/steps/input"
 	"github.com/Samasource/jen/src/internal/steps/option"
 	"github.com/Samasource/jen/src/internal/steps/options"
@@ -17,8 +17,16 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
-// LoadSpecFromDir loads spec object from a template directory
-func LoadSpecFromDir(templateDir string) (*model.Spec, error) {
+// Spec represents a template specification file found in the root of the template's dir
+type Spec struct {
+	Name        string
+	Description string
+	Version     string
+	Actions     map[string]Action
+}
+
+// Load loads spec object from a template directory
+func Load(templateDir string) (*Spec, error) {
 	specFilePath := path.Join(templateDir, constant.SpecFileName)
 	yamlFile, err := yaml.ReadFile(specFilePath)
 	if err != nil {
@@ -29,11 +37,11 @@ func LoadSpecFromDir(templateDir string) (*model.Spec, error) {
 	if !ok {
 		return nil, fmt.Errorf("spec file root is expected to be an object")
 	}
-	return loadSpecFromMap(_map)
+	return loadFromMap(_map, templateDir)
 }
 
-func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
-	spec := new(model.Spec)
+func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
+	spec := new(Spec)
 
 	// Load metadata
 	metadata, err := getRequiredMap(_map, "metadata")
@@ -61,7 +69,7 @@ func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	spec.Actions, err = loadActions(actions)
+	spec.Actions, err = loadActions(actions, templateDir)
 	if err != nil {
 		return nil, err
 	}
@@ -69,32 +77,32 @@ func loadSpecFromMap(_map yaml.Map) (*model.Spec, error) {
 	return spec, nil
 }
 
-func loadActions(node yaml.Map) (model.ActionMap, error) {
-	var actions []model.Action
+func loadActions(node yaml.Map, templateDir string) (ActionMap, error) {
+	var actions []Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
 			return nil, fmt.Errorf("value of action %q must be a list", name)
 		}
-		executables, err := loadExecutables(stepList)
+		executables, err := loadExecutables(stepList, templateDir)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
-		actions = append(actions, model.Action{Name: name, Steps: executables})
+		actions = append(actions, Action{Name: name, Steps: executables})
 	}
 
 	// Convert to map
-	m := make(model.ActionMap)
+	m := make(ActionMap)
 	for _, action := range actions {
 		m[action.Name] = action
 	}
 	return m, nil
 }
 
-func loadExecutables(list yaml.List) (model.Executables, error) {
-	var executables model.Executables
+func loadExecutables(list yaml.List, templateDir string) (exec.Executables, error) {
+	var executables exec.Executables
 	for idx, value := range list {
-		step, err := loadExecutable(value)
+		step, err := loadExecutable(value, templateDir)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load step #%d: %w", idx+1, err)
 		}
@@ -103,13 +111,13 @@ func loadExecutables(list yaml.List) (model.Executables, error) {
 	return executables, nil
 }
 
-func loadExecutable(node yaml.Node) (model.Executable, error) {
+func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error) {
 	// Special case for if step
 	_map, ok := node.(yaml.Map)
 	if ok {
 		_, ok = _map["if"]
 		if ok {
-			return loadIfStep(_map)
+			return loadIfStep(_map, templateDir)
 		}
 	}
 
@@ -117,7 +125,7 @@ func loadExecutable(node yaml.Node) (model.Executable, error) {
 	items := []struct {
 		name          string
 		defaultSubKey string
-		fct           func(node yaml.Map) (model.Executable, error)
+		fct           func(node yaml.Map, templateDir string) (exec.Executable, error)
 	}{
 		{
 			name: "input",
@@ -158,14 +166,14 @@ func loadExecutable(node yaml.Node) (model.Executable, error) {
 			return nil, err
 		}
 		if ok {
-			return x.fct(_map)
+			return x.fct(_map, templateDir)
 		}
 	}
 
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadIfStep(_map yaml.Map) (model.Executable, error) {
+func loadIfStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	condition, err := getRequiredStringFromMap(_map, "if")
 	if err != nil {
 		return nil, err
@@ -174,7 +182,7 @@ func loadIfStep(_map yaml.Map) (model.Executable, error) {
 	if err != nil {
 		return nil, err
 	}
-	executables, err := loadExecutables(list)
+	executables, err := loadExecutables(list, templateDir)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +192,7 @@ func loadIfStep(_map yaml.Map) (model.Executable, error) {
 	}, nil
 }
 
-func loadInputStep(_map yaml.Map) (model.Executable, error) {
+func loadInputStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -204,7 +212,7 @@ func loadInputStep(_map yaml.Map) (model.Executable, error) {
 	}, nil
 }
 
-func loadOptionStep(_map yaml.Map) (model.Executable, error) {
+func loadOptionStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -224,7 +232,7 @@ func loadOptionStep(_map yaml.Map) (model.Executable, error) {
 	}, nil
 }
 
-func loadOptionsStep(_map yaml.Map) (model.Executable, error) {
+func loadOptionsStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -266,7 +274,7 @@ func loadOptionsStep(_map yaml.Map) (model.Executable, error) {
 	}, nil
 }
 
-func loadChoiceStep(_map yaml.Map) (model.Executable, error) {
+func loadChoiceStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -313,29 +321,29 @@ func loadChoiceStep(_map yaml.Map) (model.Executable, error) {
 	}, nil
 }
 
-func loadRenderStep(_map yaml.Map) (model.Executable, error) {
+func loadRenderStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	source, err := getRequiredStringFromMap(_map, "source")
 	if err != nil {
 		return nil, err
 	}
 
 	return render.Render{
-		Source: source,
+		InputDir: path.Join(templateDir, source),
 	}, nil
 }
 
-func loadExecStep(_map yaml.Map) (model.Executable, error) {
+func loadExecStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	commands, err := getRequiredStringsOrStringFromMap(_map, "commands")
 	if err != nil {
 		return nil, err
 	}
 
-	return exec.Exec{
+	return execstep.Exec{
 		Commands: commands,
 	}, nil
 }
 
-func loadDoStep(_map yaml.Map) (model.Executable, error) {
+func loadDoStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	action, err := getRequiredStringFromMap(_map, "action")
 	if err != nil {
 		return nil, err

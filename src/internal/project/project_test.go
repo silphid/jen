@@ -1,10 +1,9 @@
-package persist
+package project
 
 import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/Samasource/jen/src/internal/model"
 	"github.com/Samasource/jen/src/internal/project"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +11,7 @@ import (
 
 func TestSaveAndLoad(t *testing.T) {
 	// Save
-	proj := project.Project{Variables: model.VarMap{
+	proj := project.Project{Variables: map[string]string{
 		"VAR1": "true",
 		"VAR2": "abc",
 	}}

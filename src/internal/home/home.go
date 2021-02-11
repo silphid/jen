@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Samasource/jen/src/internal/constant"
 	"github.com/Samasource/jen/src/internal/helpers"
 	"github.com/Samasource/jen/src/internal/logging"
 	"github.com/Samasource/jen/src/internal/shell"
@@ -47,7 +48,7 @@ func GetOrCloneJenRepo() (string, error) {
 	}
 
 	logging.Log("Cloning jen templates repo %q into jen dir %q", jenRepo, jenHome)
-	return jenHome, shell.Execute(nil, "", nil, fmt.Sprintf("git clone %s %s", jenRepo, jenHome))
+	return jenHome, shell.Execute(nil, "", fmt.Sprintf("git clone %s %s", jenRepo, jenHome))
 }
 
 // getJenRepoDir reads the repoitory value from the environment and returns an error if it is not set
@@ -78,6 +79,14 @@ func GetJenHomeDir() (jenHomeDir string, err error) {
 		return
 	}
 	jenHomeDir = filepath.Join(home, ".jen")
-	os.Setenv(jenHomeVar, jenHomeDir)
 	return
+}
+
+// GetTemplatesDir returns the path of directory containing all templates
+func GetTemplatesDir() (string, error) {
+	jenHomeDir, err := GetJenHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(jenHomeDir, constant.TemplatesDirName), nil
 }

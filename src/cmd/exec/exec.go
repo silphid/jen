@@ -3,35 +3,28 @@ package exec
 import (
 	"strings"
 
-	"github.com/Samasource/jen/src/internal/home"
-	"github.com/Samasource/jen/src/internal/model"
-	"github.com/Samasource/jen/src/internal/persist"
+	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
 
 // New creates the "jen exec" cobra sub-command
-func New(config *model.Config) *cobra.Command {
+func New(options internal.Options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "exec",
 		Short: "Executes an arbitrary shell command with project's environment variables",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
-			return run(config, args)
+			return run(options, args)
 		},
 	}
 }
 
-func run(config *model.Config, args []string) error {
-	_, err := home.GetOrCloneJenRepo()
+func run(options internal.Options, args []string) error {
+	execContext, err := options.NewContext()
 	if err != nil {
 		return err
 	}
 
-	err = persist.LoadOrCreateProject(config)
-	if err != nil {
-		return err
-	}
-
-	return shell.Execute(config.Values.Variables, "", config.BinDirs, strings.Join(args, " "))
+	return shell.Execute(execContext.GetShellVars(), "", strings.Join(args, " "))
 }
