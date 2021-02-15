@@ -9,7 +9,7 @@ import (
 
 func TestRender(t *testing.T) {
 	context := context{
-		vars: strMap{
+		vars: varMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
 			"TRUE_VAR":  "true",

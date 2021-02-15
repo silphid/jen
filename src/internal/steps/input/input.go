@@ -4,6 +4,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
 	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/Samasource/jen/src/internal/helpers/variables"
 )
 
 // Prompt represents a single text input user prompt
@@ -28,7 +29,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	vars := context.GetVars()
 
 	// Compute default value
-	defaultValue, ok := vars[p.Var]
+	defaultValue, ok := variables.TryGetString(vars, p.Var)
 	if !ok {
 		defaultValue, err = evaluation.EvalPromptValueTemplate(context, p.Default)
 		if err != nil {

@@ -42,7 +42,7 @@ func GetProjectDir() (string, error) {
 type Project struct {
 	Version       string
 	TemplateName  string
-	Vars          map[string]string
+	Vars          map[string]interface{}
 	Dir           string   `yaml:"-"`
 	OverridenVars []string `yaml:"-"`
 }
@@ -109,6 +109,9 @@ func LoadOrCreate(templateName string, skipConfirm bool, varOverrides []string) 
 
 	if templateName != "" {
 		proj.TemplateName = templateName
+		if err := proj.Save(); err != nil {
+			return nil, err
+		}
 	}
 
 	templatesDir, err := home.GetTemplatesDir()
@@ -120,7 +123,9 @@ func LoadOrCreate(templateName string, skipConfirm bool, varOverrides []string) 
 		if err != nil {
 			return nil, fmt.Errorf("prompting for template: %w", err)
 		}
-		proj.Save()
+		if err := proj.Save(); err != nil {
+			return nil, err
+		}
 	}
 
 	// Apply command-line variable overrides
@@ -133,6 +138,11 @@ func LoadOrCreate(templateName string, skipConfirm bool, varOverrides []string) 
 		value := submatch[2]
 		proj.Vars[name] = value
 		proj.OverridenVars = append(proj.OverridenVars, name)
+	}
+	if len(varOverrides) > 0 {
+		if err := proj.Save(); err != nil {
+			return nil, err
+		}
 	}
 
 	return proj, nil

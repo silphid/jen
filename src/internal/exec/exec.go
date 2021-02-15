@@ -6,7 +6,7 @@ type Context interface {
 	// GetVars returns a dictionary of the project's variable names mapped to
 	// their corresponding values. It does not include the process' env var.
 	// Whenever you alter this map, you are responsible for later calling SaveProject().
-	GetVars() map[string]string
+	GetVars() map[string]interface{}
 
 	// SaveVars saves all of the project's variables to project file.
 	SaveProject() error

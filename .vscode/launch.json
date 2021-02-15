@@ -15,7 +15,7 @@
         "JEN_HOME": "${workspaceFolder}/dev/jenHome"
       },
       "args": [
-        "-v", "-y", "-t", "go-service", "-s", "PROJECT=acme100,PSQL=true,NEWRELIC=false", "do", "create"
+        "-v", "-y", "-t", "go-service", "-s", "PROJECT=acme100,PSQL=false,NEWRELIC=false", "do", "create"
       ],
       "cwd": "${workspaceFolder}/dev/acme100"
     }

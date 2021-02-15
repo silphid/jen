@@ -16,7 +16,7 @@ type Context interface {
 	// GetVars returns a dictionary of the project's variable names mapped to
 	// their corresponding values. It does not include the process' env var.
 	// Do not alter this map, use SetVar() instead.
-	GetVars() map[string]string
+	GetVars() map[string]interface{}
 
 	// GetPlaceholders returns a map of special placeholders that can be used instead
 	// of go template expression, for lighter weight templating, especially for the

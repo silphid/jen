@@ -1,11 +1,10 @@
 package options
 
 import (
-	"strconv"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
 	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/Samasource/jen/src/internal/helpers/variables"
 )
 
 // Item represent one of the multiple boolean values prompted to user
@@ -53,14 +52,9 @@ func (p Prompt) Execute(context exec.Context) error {
 		options = append(options, text)
 
 		// Compute default value
-		defaultValue := item.Default
-		defaultString, ok := vars[item.Var]
-		if ok {
-			var err error
-			defaultValue, err = strconv.ParseBool(defaultString)
-			if err != nil {
-				return err
-			}
+		defaultValue, ok := variables.TryGetBool(vars, item.Var)
+		if !ok {
+			defaultValue = item.Default
 		}
 		if defaultValue {
 			indices = append(indices, i)

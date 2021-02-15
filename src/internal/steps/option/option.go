@@ -6,6 +6,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
 	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/Samasource/jen/src/internal/helpers/variables"
 )
 
 // Prompt represents a boolean user prompt
@@ -28,14 +29,9 @@ func (p Prompt) Execute(context exec.Context) error {
 	vars := context.GetVars()
 
 	// Compute default value
-	defaultValue := p.Default
-	defaultString, ok := vars[p.Var]
-	if ok {
-		var err error
-		defaultValue, err = strconv.ParseBool(defaultString)
-		if err != nil {
-			return err
-		}
+	defaultValue, ok := variables.TryGetBool(vars, p.Var)
+	if !ok {
+		defaultValue = p.Default
 	}
 
 	// Show prompt

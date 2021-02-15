@@ -174,7 +174,7 @@ func getString(node yaml.Node) (string, bool) {
 		return "", false
 	}
 	str := scalar.String()
-	// WORKAROUND: go-gypsy lib incorrectly loads `""` empty string as a literal of two double-quotes
+	// WORKAROUND: go-gypsy lib incorrectly loads double-quoted strings with quotes as part of the string itself
 	if strings.HasPrefix(str, `"`) && strings.HasSuffix(str, `"`) {
 		return str[1 : len(str)-1], true
 	}

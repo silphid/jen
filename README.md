@@ -6,6 +6,9 @@ Code generator and script runner.
 
 ## Wishlist
 
+- Fix boolean expressions
+  - either: Assume that "false" is true and "" is false (and adjust tests accordingly)
+  - or: Support boolean and numerical variable values
 - `jen do` alone to prompt for action
 - `jen export` to list env variables
 - Reusable modules
@@ -16,7 +19,7 @@ Code generator and script runner.
 ```
 placeholders:
   projekt: {{.PROJECT | lower}}
-  PROJEKT: {{.PROJECT | upper}}
+  PROJEKT: {{.PROJECT | upper}},
 ```
 
 - `--dry-run` flag (automatically turns on `--verbose`?)

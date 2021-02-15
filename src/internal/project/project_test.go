@@ -8,13 +8,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type varMap = map[string]interface{}
 type strMap = map[string]string
 
 func TestSaveAndLoad(t *testing.T) {
 	// Save
-	proj := Project{Vars: strMap{
-		"VAR1": "true",
-		"VAR2": "abc",
+	proj := Project{Vars: varMap{
+		"BOOL_VAR": true,
+		"STR_VAR":  "abc",
 	}}
 	proj.Dir = getTempDir()
 	err := proj.Save()

@@ -7,14 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type varMap = map[string]interface{}
 type strMap = map[string]string
 
 type context struct {
-	vars         strMap
+	vars         varMap
 	placeholders strMap
 }
 
-func (c context) GetVars() map[string]string {
+func (c context) GetVars() map[string]interface{} {
 	return c.vars
 }
 
@@ -33,11 +34,11 @@ func (c context) GetShellVars() []string {
 
 func TestEvalBoolExpression(t *testing.T) {
 	context := context{
-		vars: strMap{
+		vars: varMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
-			"TRUE_VAR":  "true",
-			"FALSE_VAR": "false",
+			"TRUE_VAR":  true,
+			"FALSE_VAR": false,
 			"EMPTY_VAR": "",
 		},
 	}
@@ -76,7 +77,15 @@ func TestEvalBoolExpression(t *testing.T) {
 			Expected:  true,
 		},
 		{
-			Condition: `eq .TRUE_VAR "true"`,
+			Condition: `eq .TRUE_VAR true`,
+			Expected:  true,
+		},
+		{
+			Condition: `eq .FALSE_VAR false`,
+			Expected:  true,
+		},
+		{
+			Condition: `.VAR1`,
 			Expected:  true,
 		},
 		{
@@ -85,7 +94,7 @@ func TestEvalBoolExpression(t *testing.T) {
 		},
 		{
 			Condition: `.FALSE_VAR`,
-			Expected:  true,
+			Expected:  false,
 		},
 		{
 			Condition: `.EMPTY_VAR`,
@@ -118,10 +127,11 @@ func TestEvalBoolExpression(t *testing.T) {
 
 func TestEvalFileName(t *testing.T) {
 	context := context{
-		vars: strMap{
+		vars: varMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
-			"TRUE_VAR":  "true",
+			"TRUE_VAR":  true,
+			"FALSE_VAR": false,
 			"EMPTY_VAR": "",
 		},
 		placeholders: strMap{
@@ -141,6 +151,12 @@ func TestEvalFileName(t *testing.T) {
 			Name:            `Name with true [[ .TRUE_VAR ]]conditional`,
 			ExpectedName:    `Name with true conditional`,
 			ExpectedInclude: true,
+			ExpectedRender:  UnchangedRendering,
+		},
+		{
+			Name:            `Name with false [[ .FALSE_VAR ]]conditional`,
+			ExpectedName:    ``,
+			ExpectedInclude: false,
 			ExpectedRender:  UnchangedRendering,
 		},
 		{
@@ -200,10 +216,11 @@ func TestEvalFileName(t *testing.T) {
 
 func TestEvalPromptValueTemplate(t *testing.T) {
 	context := context{
-		vars: strMap{
+		vars: varMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
-			"TRUE_VAR":  "true",
+			"TRUE_VAR":  true,
+			"FALSE_VAR": false,
 			"EMPTY_VAR": "",
 		},
 		placeholders: strMap{

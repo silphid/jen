@@ -68,7 +68,7 @@ type context struct {
 // GetVars returns a dictionary of the project's variable names mapped to
 // their corresponding values. It does not include the process' env var.
 // Whenever you alter this map, you are responsible for later calling SaveProject().
-func (c context) GetVars() map[string]string {
+func (c context) GetVars() map[string]interface{} {
 	return c.project.Vars
 }
 
@@ -93,10 +93,14 @@ func (c context) IsVarOverriden(name string) bool {
 // project's name, which appears everywhere. For now, the only supported placeholder
 // is PROJECT, but we will eventually make placeholders configurable in spec file.
 func (c context) GetPlaceholders() map[string]string {
-	projectName, _ := c.project.Vars["PROJECT"]
+	value, _ := c.project.Vars["PROJECT"]
+	str, ok := value.(string)
+	if !ok {
+		return nil
+	}
 	return map[string]string{
-		"projekt": strings.ToLower(projectName),
-		"PROJEKT": strings.ToUpper(projectName),
+		"projekt": strings.ToLower(str),
+		"PROJEKT": strings.ToUpper(str),
 	}
 }
 

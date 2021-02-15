@@ -10,10 +10,11 @@ import (
 
 func TestGetEntries(t *testing.T) {
 	context := context{
-		vars: strMap{
+		vars: varMap{
 			"VAR1":      "value1",
 			"VAR2":      "value2",
-			"TRUE_VAR":  "true",
+			"TRUE_VAR":  true,
+			"FALSE_VAR": false,
 			"EMPTY_VAR": "",
 		},
 		placeholders: strMap{
@@ -102,7 +103,8 @@ func TestGetEntries(t *testing.T) {
 			Name: "conditional files",
 			Files: []string{
 				"dir1/file1[[.TRUE_VAR]].txt.tmpl",
-				"dir1/file2[[.UNDEFINED_VAR]].txt.tmpl",
+				"dir1/file2[[.FALSE_VAR]].txt.tmpl",
+				"dir1/file3[[.UNDEFINED_VAR]].txt.tmpl",
 			},
 			Expected: []entry{
 				{input: "dir1/file1[[.TRUE_VAR]].txt.tmpl", output: "dir1/file1.txt", render: true},
@@ -112,7 +114,8 @@ func TestGetEntries(t *testing.T) {
 			Name: "conditional dirs",
 			Files: []string{
 				"dir1[[.TRUE_VAR]]/file1.txt",
-				"dir2[[.UNDEFINED_VAR]]/file2.txt",
+				"dir2[[.FALSE_VAR]]/file2.txt",
+				"dir3[[.UNDEFINED_VAR]]/file3.txt",
 			},
 			Expected: []entry{
 				{input: "dir1[[.TRUE_VAR]]/file1.txt", output: "dir1/file1.txt"},
