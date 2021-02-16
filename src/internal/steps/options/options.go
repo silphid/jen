@@ -41,7 +41,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	vars := context.GetVars()
 
 	// Collect option texts and default values
-	var indices []int
+	var defaultIndices []int
 	var options []string
 	for i, item := range p.Items {
 		// Compute message
@@ -57,7 +57,7 @@ func (p Prompt) Execute(context exec.Context) error {
 			defaultValue = item.Default
 		}
 		if defaultValue {
-			indices = append(indices, i)
+			defaultIndices = append(defaultIndices, i)
 		}
 	}
 
@@ -66,10 +66,11 @@ func (p Prompt) Execute(context exec.Context) error {
 	if err != nil {
 		return err
 	}
+	var indices []int
 	prompt := &survey.MultiSelect{
 		Message: message,
 		Options: options,
-		Default: indices,
+		Default: defaultIndices,
 	}
 	if err := survey.AskOne(prompt, &indices); err != nil {
 		return err
@@ -77,13 +78,13 @@ func (p Prompt) Execute(context exec.Context) error {
 
 	// Clear all options
 	for _, item := range p.Items {
-		vars[item.Var] = "false"
+		vars[item.Var] = false
 	}
 
 	// Enable selected options
 	for _, index := range indices {
 		name := p.Items[index].Var
-		vars[name] = "true"
+		vars[name] = true
 	}
 	return context.SaveProject()
 }

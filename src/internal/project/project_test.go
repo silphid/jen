@@ -14,8 +14,9 @@ type strMap = map[string]string
 func TestSaveAndLoad(t *testing.T) {
 	// Save
 	proj := Project{Vars: varMap{
-		"BOOL_VAR": true,
-		"STR_VAR":  "abc",
+		"TRUE_VAR":  true,
+		"FALSE_VAR": false,
+		"STR_VAR":   "abc",
 	}}
 	proj.Dir = getTempDir()
 	err := proj.Save()

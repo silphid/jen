@@ -1,8 +1,6 @@
 package option
 
 import (
-	"strconv"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/Samasource/jen/src/internal/evaluation"
 	"github.com/Samasource/jen/src/internal/exec"
@@ -48,6 +46,6 @@ func (p Prompt) Execute(context exec.Context) error {
 		return err
 	}
 
-	vars[p.Var] = strconv.FormatBool(value)
+	vars[p.Var] = value
 	return context.SaveProject()
 }
