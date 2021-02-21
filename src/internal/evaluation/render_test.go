@@ -17,23 +17,20 @@ func TestRender(t *testing.T) {
 		},
 	}
 
-	fixtures := []struct {
-		Name    string
-		DataDir string
-	}{
-		{
-			Name:    "render1",
-			DataDir: "render1",
-		},
+	names := []string{
+		"conditionals",
+		"escaped-braces",
+		"non-templated",
+		"templated",
 	}
 
-	for _, f := range fixtures {
-		t.Run(f.Name, func(t *testing.T) {
+	for _, name := range names {
+		t.Run(name, func(t *testing.T) {
 			outputDir := getTempDir()
 			defer removeAll(outputDir)
-			err := Render(context, path.Join("testdata", f.DataDir, "input"), outputDir)
+			err := Render(context, path.Join("testdata", name, "input"), outputDir)
 			assert.NoError(t, err)
-			compareDirsRecursively(t, path.Join("testdata", f.DataDir, "output"), outputDir)
+			compareDirsRecursively(t, path.Join("testdata", name, "output"), outputDir)
 		})
 	}
 }

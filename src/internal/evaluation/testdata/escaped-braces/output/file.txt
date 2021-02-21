@@ -1,0 +1,2 @@
+Regular braces VAR1: value1
+Escaped braces VAR1: {{ .VAR1 }}

@@ -33,7 +33,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
+	message, err := evaluation.EvalTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}
@@ -47,5 +47,5 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	vars[p.Var] = value
-	return context.SaveProject()
+	return context.SetVars(vars)
 }

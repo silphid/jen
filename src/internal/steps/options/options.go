@@ -45,7 +45,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	var options []string
 	for i, item := range p.Items {
 		// Compute message
-		text, err := evaluation.EvalPromptValueTemplate(context, item.Text)
+		text, err := evaluation.EvalTemplate(context, item.Text)
 		if err != nil {
 			return err
 		}
@@ -62,7 +62,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
+	message, err := evaluation.EvalTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}
@@ -86,5 +86,6 @@ func (p Prompt) Execute(context exec.Context) error {
 		name := p.Items[index].Var
 		vars[name] = true
 	}
-	return context.SaveProject()
+
+	return context.SetVars(vars)
 }

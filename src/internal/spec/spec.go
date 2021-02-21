@@ -20,8 +20,8 @@ import (
 // Spec represents a template specification file found in the root of the template's dir
 type Spec struct {
 	Name        string
-	Description string
 	Version     string
+	Description string
 	Actions     map[string]Action
 }
 
@@ -44,24 +44,18 @@ func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
 	spec := new(Spec)
 
 	// Load metadata
-	metadata, err := getRequiredMap(_map, "metadata")
-	if err != nil {
-		return nil, err
-	}
-	spec.Name, err = getRequiredStringFromMap(metadata, "name")
-	if err != nil {
-		return nil, err
-	}
-	spec.Description, err = getRequiredStringFromMap(metadata, "description")
-	if err != nil {
-		return nil, err
-	}
-	spec.Version, err = getRequiredStringFromMap(metadata, "version")
+	spec.Name = path.Base(templateDir)
+	var err error
+	spec.Version, err = getRequiredStringFromMap(_map, "version")
 	if err != nil {
 		return nil, err
 	}
 	if spec.Version != constant.SpecFileVersion {
 		return nil, fmt.Errorf("unsupported spec file version %s (expected %s)", spec.Version, constant.SpecFileVersion)
+	}
+	spec.Description, err = getRequiredStringFromMap(_map, "description")
+	if err != nil {
+		return nil, err
 	}
 
 	// Load actions

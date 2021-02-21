@@ -3,7 +3,6 @@ package evaluation
 import (
 	"bytes"
 	"fmt"
-	osexec "os/exec"
 	"regexp"
 	"strings"
 	"text/template"
@@ -13,10 +12,10 @@ import (
 
 // Context encapsulates everything required for template evaluation and rendering
 type Context interface {
-	// GetVars returns a dictionary of the project's variable names mapped to
-	// their corresponding values. It does not include the process' env var.
-	// Do not alter this map, use SetVar() instead.
-	GetVars() map[string]interface{}
+	// GetEvalVars returns a dictionary of the project's variable names mapped to
+	// their corresponding values for evaluation purposes. It does not include the
+	// process' env var.
+	GetEvalVars() map[string]interface{}
 
 	// GetPlaceholders returns a map of special placeholders that can be used instead
 	// of go template expression, for lighter weight templating, especially for the
@@ -54,33 +53,6 @@ func EvalBoolExpression(context Context, expression string) (bool, error) {
 	return result == "true", nil
 }
 
-// EvalPromptValueTemplate interpolates a choice or default value string that will be presented to
-// user via a prompt, by evaluating both go template expressions and $... shell expressions
-func EvalPromptValueTemplate(context Context, text string) (string, error) {
-	// Interpolate go templating
-	str, err := EvalTemplate(context, text)
-	if err != nil {
-		return "", err
-	}
-
-	if !strings.Contains(str, "$") {
-		return str, nil
-	}
-
-	// Interpolates env vars
-	buf := &bytes.Buffer{}
-	cmd := &osexec.Cmd{
-		Path:   "/bin/bash",
-		Args:   []string{"/bin/bash", "-c", `echo -n "` + str + `"`},
-		Env:    context.GetShellVars(),
-		Stdout: buf,
-	}
-	if err = cmd.Run(); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
 // EvalTemplate interpolates given template text into a final output string
 func EvalTemplate(context Context, text string) (string, error) {
 	// Escape triple braces
@@ -102,7 +74,7 @@ func EvalTemplate(context Context, text string) (string, error) {
 		return "", fmt.Errorf("parse template %q: %w", text, err)
 	}
 	var buffer bytes.Buffer
-	err = tmpl.Execute(&buffer, context.GetVars())
+	err = tmpl.Execute(&buffer, context.GetEvalVars())
 	if err != nil {
 		return "", fmt.Errorf("evaluate template %q: %w", text, err)
 	}

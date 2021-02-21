@@ -36,7 +36,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	currentValue, _ := context.GetVars()[p.Var]
 	var options []string
 	for i, item := range p.Items {
-		text, err := evaluation.EvalPromptValueTemplate(context, item.Text)
+		text, err := evaluation.EvalTemplate(context, item.Text)
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Show prompt
-	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
+	message, err := evaluation.EvalTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}
@@ -63,6 +63,7 @@ func (p Prompt) Execute(context exec.Context) error {
 		return err
 	}
 
-	context.GetVars()[p.Var] = p.Items[value].Value
-	return context.SaveProject()
+	vars := context.GetVars()
+	vars[p.Var] = p.Items[value].Value
+	return context.SetVars(vars)
 }

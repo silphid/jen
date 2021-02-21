@@ -21,7 +21,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	// Compute message
-	message, err := evaluation.EvalPromptValueTemplate(context, p.Message)
+	message, err := evaluation.EvalTemplate(context, p.Message)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (p Prompt) Execute(context exec.Context) error {
 	// Compute default value
 	defaultValue, ok := variables.TryGetString(vars, p.Var)
 	if !ok {
-		defaultValue, err = evaluation.EvalPromptValueTemplate(context, p.Default)
+		defaultValue, err = evaluation.EvalTemplate(context, p.Default)
 		if err != nil {
 			return err
 		}
@@ -48,5 +48,5 @@ func (p Prompt) Execute(context exec.Context) error {
 	}
 
 	vars[p.Var] = value
-	return context.SaveProject()
+	return context.SetVars(vars)
 }

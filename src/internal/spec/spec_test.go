@@ -317,10 +317,8 @@ func TestLoadSpec(t *testing.T) {
 		{
 			Name: "",
 			Buffer: `
-metadata:
-  name: Name
-  description: Description
-  version: 0.2.0
+version: 0.2.0
+description: Description
 import:
   common: common
   go: go/common
@@ -336,9 +334,9 @@ actions:
         question: Message 2
         var: Variable 2`,
 			Expected: &Spec{
-				Name:        "Name",
-				Description: "Description",
+				Name:        "template_name",
 				Version:     "0.2.0",
+				Description: "Description",
 				Actions: ActionMap{
 					"action1": Action{
 						Name: "action1",
@@ -369,6 +367,6 @@ actions:
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadFromMap(m, "TEMPLATE_DIR")
+		return loadFromMap(m, "path/to/template_name")
 	})
 }

@@ -1,0 +1,4 @@
+VAR1: value1
+VAR2: value2
+TRUE_VAR: true
+EMPTY_VAR: 

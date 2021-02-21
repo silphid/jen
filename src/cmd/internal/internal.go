@@ -67,13 +67,19 @@ type context struct {
 
 // GetVars returns a dictionary of the project's variable names mapped to
 // their corresponding values. It does not include the process' env var.
-// Whenever you alter this map, you are responsible for later calling SaveProject().
+// Whenever you alter this map, you are responsible for later calling
+// SetVars() to save your changes back to the project file.
 func (c context) GetVars() map[string]interface{} {
-	return c.project.Vars
+	clone := make(map[string]interface{})
+	for k, v := range c.project.Vars {
+		clone[k] = v
+	}
+	return clone
 }
 
-// SaveProject saves all of the project's variables to project file.
-func (c context) SaveProject() error {
+// SetVars saves given variables in project file.
+func (c context) SetVars(vars map[string]interface{}) error {
+	c.project.Vars = vars
 	return c.project.Save()
 }
 
@@ -102,6 +108,15 @@ func (c context) GetPlaceholders() map[string]string {
 		"projekt": strings.ToLower(str),
 		"PROJEKT": strings.ToUpper(str),
 	}
+}
+
+// GetEvalVars returns a dictionary of the project's variable names mapped to
+// their corresponding values for evaluation purposes. It does not include the
+// process' env var.
+func (c context) GetEvalVars() map[string]interface{} {
+	vars := c.GetVars()
+	vars["projectDirName"] = filepath.Base(c.project.Dir)
+	return vars
 }
 
 // GetShellVars returns all env vars to be used when invoking shell commands,
