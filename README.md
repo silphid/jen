@@ -286,6 +286,13 @@ the root directory passed to the `render` step, ie:
 - render: ./src.tmpl
 ```
 
+## Escaping double-braces
+
+Sometimes, it's not enough to completely turn rendering on or off for an entire file. For instance,
+if you need to intermix jen templating expressions with other templating that also use double-braces
+(ie: helm charts) within the same file, you can escape your double-braces by using `{{{` and `}}}`,
+which will be rendered to `{{` and `}}` respectively.
+
 ## Dynamic file and directory names
 
 File and directory names can include template expressions enclosed between double-braces (ie:
@@ -339,7 +346,7 @@ proposed choices and default values, by enclosing those expressions between `{{`
 
 ## Expressions in `if` step
 
-As the conditional for `if` steps is always a template expression, there should be no double-braces, ie:
+As the conditional for `if` steps is always a template expression, _do not_ enclose them between double-braces, ie:
 
 ```yaml
 - if: .INSTALL
@@ -347,7 +354,7 @@ As the conditional for `if` steps is always a template expression, there should 
     - ...
 ```
 
-## Placeholders
+## Special placeholders
 
 Because the PROJECT variable is typically used pervasively throughout templates in the form of `{{.PROJECT}}`
 and `{{.PROJECT | upper}}`, we have introduced the special placeholders `projekt` and `PROJEKT`, which can
