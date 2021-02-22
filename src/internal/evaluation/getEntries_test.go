@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"path"
+	"path/filepath"
 	"sort"
 	"testing"
 
@@ -173,8 +173,8 @@ func TestGetEntries(t *testing.T) {
 		var results []entry
 		for _, ent := range entries {
 			results = append(results, entry{
-				input:  path.Join(inputDir, ent.input),
-				output: path.Join("/output", ent.output),
+				input:  filepath.Join(inputDir, ent.input),
+				output: filepath.Join("/output", ent.output),
 				render: ent.render,
 			})
 		}
@@ -188,7 +188,7 @@ func TestGetEntries(t *testing.T) {
 			defer removeAll(inputDir)
 
 			for _, file := range f.Files {
-				inputFile := path.Join(inputDir, file)
+				inputFile := filepath.Join(inputDir, file)
 				createEmptyFile(inputFile)
 			}
 

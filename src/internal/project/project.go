@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -55,8 +54,8 @@ func (p Project) Save() error {
 		return err
 	}
 
-	filePath := path.Join(p.Dir, constant.ProjectFileName)
-	return ioutil.WriteFile(filePath, doc, os.ModePerm)
+	path := filepath.Join(p.Dir, constant.ProjectFileName)
+	return ioutil.WriteFile(path, doc, os.ModePerm)
 }
 
 // Load loads the project file from given project directory
@@ -178,7 +177,7 @@ func promptTemplate(templatesDir string) (string, error) {
 		if strings.HasPrefix(template, ".") {
 			continue
 		}
-		templateDir := path.Join(templatesDir, template)
+		templateDir := filepath.Join(templatesDir, template)
 		spec, err := spec.Load(templateDir)
 		if err != nil {
 			return "", err
@@ -211,5 +210,5 @@ func (p Project) GetTemplateDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return path.Join(templatesDir, p.TemplateName), nil
+	return filepath.Join(templatesDir, p.TemplateName), nil
 }
