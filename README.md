@@ -2,7 +2,7 @@
 
 > Jen - _noun_ (in Chinese philosophy) a compassionate love for humanity or for the world as a whole.
 
-Jen is a project scaffolding and script runner that accompanies your project throughout its lifetime.
+Jen is a project scaffolding and script runner that accompanies your project throughout its life-time.
 
 # Motivation
 
@@ -29,20 +29,40 @@ Jen aims to provide a very simple framework to answer all those questions.
 - When scaffolding a project, Jen prompts user for which template to use and all values required by
   template and associated shell scripts
 - All that information gets stored in a `jen.yaml` file in the project's root dir and
-  remains available everytime you run a `jen ...` command within your project's directory structure.
-- Use jen throughout your project's life to run companion shell scripts using same variables.
+  remains available everytime you run a `jen ...` command anywhere within your project's directory
+  structure.
+- Use jen throughout your project's life-time to run companion shell scripts using same variables.
 
 # Getting started
 
 ## Install Jen
 
+Download and install latest release from [github](https://github.com/Samasource/jen/releases/latest).
+
 ## Create git repo for templates/scripts
 
 Create a git repo to store all your templates and scripts, using the following structure:
 
+- `bin` (scripts common to all templates)
+- `templates`
+  - `TEMPLATE_NAME`
+    - `spec.yaml` (defines actions/steps/variables)
+    - `src` (template files to render, but this dir can be named whatever you want)
+    - `bin` (template-specific scripts)
+
+### Scripts `bin` directories and your `PATH`
+
+DevOps-oriented shell scripts can be packaged and distributed with your jen templates and can be
+either "shared" (all projects can use them, regardless of which template they use) or "template-
+specific" (only accessible when a specific template is used).
+
+When executing any action or shell command, jen always prepends your `PATH` env var with the
+template-specific `bin` directory, followed by the shared one. That means you can override shared
+scripts at the template level by redefining scripts with the same name as shared ones.
+
 ## Set Jen env vars
 
-- JEN_HOME: Directory where Jen will clone your templates git repo (defaults to `~/.jen`)
+- JEN_HOME: Local directory where jen will clone your templates git repo (defaults to `~/.jen`)
 - JEN_REPO: URL of your templates git repo to clone
 
 ## Creating a new project from a template
@@ -53,9 +73,10 @@ $ cd foobar
 $ jen do create
 ```
 
-1. If it doesn't already exist, Jen will automatically clone your templates git repo into your $JEN_HOME.
-2. It will prompt you to select from the list of templates available in that repo. That template name
-   will be stored in `jen.yaml` file in current dir.
+1. If it doesn't already exist, jen will automatically clone your templates git repo into your `JEN_HOME`.
+2. It will prompt you to select a template from the list of those available in that repo. That template name
+   will be stored in `jen.yaml` file in current dir. That file now identifies your project as jen-enabled
+   and allows jen to determine the root directory of your project.
 3. Depending on the steps configured in the `create` action of the template you selected, you should
    typically be prompted for the values of different variables, which will also be saved in the `jen.yaml`
    file.
@@ -66,17 +87,17 @@ $ jen do create
 
 ## Invoke an action
 
-To invoke given action from your project's template spec:
+To invoke any action defined in your project's template spec:
 
 ```bash
 $ jen do ACTION
 ```
 
-All steps defined within that action will be called in order.
+All steps defined as children of that action will be called in order.
 
 ## Execute a shell command
 
-To execute any shell command, including your custom shell scripts, with your project's variables as environment:
+To execute any shell command, including your custom shell scripts, while injecting your project's env vars:
 
 ```bash
 $ jen exec COMMAND ARG1 ARG2 ...
@@ -90,11 +111,11 @@ To start a sub-shell with your custom shell scripts added to `$PATH` and your pr
 $ jen exec SHELL
 ```
 
-Where `SHELL` can any of `bash`, `zsh`, `sh`...
+(where `SHELL` can any of `bash`, `zsh`, `sh`...)
 
-You are then free to call as many custom scripts and shell commands as you want, until you do `exit`.
+You are then free to call as many shell scripts and shell commands as you want, until you do `exit`.
 
-# Update templates repo
+## Update templates repo
 
 To pull latest version of templates git repo:
 
@@ -102,19 +123,10 @@ To pull latest version of templates git repo:
 $ jen pull
 ```
 
-# Templates git repo
-
-- bin (scripts common to all templates)
-- templates
-  - TEMPLATE_NAME
-    - spec.yaml (defines actions/steps/variables)
-    - src (template files to render)
-    - bin (template-specific scripts)
-
 # `spec.yaml` files
 
 Each template has a `spec.yaml` file in its root that specifies how to render the template, what
-variables to prompt user and what actions user can invoke throughout the project's lifetime.
+variables to prompt user and what actions user can invoke throughout the project's life-time.
 
 It has this general structure:
 
@@ -151,7 +163,7 @@ Steps have predefined names and purposes:
 
 - `if`: conditionally invokes child steps
 - `do`: executes another action by name (much like a function call)
-- `exec`: executes a shell command, including custom scripts, with project vars in environment
+- `exec`: executes a shell command, including shell scripts, with project vars in environment
 - `render`: renders template into current dir, using project vars
 - `input`: prompts user for a single free-form string var
 - `choice`: prompts user for a single string var among a list of multiple proposed choices
@@ -232,7 +244,7 @@ actions:
   # By convention, the "install" action is in charge of setting the project up with CI/CD
   # and infra. It is typically invoked as the last step of the "create" action.
   install:
-    # The "exec" step allows to invoke shell commands, including custom scripts, while
+    # The "exec" step allows to invoke shell commands, including shell scripts, while
     # passing them all project variables as env vars. In this case, it specifies a list
     # of multiple commands to execute.
     - exec:
@@ -250,25 +262,25 @@ actions:
 
 ## Go template language
 
-Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/). It
-also augments Go's built-in functions with the [sprig](https://masterminds.github.io/sprig/) set of
-very helpful functions.
+Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/) and
+augments its built-in functions with the very helpful [sprig](https://masterminds.github.io/sprig/)
+function library.
 
-Those template expressions can be used in templates, user prompts and file and directory names, as
-described in the following sections.
+Those template expressions can be used in templates, user prompts, and file/directory names, as
+described in following sections.
 
 ## Activating/deactivating rendering
 
-By default all files in a template are copied as is, without rendering their content as templates.
-Template rendering can however be activated or deactivate selectively on a per-file or per-directory
-basis, by appending a `.tmpl` or `.notmpl` extension to file and directory names. Applying those
+By default, all files in a template are copied as is, without rendering their content as templates.
+Template rendering can however be activated or deactivate selectively on a per-file/directory
+basis, by appending a `.tmpl` or `.notmpl` extension to file/directory names. Applying those
 extensions to a directory affects all child files recursively, unless overriden down the tree.
 
-Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file and
+Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file/
 directory names.
 
-To override the no templating default, you can simply append a `.tmpl` extension to the directory
-name passed to the `render` step:
+To override the no templating default, you can simply append a `.tmpl` extension to the name of
+the root directory passed to the `render` step, ie:
 
 ```yaml
 - render: ./src.tmpl
@@ -276,43 +288,58 @@ name passed to the `render` step:
 
 ## Dynamic file and directory names
 
-File and directory names can include template expressions:
-
-- src
-  - {{.PROJECT}}.txt
-  - {{.TEAM}} team files
-    - file1.txt
-    - file2.txt
+File and directory names can include template expressions enclosed between double-braces (ie:
+`{{.PROJECT}}.sql`)
 
 ## Conditional files and directories
 
-Files and directories can be selectively included/excluded by including a double-square-bracket expression
-in their name, which must evaluate to true in order for the file or directory to be included in render.
+Files and directories can be selectively included/excluded by embedding a double-square-bracket expression
+in their name, which must evaluate to true in order for the file/directory to be included in render.
 
-For example, in the following template directory structure:
+Take the following template directory structure as example:
 
-- src
-  - database[[.DB]]
-    - migration.go
-    - driver.go
+- `src`
+  - `database[[.DB]]`
+    - `migration.go`
+    - `driver.go`
 
-the `database[[.DB]]` directory and its content will only be rendered if the `DB` var is `true` and the
-double-square-bracket expression will automatically get stripped away from the target name:
+Only when the `DB` var evaluates to `true` will the `database[[.DB]]` directory and its content be rendered
+to project directory. The double-square-bracket expression will also automatically get stripped away from
+the target dir name:
 
-- src
-  - database
-    - migration.go
-    - driver.go
+- `src`
+  - `database`
+    - `migration.go`
+    - `driver.go`
+
+## Collapsing of pure conditional directories
+
+Pure conditional directories - that is, those for which the name only contains a double-square-bracket
+expression - are treated as a special case. If their expression evaluates to `true`, they get collapsed and
+their contents get placed directly into parent directory.
+
+That is very useful to group multiple files and folders under a same conditional expression, without actually
+introducing an extra directory level in final output. For example, given this template structure:
+
+- `src`
+  - `[[.DB]]`
+    - `migration.go`
+    - `driver.go`
+
+If `DB` is true, the following structure will be rendered to target directory:
+
+- `src`
+  - `migration.go`
+  - `driver.go`
 
 ## Expressions in prompts
 
-In prompt steps (`input`, `choice`, `option`, `options`) you can use template expressions within messages,
+For prompt steps (`input`, `choice`, `option`, `options`), you can use template expressions within messages,
 proposed choices and default values, by enclosing those expressions between `{{` and `}}`.
 
 ## Expressions in `if` step
 
-The conditional for `if` steps is always a template expression, so _do not_ enclose it between double
-braces:
+As the conditional for `if` steps is always a template expression, there should be no double-braces, ie:
 
 ```yaml
 - if: .INSTALL
@@ -324,30 +351,29 @@ braces:
 
 Because the PROJECT variable is typically used pervasively throughout templates in the form of `{{.PROJECT}}`
 and `{{.PROJECT | upper}}`, we have introduced the special placeholders `projekt` and `PROJEKT`, which can
-be used anywhere in file/dir names and templates without double-braces.
+be used anywhere in file/dir names and templates without any adornments.
 
-For example, the text "MY*PROJEKT_FILE" is equivalent to "MY*{{.PROJECT | upper}}\_FILE".
+For example, the text "MY PROJEKT FILE.TXT" is equivalent to "MY {{.PROJECT | upper}} FILE.TXT".
 
 Currently, those two placeholders are hardcoded and are the only ones supported, but we plan to add support
 for defining your own in the template spec.
 
-# Shell scripts
-
-When executing any action or shell command, jen automatically adds all project variables to your
-shell environment. It also adds the `bin` directories for your template-specific and common custom scripts
-to your `$PATH` env var. That way, your custom scripts can only be invoked when all proper environment
-variables are set.
+This feature was inspired by the way we were previously creating new projects by duplicating an existing
+project and doing a search-and-replace for the project name in different case variants. That strategy was
+very simple and effective, as long as the project name was a very distinct string that did not appear in
+any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
+unlikely to encounter in your project for any other reason than those placeholders!
 
 ## Wishlist
 
-- Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
+- Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
 - Add `jen export` command to output env variables in a format that can be sourced directly.
+- Allow `do` step to define multiple actions to call.
+- Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
 - Add reusable modules (including both templates and scripts).
 - Add `set` step to set multiple variables.
-- Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
 - Add `--dry-run` flag (automatically turns on `--verbose`?)
 - Add regex validation for `input` prompt.
-- Allow `do` step to define multiple actions to call.
 - Allow to customize placeholders in spec file:
 
 ```
