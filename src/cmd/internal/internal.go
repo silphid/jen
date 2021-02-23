@@ -23,7 +23,7 @@ type Options struct {
 
 // NewContext creates a context to be used for executing executables
 func (o Options) NewContext() (exec.Context, error) {
-	_, err := home.GetOrCloneJenRepo()
+	_, err := home.GetOrCloneRepo()
 	if err != nil {
 		return nil, err
 	}
@@ -43,13 +43,13 @@ func (o Options) NewContext() (exec.Context, error) {
 		return nil, err
 	}
 
-	jenHomeDir, err := home.GetJenHomeDir()
+	cloneSubDir, err := home.GetCloneSubDir()
 	if err != nil {
 		return nil, err
 	}
 
 	return context{
-		jenHomeDir:  jenHomeDir,
+		cloneSubDir: cloneSubDir,
 		templateDir: templateDir,
 		project:     *proj,
 		spec:        *specification,
@@ -59,7 +59,7 @@ func (o Options) NewContext() (exec.Context, error) {
 // context contains all the information for implementing both the
 // exec.context and evaluation.context interfaces
 type context struct {
-	jenHomeDir  string
+	cloneSubDir string
 	templateDir string
 	project     project.Project
 	spec        spec.Spec
@@ -124,7 +124,7 @@ func (c context) GetEvalVars() map[string]interface{} {
 // PATH var including extra bin dirs.
 func (c context) GetShellVars() []string {
 	binDirs := []string{
-		filepath.Join(c.jenHomeDir, "bin"),
+		filepath.Join(c.cloneSubDir, "bin"),
 		filepath.Join(c.project.Dir, "bin"),
 	}
 

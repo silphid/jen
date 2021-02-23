@@ -27,7 +27,7 @@ Jen aims to provide a very simple framework to answer all those questions.
   specific to each template or common to all.
 - Jen automatically clones that repo locally upon first use.
 - When scaffolding a project, Jen prompts user for which template to use and all values required by
-  template and associated shell scripts
+  template and associated shell scripts.
 - All that information gets stored in a `jen.yaml` file in the project's root dir and
   remains available everytime you run a `jen ...` command anywhere within your project's directory
   structure.
@@ -62,8 +62,19 @@ scripts at the template level by redefining scripts with the same name as shared
 
 ## Set Jen env vars
 
-- JEN_HOME: Local directory where jen will clone your templates git repo (defaults to `~/.jen`)
+- JEN_CLONE: Local directory where jen will clone your jen git repo (defaults to `~/.jen/repo`)
 - JEN_REPO: URL of your templates git repo to clone
+- JEN_SUBDIR: Optional sub-directory within your repo where to look for jen files. This can be
+  useful when your git repo also contains other things.
+
+### Example
+
+To use jen's example templates and scripts, simply set your variables as follows:
+
+```bash
+$ export JEN_REPO=git@github.com:Samasource/jen.git
+$ export JEN_SUBDIR=examples
+```
 
 ## Creating a new project from a template
 
@@ -373,13 +384,14 @@ unlikely to encounter in your project for any other reason than those placeholde
 
 ## Wishlist
 
-- Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute)
+- Add config to specify templates sub-dir within git repo.
+- Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
 - Allow `do` step to define multiple actions to call.
 - Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
 - Add reusable modules (including both templates and scripts).
 - Add `set` step to set multiple variables.
-- Add `--dry-run` flag (automatically turns on `--verbose`?)
+- Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
 - Allow to customize placeholders in spec file:
 
