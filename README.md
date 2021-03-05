@@ -91,9 +91,9 @@ You can now call different project actions with `jen do ACTION`. This `hello-wor
 
 ```bash
 $ jen do install
-Creating docker image repo for project acme101
+Creating docker image repo for project foobar
 Done.
-Creating triggers on CI/CD pipelines for project acme101
+Creating triggers on CI/CD pipelines for project foobar
 Done.
 ```
 
