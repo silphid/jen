@@ -58,12 +58,16 @@ When executing any action or shell command, jen always prepends your `PATH` env 
 
 This `hello-world` example is available on [github](https://github.com/Samasource/jen/tree/master/examples/templates/hello-world). Don't hesitate to explore it there to better understand how it works (the template itself is much more instructive and interesting than the final output).
 
+## Configuring jen
+
 1. Configure jen to point to jen's example templates and scripts:
 
 ```bash
 $ export JEN_REPO=git@github.com:Samasource/jen.git
 $ export JEN_SUBDIR=examples
 ```
+
+## Creating project
 
 2. Create a new project directory:
 
@@ -78,54 +82,65 @@ $ jen do create
 5. Jen then shows a list of available templates from that repo. Right now there's only one `hello-world` example, so just press `Enter`. That choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized.
 6. Because the `create` action calls out to the `prompt` action, you are now prompted for variable values. Answer the different prompts (notice how it automatically suggests the current dir name `foobar` as default project name). Your values also get saved to `jen.yaml` file.
 7. The `create` action then calls `render` step to render the `hello-world` template files to current dir.
-8. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
-9. Once your project is committed, you would typically call the `install` action to let your CI/CD pipeline and infra know about your new project (don't hesitate, it just executes a dummy bash script that echoes a message to simulate the real thing):
+8. If in previous prompts you opted for installing your project in CI/CD, the `install` action will be called now to simulate that.
+9. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
+
+## Invoking actions
+
+You can now call different project actions with `jen do ACTION`. This `hello-world` example includes actions `create`, `prompt`, `install` and `uninstall`. The last two are meant to register your project with your CI/CD pipeline and infra, but here they just call dummy bash scripts that simulate the real thing. For example:
 
 ```bash
 $ jen do install
+Creating docker image repo for project acme101
+Done.
+Creating triggers on CI/CD pipelines for project acme101
+Done.
 ```
 
-Note: When you're done trying the examples, don't forget to delete the jen examples repo clone on your machine (at `$JEN_HOME/repo` or `~/.jen/repo`) and to make jen point to your own template repo.
+## Executing scripts
 
-# Jen commands
-
-## Invoke an action
-
-To invoke any action defined in your project's template spec:
+You can also execute custom scripts (or any shell command really) with `jen exec CMD ARG1 ARG2 ...`. The jen examples include scripts `create-cicd-triggers`, `create-docker-repo`, `remove-cicd-triggers` and `remove-docker-repo`. For example:
 
 ```bash
-$ jen do ACTION
+$ jen exec remove-cicd-triggers
+Removing triggers from CI/CD pipelines for project foobar
+Done.
 ```
 
-All steps defined as children of that action will be called in order.
+## Starting a sub-shell
 
-## Execute a shell command
-
-To execute any shell command, including your custom shell scripts, while injecting your project's env vars:
+You can even start a sub-shell with your custom shell scripts added to `$PATH` and your project's variables as environment:
 
 ```bash
-$ jen exec COMMAND ARG1 ARG2 ...
+$ jen exec $SHELL
 ```
 
-## Start a sub-shell
+The `$SHELL` variable is typically set to your current shell, but you can also explicitly specify any of `bash`, `zsh`, `sh`...
 
-To start a sub-shell with your custom shell scripts added to `$PATH` and your project's variables as environment:
+You are then free to call as many shell scripts and shell commands as you want, until you do `exit`. For example:
 
 ```bash
-$ jen exec SHELL
+$ echo $PROJECT
+foobar
+
+$ remove-cicd-triggers
+Removing triggers from CI/CD pipelines for project foobar
+Done.
+
+$ exit
 ```
 
-(where `SHELL` can any of `bash`, `zsh`, `sh`...)
-
-You are then free to call as many shell scripts and shell commands as you want, until you do `exit`.
-
-## Update templates repo
+## Updating templates git repo
 
 To pull latest version of templates git repo:
 
 ```bash
 $ jen pull
 ```
+
+## Cleaning up
+
+When you're done experimenting with the examples, don't forget to delete the jen examples repo clone from your machine (at `$JEN_HOME/repo` or `~/.jen/repo`) and to make jen point to your own template repo.
 
 # `spec.yaml` files
 
@@ -370,6 +385,10 @@ To associate a template with an existing project that was not initially generate
 - Add config to specify templates sub-dir within git repo.
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
+- Add `jen ls actions` to list available actions in template.
+- Add `jen ls scripts` to list available scripts (both shared and template-specific).
+- Add `jen ls vars` to list project variables and their values (same as `jen export` but more human-readable).
+- Add `jen shell` to start a sub-shell with all project variables in environment (same as `jen exec $SHELL`).
 - Allow `do` step to define multiple actions to call.
 - Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
 - Add reusable modules (including both templates and scripts).
