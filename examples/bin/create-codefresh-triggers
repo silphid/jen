@@ -1,0 +1,2 @@
+#!/bin/bash
+echo create-codefresh-triggers $PROJECT

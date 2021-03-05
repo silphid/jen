@@ -1,0 +1,13 @@
+name: {{ .Env.PROJECT }}
+type: git
+repo: Samasource/{{ .Env.PROJECT }}
+events:
+- pullrequest.opened
+- pullrequest.reopened
+- pullrequest.synchronize
+commentRegex: /.*/gi
+branchRegex: /.*/gi
+branchRegexInput: regex
+pullRequestTargetBranchRegex: /^master$/gi
+provider: github
+context: github-1

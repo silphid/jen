@@ -6,12 +6,8 @@ Jen is a project scaffolding and script runner that accompanies your project thr
 
 # Motivation
 
-We were not satisfied with existing project scaffolding tools, which often are language-specific and
-leave you on your own once your project has been generated. Many DevOps shell scripts (ie:
-registering your project with CI/CD and other infra, promoting it from staging to prod...) need to be
-maintained, organized and shared separately. They typically require similar inputs to those provided
-during scaffolding (ie: project name, cluster, cloud region, team...), yet you have to pass that
-information as arguments all over again every time you invoke them.
+We were not satisfied with existing project scaffolding tools, which often are language-specific and leave you on your own once your project has been generated. Many DevOps shell scripts (ie: registering your project with CI/CD and other infra, promoting it from staging to prod...) need to be maintained, organized and shared separately. They typically require similar inputs to those provided
+during scaffolding (ie: project name, cluster, cloud region, team...), yet you have to pass that information as arguments all over again every time you invoke them.
 
 As DevOps, we have many concerns to address, such as:
 
@@ -23,14 +19,10 @@ Jen aims to provide a very simple framework to answer all those questions.
 
 # How it works
 
-- Put all you project templates in a git repo with a specific structure, including shell scripts
-  specific to each template or common to all.
+- Put all you project templates in a git repo with a specific structure, including shell scripts specific to each template or common to all.
 - Jen automatically clones that repo locally upon first use.
-- When scaffolding a project, Jen prompts user for which template to use and all values required by
-  template and associated shell scripts.
-- All that information gets stored in a `jen.yaml` file in the project's root dir and
-  remains available everytime you run a `jen ...` command anywhere within your project's directory
-  structure.
+- When scaffolding a project, Jen prompts user for which template to use and all values required by template and associated shell scripts.
+- All that information gets stored in a `jen.yaml` file in the project's root dir and remains available everytime you run a `jen ...` command anywhere within your project's directory structure.
 - Use jen throughout your project's life-time to run companion shell scripts using same variables.
 
 # Getting started
@@ -52,20 +44,15 @@ Create a git repo to store all your templates and scripts, using the following s
 
 ### Scripts `bin` directories and your `PATH`
 
-DevOps-oriented shell scripts can be packaged and distributed with your jen templates and can be
-either "shared" (all projects can use them, regardless of which template they use) or "template-
-specific" (only accessible when a specific template is used).
+DevOps-oriented shell scripts can be packaged and distributed with your jen templates and can be either "shared" (all projects can use them, regardless of which template they use) or "template-specific" (only accessible when a specific template is used).
 
-When executing any action or shell command, jen always prepends your `PATH` env var with the
-template-specific `bin` directory, followed by the shared one. That means you can override shared
-scripts at the template level by redefining scripts with the same name as shared ones.
+When executing any action or shell command, jen always prepends your `PATH` env var with the template-specific `bin` directory, followed by the shared one. That means you can override shared scripts at the template level by redefining scripts with the same name as shared ones.
 
 ## Set Jen env vars
 
 - JEN_CLONE: Local directory where jen will clone your jen git repo (defaults to `~/.jen/repo`)
 - JEN_REPO: URL of your templates git repo to clone
-- JEN_SUBDIR: Optional sub-directory within your repo where to look for jen files. This can be
-  useful when your git repo also contains other things.
+- JEN_SUBDIR: Optional sub-directory within your repo where to look for jen files. This can be useful when your git repo also contains other things.
 
 ### Example
 
@@ -85,14 +72,9 @@ $ jen do create
 ```
 
 1. If it doesn't already exist, jen will automatically clone your templates git repo into your `JEN_HOME`.
-2. It will prompt you to select a template from the list of those available in that repo. That template name
-   will be stored in `jen.yaml` file in current dir. That file now identifies your project as jen-enabled
-   and allows jen to determine the root directory of your project.
-3. Depending on the steps configured in the `create` action of the template you selected, you should
-   typically be prompted for the values of different variables, which will also be saved in the `jen.yaml`
-   file.
-4. Typically, the selected template will be rendered to current directory and, potentially, some scripts
-   may automatically run to register your project with your infrastructure.
+2. It will prompt you to select a template from the list of those available in that repo. That template name will be stored in `jen.yaml` file in current dir. That file now identifies your project as jen-enabled and allows jen to determine the root directory of your project.
+3. Depending on the steps configured in the `create` action of the template you selected, you should typically be prompted for the values of different variables, which will also be saved in the `jen.yaml` file.
+4. Typically, the selected template will be rendered to current directory and, potentially, some scripts may automatically run to register your project with your infrastructure.
 
 # Jen commands
 
@@ -136,8 +118,7 @@ $ jen pull
 
 # `spec.yaml` files
 
-Each template has a `spec.yaml` file in its root that specifies how to render the template, what
-variables to prompt user and what actions user can invoke throughout the project's life-time.
+Each template has a `spec.yaml` file in its root that specifies how to render the template, what variables to prompt user and what actions user can invoke throughout the project's life-time.
 
 It has this general structure:
 
@@ -155,20 +136,16 @@ actions:
 
 ## Actions
 
-Actions are named operations that can be invoked by user via the `jen do ACTION` command,
-or as part of another action. They can have arbitrary names, however it is recommended to
-follow the convention having at least the following two actions:
+Actions are named operations that can be invoked by user via the `jen do ACTION` command, or as part of another action. They can have arbitrary names, however it is recommended to follow the convention having at least the following two actions:
 
 - `create`: action that initially scaffolds the project
-- `prompt`: action that prompts user for variables (this action is typically invoked from
-  the `create` action)
+- `prompt`: action that prompts user for variables (this action is typically invoked from the `create` action)
 
 The order of actions is irrelevant, much like the definition of functions in any program.
 
 ## Steps
 
-Each action is comprised of one or many steps that are executed sequentially when the
-action is invoked (their order is therefore important).
+Each action is comprised of one or many steps that are executed sequentially when the action is invoked (their order is therefore important).
 
 Steps have predefined names and purposes:
 
@@ -273,25 +250,17 @@ actions:
 
 ## Go template language
 
-Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/) and
-augments its built-in functions with the very helpful [sprig](https://masterminds.github.io/sprig/)
+Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/) and augments its built-in functions with the very helpful [sprig](https://masterminds.github.io/sprig/)
 function library.
 
-Those template expressions can be used in templates, user prompts, and file/directory names, as
-described in following sections.
+Those template expressions can be used in templates, user prompts, and file/directory names, as described in following sections.
 
 ## Activating/deactivating rendering
 
-By default, all files in a template are copied as is, without rendering their content as templates.
-Template rendering can however be activated or deactivate selectively on a per-file/directory
-basis, by appending a `.tmpl` or `.notmpl` extension to file/directory names. Applying those
-extensions to a directory affects all child files recursively, unless overriden down the tree.
+By default, all files in a template are copied as is, without rendering their content as templates. Template rendering can however be activated or deactivate selectively on a per-file/directory basis, by appending a `.tmpl` or `.notmpl` extension to file/directory names. Applying those
+extensions to a directory affects all child files recursively, unless overriden down the tree. Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file/ directory names.
 
-Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file/
-directory names.
-
-To override the no templating default, you can simply append a `.tmpl` extension to the name of
-the root directory passed to the `render` step, ie:
+To override the no templating default, you can simply append a `.tmpl` extension to the name of the root directory passed to the `render` step, ie:
 
 ```yaml
 - render: ./src.tmpl
@@ -299,20 +268,15 @@ the root directory passed to the `render` step, ie:
 
 ## Escaping double-braces
 
-Sometimes, it's not enough to completely turn rendering on or off for an entire file. For instance,
-if you need to intermix jen templating expressions with other templating that also use double-braces
-(ie: helm charts) within the same file, you can escape your double-braces by using `{{{` and `}}}`,
-which will be rendered to `{{` and `}}` respectively.
+Sometimes, it's not enough to completely turn rendering on or off for an entire file. For instance, if you need to intermix jen templating expressions with other templating that also use double-braces (ie: helm charts) within the same file, you can escape your double-braces by using `{{{` and `}}}`, which will be rendered to `{{` and `}}` respectively.
 
 ## Dynamic file and directory names
 
-File and directory names can include template expressions enclosed between double-braces (ie:
-`{{.PROJECT}}.sql`)
+File and directory names can include template expressions enclosed between double-braces (ie: `{{.PROJECT}}.sql`)
 
 ## Conditional files and directories
 
-Files and directories can be selectively included/excluded by embedding a double-square-bracket expression
-in their name, which must evaluate to true in order for the file/directory to be included in render.
+Files and directories can be selectively included/excluded by embedding a double-square-bracket expression in their name, which must evaluate to true in order for the file/directory to be included in render.
 
 Take the following template directory structure as example:
 
@@ -321,9 +285,7 @@ Take the following template directory structure as example:
     - `migration.go`
     - `driver.go`
 
-Only when the `DB` var evaluates to `true` will the `database[[.DB]]` directory and its content be rendered
-to project directory. The double-square-bracket expression will also automatically get stripped away from
-the target dir name:
+Only when the `DB` var evaluates to `true` will the `database[[.DB]]` directory and its content be rendered to project directory. The double-square-bracket expression will also automatically get stripped away from the target dir name:
 
 - `src`
   - `database`
@@ -332,12 +294,9 @@ the target dir name:
 
 ## Collapsing of pure conditional directories
 
-Pure conditional directories - that is, those for which the name only contains a double-square-bracket
-expression - are treated as a special case. If their expression evaluates to `true`, they get collapsed and
-their contents get placed directly into parent directory.
+Pure conditional directories - that is, those for which the name only contains a double-square-bracket expression - are treated as a special case. If their expression evaluates to `true`, they get collapsed and their contents get placed directly into parent directory.
 
-That is very useful to group multiple files and folders under a same conditional expression, without actually
-introducing an extra directory level in final output. For example, given this template structure:
+That is very useful to group multiple files and folders under a same conditional expression, without actually introducing an extra directory level in final output. For example, given this template structure:
 
 - `src`
   - `[[.DB]]`
@@ -352,8 +311,7 @@ If `DB` is true, the following structure will be rendered to target directory:
 
 ## Expressions in prompts
 
-For prompt steps (`input`, `choice`, `option`, `options`), you can use template expressions within messages,
-proposed choices and default values, by enclosing those expressions between `{{` and `}}`.
+For prompt steps (`input`, `choice`, `option`, `options`), you can use template expressions within messages, proposed choices and default values, by enclosing those expressions between `{{` and `}}`.
 
 ## Expressions in `if` step
 
@@ -367,22 +325,22 @@ As the conditional for `if` steps is always a template expression, _do not_ encl
 
 ## Special placeholders
 
-Because the PROJECT variable is typically used pervasively throughout templates in the form of `{{.PROJECT}}`
-and `{{.PROJECT | upper}}`, we have introduced the special placeholders `projekt` and `PROJEKT`, which can
-be used anywhere in file/dir names and templates without any adornments.
+Because the PROJECT variable is typically used pervasively throughout templates in the form of `{{.PROJECT}}` and `{{.PROJECT | upper}}`, we have introduced the special placeholders `projekt` and `PROJEKT`, which can be used anywhere in file/dir names and templates without any adornments.
 
 For example, the text "MY PROJEKT FILE.TXT" is equivalent to "MY {{.PROJECT | upper}} FILE.TXT".
 
-Currently, those two placeholders are hardcoded and are the only ones supported, but we plan to add support
-for defining your own in the template spec.
+Currently, those two placeholders are hardcoded and are the only ones supported, but we plan to add support for defining your own in the template spec.
 
-This feature was inspired by the way we were previously creating new projects by duplicating an existing
-project and doing a search-and-replace for the project name in different case variants. That strategy was
-very simple and effective, as long as the project name was a very distinct string that did not appear in
-any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
+This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
 unlikely to encounter in your project for any other reason than those placeholders!
 
-## Wishlist
+# Tips
+
+## Associating an existing project with a template
+
+To associate a template with an existing project that was not initially generated by jen, without doing any scaffolding, you just have to invoke the `jen do prompt` command in the root of the existing project. This assumes your templates follow the recommended convention of having the standard `create` and `prompt` steps, where the `create` step first calls `prompt` and then does the template rendering. In that case, calling the `prompt` step alone in a non-jen-initialized project will first ask you to select the template to associate the project with, and then will prompt you for variable values and save them to the `jen.yaml` file. From that point, your project is initialized and associated with a template. You just need to commit the `jen.yaml` file into git.
+
+# Wishlist
 
 - Add config to specify templates sub-dir within git repo.
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).

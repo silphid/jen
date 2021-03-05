@@ -1,0 +1,13 @@
+name: {{ .Env.PROJECT }}
+type: git
+repo: Samasource/{{ .Env.PROJECT }}
+events:
+- push.heads
+commentRegex: /.*/gi
+branchRegex: /^master$/gi
+branchRegexInput: regex
+provider: github
+context: github-1
+variables:
+- key: CLUSTER
+  value: {{ .Env.CLUSTER }}
