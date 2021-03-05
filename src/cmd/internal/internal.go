@@ -51,7 +51,7 @@ func (o Options) NewContext() (exec.Context, error) {
 	return context{
 		cloneSubDir: cloneSubDir,
 		templateDir: templateDir,
-		project:     *proj,
+		project:     proj,
 		spec:        *specification,
 	}, nil
 }
@@ -61,7 +61,7 @@ func (o Options) NewContext() (exec.Context, error) {
 type context struct {
 	cloneSubDir string
 	templateDir string
-	project     project.Project
+	project     *project.Project
 	spec        spec.Spec
 }
 
@@ -115,7 +115,11 @@ func (c context) GetPlaceholders() map[string]string {
 // process' env var.
 func (c context) GetEvalVars() map[string]interface{} {
 	vars := c.GetVars()
-	vars["projectDirName"] = filepath.Base(c.project.Dir)
+	absProjectDir, err := filepath.Abs(c.project.Dir)
+	if err != nil {
+		panic(fmt.Errorf("failed to determine project's absolute dir: %w", err))
+	}
+	vars["projectDirName"] = filepath.Base(absProjectDir)
 	return vars
 }
 

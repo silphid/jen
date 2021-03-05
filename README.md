@@ -48,11 +48,11 @@ DevOps-oriented shell scripts can be packaged and distributed with your jen temp
 
 When executing any action or shell command, jen always prepends your `PATH` env var with the template-specific `bin` directory, followed by the shared one. That means you can override shared scripts at the template level by redefining scripts with the same name as shared ones.
 
-## Set Jen env vars
+## Set Jen environment variables
 
-- JEN_CLONE: Local directory where jen will clone your jen git repo (defaults to `~/.jen/repo`)
-- JEN_REPO: URL of your templates git repo to clone
-- JEN_SUBDIR: Optional sub-directory within your repo where to look for jen files. This can be useful when your git repo also contains other things.
+- `JEN_CLONE`: Local directory where jen will clone your jen git repo (defaults to `~/.jen/repo`)
+- `JEN_REPO`: URL of your templates git repo to clone
+- `JEN_SUBDIR`: Optional sub-directory within your repo where to look for jen files. This can be useful when your git repo also contains other things.
 
 # Hello World example
 
@@ -74,11 +74,12 @@ $ jen do create
 ```
 
 3. If it's your first time, jen will automatically clone your templates git repo into `$JEN_HOME/repo`.
-4. Jen then shows a list of available templates from that repo. Select `hello-world` and press `Enter` (that choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized).
-5. Because the `create` action calls out to the `prompt` action, you are now prompted for variable values. Answer the different prompts (notice how it automatically suggests the current dir name `foobar` as default project name). Your values also get saved to `jen.yaml` file.
-6. The `create` action then calls `render` step to render the `hello-world` template files to current dir.
-7. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
-8. Once your project is committed, you would typically call the `install` action to let your CI/CD pipeline and infra know about your new project (don't hesitate, it just executes a dummy bash script that echoes a message to simulate the real thing):
+4. Because the current dir is not initialized with jen yet, it asks for confirmation. Type `y` and press `Enter`.
+5. Jen then shows a list of available templates from that repo. Select `hello-world` and press `Enter` (that choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized).
+6. Because the `create` action calls out to the `prompt` action, you are now prompted for variable values. Answer the different prompts (notice how it automatically suggests the current dir name `foobar` as default project name). Your values also get saved to `jen.yaml` file.
+7. The `create` action then calls `render` step to render the `hello-world` template files to current dir.
+8. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
+9. Once your project is committed, you would typically call the `install` action to let your CI/CD pipeline and infra know about your new project (don't hesitate, it just executes a dummy bash script that echoes a message to simulate the real thing):
 
 ```bash
 $ jen do install
