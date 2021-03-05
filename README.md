@@ -75,7 +75,7 @@ $ jen do create
 
 3. If it's your first time, jen will automatically clone your templates git repo into `$JEN_HOME/repo`.
 4. Because the current dir is not initialized with jen yet, it asks for confirmation. Type `y` and press `Enter`.
-5. Jen then shows a list of available templates from that repo. Select `hello-world` and press `Enter` (that choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized).
+5. Jen then shows a list of available templates from that repo. Right now there's only one `hello-world` example, so just press `Enter`. That choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized.
 6. Because the `create` action calls out to the `prompt` action, you are now prompted for variable values. Answer the different prompts (notice how it automatically suggests the current dir name `foobar` as default project name). Your values also get saved to `jen.yaml` file.
 7. The `create` action then calls `render` step to render the `hello-world` template files to current dir.
 8. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
