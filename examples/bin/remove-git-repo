@@ -1,2 +1,0 @@
-#!/bin/bash
-echo remove-git-repo $PROJECT

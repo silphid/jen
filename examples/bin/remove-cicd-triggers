@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Removing triggers from CI/CD pipelines for project $PROJECT"
+sleep 1
+echo "Done."

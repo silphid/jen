@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Creating docker image repo for project $PROJECT"
+sleep 1
+echo "Done."

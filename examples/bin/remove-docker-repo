@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "Removing docker image repo for project $PROJECT"
+sleep 1
+echo "Done."

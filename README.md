@@ -54,16 +54,18 @@ When executing any action or shell command, jen always prepends your `PATH` env 
 - JEN_REPO: URL of your templates git repo to clone
 - JEN_SUBDIR: Optional sub-directory within your repo where to look for jen files. This can be useful when your git repo also contains other things.
 
-### Example
+# Hello World example
 
-To use jen's example templates and scripts, simply set your variables as follows:
+This `hello-world` example is available on [github](https://github.com/Samasource/jen/tree/master/examples/templates/hello-world). Don't hesitate to explore it there to better understand how it works (the template itself is much more instructive and interesting than the final output).
+
+1. Configure jen to point to jen's example templates and scripts:
 
 ```bash
 $ export JEN_REPO=git@github.com:Samasource/jen.git
 $ export JEN_SUBDIR=examples
 ```
 
-## Creating a new project from a template
+2. Create a new project directory:
 
 ```bash
 $ mkdir foobar
@@ -71,10 +73,18 @@ $ cd foobar
 $ jen do create
 ```
 
-1. If it doesn't already exist, jen will automatically clone your templates git repo into your `JEN_HOME`.
-2. It will prompt you to select a template from the list of those available in that repo. That template name will be stored in `jen.yaml` file in current dir. That file now identifies your project as jen-enabled and allows jen to determine the root directory of your project.
-3. Depending on the steps configured in the `create` action of the template you selected, you should typically be prompted for the values of different variables, which will also be saved in the `jen.yaml` file.
-4. Typically, the selected template will be rendered to current directory and, potentially, some scripts may automatically run to register your project with your infrastructure.
+3. If it's your first time, jen will automatically clone your templates git repo into `$JEN_HOME/repo`.
+4. Jen then shows a list of available templates from that repo. Select `hello-world` and press `Enter` (that choice gets saved to `jen.yaml` file in current dir and identifies your project as jen-initialized).
+5. Because the `create` action calls out to the `prompt` action, you are now prompted for variable values. Answer the different prompts (notice how it automatically suggests the current dir name `foobar` as default project name). Your values also get saved to `jen.yaml` file.
+6. The `create` action then calls `render` step to render the `hello-world` template files to current dir.
+7. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
+8. Once your project is committed, you would typically call the `install` action to let your CI/CD pipeline and infra know about your new project (don't hesitate, it just executes a dummy bash script that echoes a message to simulate the real thing):
+
+```bash
+$ jen do install
+```
+
+Note: When you're done trying the examples, don't forget to delete the jen examples repo clone on your machine (at `$JEN_HOME/repo` or `~/.jen/repo`) and to make jen point to your own template repo.
 
 # Jen commands
 
@@ -136,16 +146,28 @@ actions:
 
 ## Actions
 
-Actions are named operations that can be invoked by user via the `jen do ACTION` command, or as part of another action. They can have arbitrary names, however it is recommended to follow the convention having at least the following two actions:
+Actions are named operations that can be invoked by user via the `jen do ACTION` command, or as part of another action (using the `do` step). The order of actions is irrelevant, much like the order of function definitions within any source code.
 
-- `create`: action that initially scaffolds the project
-- `prompt`: action that prompts user for variables (this action is typically invoked from the `create` action)
+### Standard actions
 
-The order of actions is irrelevant, much like the definition of functions in any program.
+You can have any arbitrary actions with any names in your template specs, however it is recommended to follow the convention of having at least the following actions:
+
+- `create`: 
+  - first invoke the `prompt` action below
+  - then render project template
+- `prompt`:
+  - prompt user for variable values
+
+Optionally, also include those actions:
+
+- `install`:
+  - register your project with CI/CD pipelines and infra
+- `uninstall`:
+  - unregister your project from CI/CD pipelines and infra
 
 ## Steps
 
-Each action is comprised of one or many steps that are executed sequentially when the action is invoked (their order is therefore important).
+Each action is composed of one or many steps that are executed sequentially when the action is invoked (their order is therefore important).
 
 Steps have predefined names and purposes:
 
@@ -159,6 +181,8 @@ Steps have predefined names and purposes:
 - `options`: prompts user for multiple boolean vars as a list of toggles
 
 ## Example
+
+The following is the [spec.yaml](https://github.com/Samasource/jen/tree/master/examples/templates/hello-world/spec.yaml) file of `hello-world` template in jen's [examples](https://github.com/Samasource/jen/tree/master/examples):
 
 ```yaml
 # Version of jen file format (for future compatibility checks)
@@ -236,13 +260,13 @@ actions:
     # passing them all project variables as env vars. In this case, it specifies a list
     # of multiple commands to execute.
     - exec:
-        - create-container-repo
+        - create-docker-repo
         - create-cicd-triggers
 
   # By convention, the "uninstall" action is in charge of removing the project from infra
   uninstall:
     # Here the "exec" step is invoked multiple times, each executing a single command
-    - exec: remove-container-repo
+    - exec: remove-docker-repo
     - exec: remove-cicd-triggers
 ```
 
@@ -338,7 +362,7 @@ unlikely to encounter in your project for any other reason than those placeholde
 
 ## Associating an existing project with a template
 
-To associate a template with an existing project that was not initially generated by jen, without doing any scaffolding, you just have to invoke the `jen do prompt` command in the root of the existing project. This assumes your templates follow the recommended convention of having the standard `create` and `prompt` steps, where the `create` step first calls `prompt` and then does the template rendering. In that case, calling the `prompt` step alone in a non-jen-initialized project will first ask you to select the template to associate the project with, and then will prompt you for variable values and save them to the `jen.yaml` file. From that point, your project is initialized and associated with a template. You just need to commit the `jen.yaml` file into git.
+To associate a template with an existing project that was not initially generated by jen, without doing any scaffolding, you just have to invoke the `jen do prompt` command in the root of the existing project. This assumes your templates follow the recommended convention of having the standard `create` and `prompt` actions (where the `create` action first calls `prompt` and then does the template rendering). In that case, calling the `prompt` action alone in a non-jen-initialized project will first ask you to select the template to associate the project with, and then will prompt you for variable values and save them to the `jen.yaml` file. From that point, your project is initialized and associated with a template. You just need to commit the `jen.yaml` file into git.
 
 # Wishlist
 
@@ -351,6 +375,7 @@ To associate a template with an existing project that was not initially generate
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
+- Allow special `.tmpl` and `.notmpl` extensions to be placed before actual extension (ie: `file.tmpl.txt`), to allow file editor to recognize them better during template editing.
 - Allow to customize placeholders in spec file:
 
 ```

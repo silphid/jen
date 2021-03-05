@@ -1,0 +1,34 @@
+# PROJEKT 
+
+The PROJEKT project is managed by the {{.TEAM}} team.
+
+`PROJEKT` is a special placeholder equivalent to {{.PROJECT | upper}}
+
+Project name: {{.PROJECT}}
+Project name in uppercase: {{.PROJECT | upper}}
+Placeholder lowercase: projekt
+Placeholder uppercase: PROJEKT
+
+It was created with:
+- {{if .PSQL}}Support{{else}}No support{{end}} for PostgreSQL.
+- {{if .NEWRELIC}}Support{{else}}No support{{end}} for New Relic.
+
+# Escaping double-braces
+
+When you don't want double-braces to be interpolated, even in a file with templating enabled, simply triple them. For example, this {{{triple-brace expression}}} will be rendered with double-braces.
+
+# Go templating
+
+Refer to the [go templating documentation](https://golang.org/pkg/text/template/) to find out everything you can do in jen templates.
+
+## Dashes inside double-braces
+
+When you want to put an expression on its own line, but don't want a new-line to appear in final output, you may put a dash at the beginning or end of the expression, within the double-braces, to trim all white-space before or after it. For example:
+
+Selected features:
+{{if .PSQL -}}
+  - PostgreSQL
+{{-end}}
+{{if .NEWRELIC -}}
+  - New Relic
+{{-end}}
