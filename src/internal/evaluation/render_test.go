@@ -1,7 +1,7 @@
 package evaluation
 
 import (
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,9 +28,9 @@ func TestRender(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			outputDir := getTempDir()
 			defer removeAll(outputDir)
-			err := Render(context, path.Join("testdata", name, "input"), outputDir)
+			err := Render(context, filepath.Join("testdata", name, "input"), outputDir)
 			assert.NoError(t, err)
-			compareDirsRecursively(t, path.Join("testdata", name, "output"), outputDir)
+			compareDirsRecursively(t, filepath.Join("testdata", name, "output"), outputDir)
 		})
 	}
 }

@@ -2,7 +2,7 @@ package spec
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 
 	"github.com/Samasource/jen/src/internal/constant"
 	"github.com/Samasource/jen/src/internal/exec"
@@ -27,7 +27,7 @@ type Spec struct {
 
 // Load loads spec object from a template directory
 func Load(templateDir string) (*Spec, error) {
-	specFilePath := path.Join(templateDir, constant.SpecFileName)
+	specFilePath := filepath.Join(templateDir, constant.SpecFileName)
 	yamlFile, err := yaml.ReadFile(specFilePath)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
 	spec := new(Spec)
 
 	// Load metadata
-	spec.Name = path.Base(templateDir)
+	spec.Name = filepath.Base(templateDir)
 	var err error
 	spec.Version, err = getRequiredStringFromMap(_map, "version")
 	if err != nil {
@@ -322,7 +322,7 @@ func loadRenderStep(_map yaml.Map, templateDir string) (exec.Executable, error) 
 	}
 
 	return render.Render{
-		InputDir: path.Join(templateDir, source),
+		InputDir: filepath.Join(templateDir, source),
 	}, nil
 }
 

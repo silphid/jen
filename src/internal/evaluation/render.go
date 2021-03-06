@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/Samasource/jen/src/internal/logging"
 )
@@ -47,12 +47,12 @@ func getEntries(context Context, inputDir, outputDir string, renderParent bool) 
 	for _, info := range infos {
 		// Determine input/output names and render mode
 		inputName := info.Name()
-		inputPath := path.Join(inputDir, inputName)
+		inputPath := filepath.Join(inputDir, inputName)
 		outputName, included, renderMode, err := evalFileName(context, inputName)
 		if err != nil {
 			return nil, err
 		}
-		outputPath := path.Join(outputDir, outputName)
+		outputPath := filepath.Join(outputDir, outputName)
 
 		// Determine render enabled/disabled for this item
 		renderItem := renderParent
@@ -104,7 +104,7 @@ func renderFile(context Context, inputPath, outputPath string, render bool) erro
 	}
 
 	// Create output dir
-	outputDir := path.Dir(outputPath)
+	outputDir := filepath.Dir(outputPath)
 	err = os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to create output directory %q: %w", outputDir, err)
