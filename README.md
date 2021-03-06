@@ -112,10 +112,8 @@ Done.
 You can even start a sub-shell with your custom shell scripts added to `$PATH` and your project's variables as environment:
 
 ```bash
-$ jen exec $SHELL
+$ jen shell
 ```
-
-The `$SHELL` variable is typically set to your current shell, but you can also explicitly specify any of `bash`, `zsh`, `sh`...
 
 You are then free to call as many shell scripts and shell commands as you want, until you do `exit`. For example:
 
@@ -129,6 +127,14 @@ Done.
 
 $ exit
 ```
+
+Note that this command is just a shorthand for:
+
+```bash
+$ jen exec $SHELL
+```
+
+Where the `$SHELL` variable is typically set to your current shell, but you can also explicitly specify any of `bash`, `zsh`, `sh`...
 
 ## Updating templates git repo
 
@@ -382,12 +388,13 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
-- Add config to specify templates sub-dir within git repo.
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
-- Add `jen ls actions` to list available actions in template.
-- Add `jen ls scripts` to list available scripts (both shared and template-specific).
-- Add `jen ls vars` to list project variables and their values (same as `jen export` but more human-readable).
+- Add `jen list templates` to list available templates.
+- Add `jen list actions` to list available actions in template.
+- Add `jen list scripts` to list available scripts (both shared and template-specific).
+- Add `jen list vars` to list project variables and their values (same as `jen export` but more human-readable).
+- Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Add `jen shell` to start a sub-shell with all project variables in environment (same as `jen exec $SHELL`).
 - Allow `do` step to define multiple actions to call.
 - Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
@@ -395,6 +402,7 @@ To associate a template with an existing project that was not initially generate
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
+- Fix `choice` step to pre-select current value, if any.
 - Allow special `.tmpl` and `.notmpl` extensions to be placed before actual extension (ie: `file.tmpl.txt`), to allow file editor to recognize them better during template editing.
 - Allow to customize placeholders in spec file:
 
