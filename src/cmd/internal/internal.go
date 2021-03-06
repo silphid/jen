@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -124,21 +125,51 @@ func (c context) GetEvalVars() map[string]interface{} {
 	return vars
 }
 
-// GetShellVars returns all env vars to be used when invoking shell commands,
-// including the current process' env vars, the project's vars and an augmented
-// PATH var including extra bin dirs.
-func (c context) GetShellVars() []string {
+// getBinDirs returns the list of bin dirs that actually exist
+func (c context) getBinDirs() []string {
 	binDirs := []string{
 		filepath.Join(c.cloneSubDir, "bin"),
 		filepath.Join(c.project.Dir, "bin"),
 	}
 
 	// Add bin dirs to PATH env var
-	pathVar := os.Getenv("PATH")
+	var validBinDirs []string
 	for _, dir := range binDirs {
 		if helpers.PathExists(dir) {
-			pathVar = dir + ":" + pathVar
+			validBinDirs = append(validBinDirs, dir)
 		}
+	}
+	return validBinDirs
+}
+
+// GetScripts returns the list of executable scripts in bin dirs
+func (c context) GetScripts() ([]string, error) {
+	var scripts []string
+	binDirs := c.getBinDirs()
+	for _, dir := range binDirs {
+		infos, err := ioutil.ReadDir(dir)
+		if err != nil {
+			return nil, err
+		}
+		for _, info := range infos {
+			// Is it executable by owner, group or any?
+			if info.Mode()&0111 != 0 {
+				scripts = append(scripts, info.Name())
+			}
+		}
+	}
+	return scripts, nil
+}
+
+// GetShellVars returns all env vars to be used when invoking shell commands,
+// including the current process' env vars, the project's vars and an augmented
+// PATH var including extra bin dirs.
+func (c context) GetShellVars() []string {
+	// Add bin dirs to PATH env var
+	binDirs := c.getBinDirs()
+	pathVar := os.Getenv("PATH")
+	for _, dir := range binDirs {
+		pathVar = dir + ":" + pathVar
 	}
 
 	// Collect all current process env vars, except PATH

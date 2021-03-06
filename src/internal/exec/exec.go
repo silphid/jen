@@ -38,6 +38,9 @@ type Context interface {
 	// GetActionNames returns the names of all actions available in template.
 	GetActionNames() []string
 
+	// GetScripts returns the list of executable scripts in bin dirs
+	GetScripts() ([]string, error)
+
 	// GetProjectDir returns the current project's dir
 	GetProjectDir() string
 }

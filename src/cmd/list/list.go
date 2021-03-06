@@ -5,6 +5,7 @@ import (
 
 	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/Samasource/jen/src/cmd/list/actions"
+	"github.com/Samasource/jen/src/cmd/list/scripts"
 	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,7 @@ func New(options *internal.Options) *cobra.Command {
 		},
 	}
 	c.AddCommand(actions.New(options))
+	c.AddCommand(scripts.New(options))
 	return c
 }
 
