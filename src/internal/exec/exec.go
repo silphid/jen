@@ -35,6 +35,9 @@ type Context interface {
 	// found.
 	GetAction(name string) Executable
 
+	// GetActionNames returns the names of all actions available in template.
+	GetActionNames() []string
+
 	// GetProjectDir returns the current project's dir
 	GetProjectDir() string
 }

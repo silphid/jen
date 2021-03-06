@@ -1,19 +1,19 @@
-package exec
+package actions
 
 import (
-	"strings"
+	"fmt"
 
 	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
 
 // New creates a cobra command
 func New(options *internal.Options) *cobra.Command {
 	return &cobra.Command{
-		Use:   "exec",
-		Short: "Executes an arbitrary shell command with project's environment variables",
-		Args:  cobra.MinimumNArgs(1),
+		Use:     "actions",
+		Aliases: []string{"action"},
+		Short:   "Lists actions available in current template",
+		Args:    cobra.NoArgs,
 		RunE: func(_ *cobra.Command, args []string) error {
 			return run(options, args)
 		},
@@ -26,5 +26,8 @@ func run(options *internal.Options, args []string) error {
 		return err
 	}
 
-	return shell.Execute(execContext.GetShellVars(), "", strings.Join(args, " "))
+	for _, action := range execContext.GetActionNames() {
+		fmt.Println(action)
+	}
+	return nil
 }

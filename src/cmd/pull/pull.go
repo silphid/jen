@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New creates the "jen pull" cobra sub-command
+// New creates a cobra command
 func New() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pull",

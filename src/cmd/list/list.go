@@ -1,23 +1,26 @@
-package exec
+package list
 
 import (
 	"strings"
 
 	"github.com/Samasource/jen/src/cmd/internal"
+	"github.com/Samasource/jen/src/cmd/list/actions"
 	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
 
 // New creates a cobra command
 func New(options *internal.Options) *cobra.Command {
-	return &cobra.Command{
-		Use:   "exec",
-		Short: "Executes an arbitrary shell command with project's environment variables",
-		Args:  cobra.MinimumNArgs(1),
+	c := &cobra.Command{
+		Use:     "list",
+		Aliases: []string{"ls"},
+		Short:   "Lists available templates, actions, variables or scripts",
 		RunE: func(_ *cobra.Command, args []string) error {
 			return run(options, args)
 		},
 	}
+	c.AddCommand(actions.New(options))
+	return c
 }
 
 func run(options *internal.Options, args []string) error {

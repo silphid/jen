@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/Samasource/jen/src/internal/exec"
@@ -171,6 +172,16 @@ func (c context) GetAction(name string) exec.Executable {
 		return nil
 	}
 	return action
+}
+
+// GetActionNames returns the names of all actions available in template.
+func (c context) GetActionNames() []string {
+	names := make([]string, 0, len(c.spec.Actions))
+	for name := range c.spec.Actions {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
 
 // GetProjectDir returns the current project's dir

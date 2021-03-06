@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// New creates the "jen exec" cobra sub-command
+// New creates a cobra command
 func New(options *internal.Options) *cobra.Command {
 	return &cobra.Command{
 		Use:   "shell",

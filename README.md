@@ -87,7 +87,17 @@ $ jen do create
 
 ## Invoking actions
 
-You can now call different project actions with `jen do ACTION`. This `hello-world` example includes actions `create`, `prompt`, `install` and `uninstall`. The last two are meant to register your project with your CI/CD pipeline and infra, but here they just call dummy bash scripts that simulate the real thing. For example:
+You can now call different project actions with `jen do ACTION`, but first let's see what actions this `hello-world` example defines:
+
+```bash
+$ jen list actions
+create
+install
+prompt
+uninstall
+```
+
+We have already discussed about `create` and `prompt`. Now, `install` and `uninstall` are meant to register/unregister your project with your CI/CD pipeline and infra, but here they just call dummy bash scripts that simulate the real thing. For example:
 
 ```bash
 $ jen do install
@@ -395,13 +405,13 @@ To associate a template with an existing project that was not initially generate
 - Add `jen list scripts` to list available scripts (both shared and template-specific).
 - Add `jen list vars` to list project variables and their values (same as `jen export` but more human-readable).
 - Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
-- Add `jen shell` to start a sub-shell with all project variables in environment (same as `jen exec $SHELL`).
 - Allow `do` step to define multiple actions to call.
 - Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
 - Add reusable modules (including both templates and scripts).
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
+- Add more example templates, for go, node...
 - Fix `choice` step to pre-select current value, if any.
 - Allow special `.tmpl` and `.notmpl` extensions to be placed before actual extension (ie: `file.tmpl.txt`), to allow file editor to recognize them better during template editing.
 - Allow to customize placeholders in spec file:
