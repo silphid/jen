@@ -436,7 +436,6 @@ To associate a template with an existing project that was not initially generate
 
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
-- Add `jen list templates` to list available templates.
 - Add `jen list vars` to list project variables and their values (same as `jen export` but more human-readable).
 - Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Allow `do` step to define multiple actions to call.
