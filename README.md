@@ -107,9 +107,20 @@ Creating triggers on CI/CD pipelines for project foobar
 Done.
 ```
 
+You can also run `jen do` without specifying action and it will prompt you for which one to execute:
+
+```bash
+$ jen do
+? Select action to execute  [Use arrows to move, type to filter]
+> create
+  install
+  prompt
+  uninstall
+```
+
 ## Executing scripts
 
-You can also execute custom scripts (or any shell command really) with `jen exec CMD ARG1 ARG2 ...`. The jen examples include scripts `create-cicd-triggers`, `create-docker-repo`, `remove-cicd-triggers` and `remove-docker-repo`. For example:
+You can execute custom scripts (or any shell command really) with `jen exec CMD ARG1 ARG2 ...`. The jen examples include scripts `create-cicd-triggers`, `create-docker-repo`, `remove-cicd-triggers` and `remove-docker-repo`. For example:
 
 ```bash
 $ jen exec remove-cicd-triggers
@@ -401,12 +412,10 @@ To associate a template with an existing project that was not initially generate
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
 - Add `jen list templates` to list available templates.
-- Add `jen list actions` to list available actions in template.
 - Add `jen list scripts` to list available scripts (both shared and template-specific).
 - Add `jen list vars` to list project variables and their values (same as `jen export` but more human-readable).
 - Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Allow `do` step to define multiple actions to call.
-- Invoking `jen do` without specifying an action should prompt user to select it from available list of actions.
 - Add reusable modules (including both templates and scripts).
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
