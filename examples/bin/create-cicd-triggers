@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+jen require PROJECT
 echo "Creating triggers on CI/CD pipelines for project $PROJECT"
 sleep 1
 echo "Done."

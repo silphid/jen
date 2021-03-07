@@ -453,6 +453,19 @@ Currently, those two placeholders are hardcoded and are the only ones supported,
 This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
 unlikely to encounter in your project for any other reason than those placeholders!
 
+# Other commands
+
+## Verifying required variables in custom scripts
+
+To make your scripts more robust and self documented, you can use the `jen require VAR1 VAR2 ...` command in their first few lines (typically after `set -e` to make script fail in case of missing variable):
+
+```bash
+#!/bin/bash
+set -e
+jen require PROJECT TEAM
+echo "You are now garanteed that the $PROJECT and $TEAM variables can be used safely"
+```
+
 # Tips
 
 ## Associating an existing project with a template
@@ -462,9 +475,9 @@ To associate a template with an existing project that was not initially generate
 # Wishlist
 
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
-- Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Allow `do` step to define multiple actions to call.
 - Add reusable modules (including both templates and scripts).
+- Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.

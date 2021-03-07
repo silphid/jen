@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+jen require PROJECT
 echo "Removing docker image repo for project $PROJECT"
 sleep 1
 echo "Done."

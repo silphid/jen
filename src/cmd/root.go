@@ -7,6 +7,7 @@ import (
 	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/Samasource/jen/src/cmd/list"
 	"github.com/Samasource/jen/src/cmd/pull"
+	"github.com/Samasource/jen/src/cmd/require"
 	"github.com/Samasource/jen/src/cmd/shell"
 	"github.com/Samasource/jen/src/internal/logging"
 	"github.com/spf13/cobra"
@@ -34,5 +35,6 @@ continues to support you throughout development in executing project-related com
 	c.AddCommand(shell.New(&options))
 	c.AddCommand(list.New(&options))
 	c.AddCommand(export.New(&options))
+	c.AddCommand(require.New(&options))
 	return c
 }
