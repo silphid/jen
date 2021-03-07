@@ -153,7 +153,7 @@ func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error)
 		},
 		{
 			name:          "do",
-			defaultSubKey: "action",
+			defaultSubKey: "actions",
 			fct:           loadDoStep,
 		},
 	}
@@ -361,12 +361,12 @@ func loadExecStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 }
 
 func loadDoStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
-	action, err := getRequiredStringFromMap(_map, "action")
+	actions, err := getRequiredStringsOrStringFromMap(_map, "actions")
 	if err != nil {
 		return nil, err
 	}
 
 	return do.Do{
-		Action: action,
+		Actions: actions,
 	}, nil
 }

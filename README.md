@@ -360,9 +360,13 @@ actions:
 
   # By convention, the "uninstall" action is in charge of removing the project from infra
   uninstall:
-    # Here the "exec" step is invoked multiple times, each executing a single command
-    - exec: remove-docker-repo
-    - exec: remove-cicd-triggers
+    # The "confirm" step is similar to "if", however it prompts user with given message and
+    # only upon confirmation executes steps in the "then" clause.
+    - confirm: Are you sure you want to completely uninstall project {{.PROJECT}} from infrastructure?
+      then:
+        # Here the "exec" step is invoked multiple times, each executing a single command
+        - exec: remove-docker-repo
+        - exec: remove-cicd-triggers
 ```
 
 # Templates
@@ -474,7 +478,6 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
-- Allow `do` step to define multiple actions to call.
 - Add reusable modules (including both templates and scripts).
 - Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).
 - Add `set` step to set multiple variables.

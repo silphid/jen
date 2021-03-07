@@ -253,6 +253,19 @@ exec:
 			},
 		},
 		{
+			Name: "exec step multiple child strings",
+			Buffer: `
+exec:
+  - Command 1
+  - Command 2`,
+			Expected: execstep.Exec{
+				Commands: []string{
+					"Command 1",
+					"Command 2",
+				},
+			},
+		},
+		{
 			Name: "exec step short-hand",
 			Buffer: `
 exec: Command 1`,
@@ -264,9 +277,21 @@ exec: Command 1`,
 			Name: "do step long-hand",
 			Buffer: `
 do:
-  action: Action`,
+  actions:
+    - Action 1
+    - Action 2`,
 			Expected: do.Do{
-				Action: "Action",
+				Actions: []string{"Action 1", "Action 2"},
+			},
+		},
+		{
+			Name: "do step multiple child strings",
+			Buffer: `
+do:
+  - Action 1
+  - Action 2`,
+			Expected: do.Do{
+				Actions: []string{"Action 1", "Action 2"},
 			},
 		},
 		{
@@ -274,7 +299,7 @@ do:
 			Buffer: `
 do: Action`,
 			Expected: do.Do{
-				Action: "Action",
+				Actions: []string{"Action"},
 			},
 		},
 	}
