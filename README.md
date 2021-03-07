@@ -85,9 +85,36 @@ $ jen do create
 8. If in previous prompts you opted for installing your project in CI/CD, the `install` action will be called now to simulate that.
 9. At this point, typically, you would commit your project to git, including the `jen.yaml` file.
 
+## Inspecting project variables
+
+Let's have a look at our project's `jen.yaml` file that has just been created:
+
+```bash
+cat jen.yaml
+version: 0.2.0
+templatename: hello-world
+vars:
+  INSTALL: true
+  NEWRELIC: true
+  PROJECT: foobar
+  PSQL: true
+  TEAM: devops
+```
+
+But there's a dedicated command for viewing variables, which can be invoked from anywhere within your project structure:
+
+```bash
+$ jen list vars
+INSTALL: true
+NEWRELIC: true
+PROJECT: foobar
+PSQL: true
+TEAM: devops
+```
+
 ## Invoking actions
 
-You can now call different project actions with `jen do ACTION`, but first let's see what actions the `hello-world` example defines:
+We are now ready to call different project actions with `jen do ACTION`, but first let's see what actions the `hello-world` example defines:
 
 ```bash
 $ jen list actions
@@ -120,7 +147,7 @@ $ jen do
 
 ## Executing scripts
 
-You can execute custom scripts (or any shell command really) with `jen exec CMD ARG1 ARG2 ...`, but first let's see what scripts the `hello-world` example defines:
+Typically, we would always go through higher-level actions to call scripts and shell commands, but we can also invoke them directly using `jen exec CMD ARG1 ARG2 ...`. However, let's first see what scripts the `hello-world` example defines:
 
 ```bash
 $ jen list scripts
@@ -151,7 +178,7 @@ $ jen exec
   remove-docker-repo
 ```
 
-Just keep in mind that you are not limited to custom scripts, you can really execute any shell command with the `jen exec CMD ARG1 ARG2 ...` syntax.
+Just keep in mind that you are not limited to custom scripts, you can execute really any shell command with the `jen exec CMD ARG1 ARG2 ...` syntax.
 
 ## Starting a sub-shell
 
@@ -436,7 +463,6 @@ To associate a template with an existing project that was not initially generate
 
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Add `jen export` command to output env variables in a format that can be sourced directly.
-- Add `jen list vars` to list project variables and their values (same as `jen export` but more human-readable).
 - Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Allow `do` step to define multiple actions to call.
 - Add reusable modules (including both templates and scripts).
