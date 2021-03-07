@@ -247,7 +247,7 @@ Actions are named operations that can be invoked by user via the `jen do ACTION`
 
 You can have any arbitrary actions with any names in your template specs, however it is recommended to follow the convention of having at least the following actions:
 
-- `create`: 
+- `create`:
   - first invoke the `prompt` action below
   - then render project template
 - `prompt`:
@@ -462,7 +462,6 @@ To associate a template with an existing project that was not initially generate
 # Wishlist
 
 - Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
-- Add `jen export` command to output env variables in a format that can be sourced directly.
 - Add `jen chk vars VAR1 VAR2 ...` to ensure that all given variables are set in environment (to document and make scripts more robust).
 - Allow `do` step to define multiple actions to call.
 - Add reusable modules (including both templates and scripts).

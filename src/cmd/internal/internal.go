@@ -164,7 +164,7 @@ func (c context) GetScripts() ([]string, error) {
 // GetShellVars returns all env vars to be used when invoking shell commands,
 // including the current process' env vars, the project's vars and an augmented
 // PATH var including extra bin dirs.
-func (c context) GetShellVars() []string {
+func (c context) GetShellVars(includeProcessVars bool) []string {
 	// Add bin dirs to PATH env var
 	binDirs := c.getBinDirs()
 	pathVar := os.Getenv("PATH")
@@ -174,9 +174,11 @@ func (c context) GetShellVars() []string {
 
 	// Collect all current process env vars, except PATH
 	var env []string
-	for _, entry := range os.Environ() {
-		if !strings.HasPrefix(entry, "PATH=") {
-			env = append(env, entry)
+	if includeProcessVars {
+		for _, entry := range os.Environ() {
+			if !strings.HasPrefix(entry, "PATH=") {
+				env = append(env, entry)
+			}
 		}
 	}
 

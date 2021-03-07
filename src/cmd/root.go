@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/Samasource/jen/src/cmd/do"
 	"github.com/Samasource/jen/src/cmd/exec"
+	"github.com/Samasource/jen/src/cmd/export"
 	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/Samasource/jen/src/cmd/list"
 	"github.com/Samasource/jen/src/cmd/pull"
@@ -32,5 +33,6 @@ continues to support you throughout development in executing project-related com
 	c.AddCommand(exec.New(&options))
 	c.AddCommand(shell.New(&options))
 	c.AddCommand(list.New(&options))
+	c.AddCommand(export.New(&options))
 	return c
 }

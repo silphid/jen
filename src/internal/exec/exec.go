@@ -29,7 +29,7 @@ type Context interface {
 	// GetShellVars returns all env vars to be used when invoking shell commands,
 	// including the current process' env vars, the project's vars and an augmented
 	// PATH var including extra bin dirs.
-	GetShellVars() []string
+	GetShellVars(includeProcessVars bool) []string
 
 	// GetAction returns action with given name within same spec file or nil if not
 	// found.

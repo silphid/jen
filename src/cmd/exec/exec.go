@@ -36,7 +36,7 @@ func run(options *internal.Options, args []string) error {
 		args = []string{script}
 	}
 
-	return shell.Execute(execContext.GetShellVars(), "", strings.Join(args, " "))
+	return shell.Execute(execContext.GetShellVars(true), "", strings.Join(args, " "))
 }
 
 func promptScript(context exec.Context) (string, error) {

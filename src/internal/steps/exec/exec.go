@@ -16,5 +16,5 @@ func (e Exec) String() string {
 
 // Execute runs one or multiple shell commands with project's variables and bin dirs
 func (e Exec) Execute(context exec.Context) error {
-	return shell.Execute(context.GetShellVars(), context.GetProjectDir(), e.Commands...)
+	return shell.Execute(context.GetShellVars(true), context.GetProjectDir(), e.Commands...)
 }
