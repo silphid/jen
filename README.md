@@ -474,7 +474,6 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
-- Add `confirm` step (similar to `if`, but `confirm` property contains message to display and `then` the steps to execute).
 - Allow `do` step to define multiple actions to call.
 - Add reusable modules (including both templates and scripts).
 - Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).

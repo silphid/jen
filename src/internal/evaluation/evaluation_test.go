@@ -23,7 +23,7 @@ func (c context) GetPlaceholders() map[string]string {
 	return c.placeholders
 }
 
-func (c context) GetShellVars() []string {
+func (c context) GetShellVars(includeProcessVars bool) []string {
 	vars := make([]string, len(c.vars))
 	for key, value := range c.vars {
 		entry := fmt.Sprintf("%s=%v", key, value)

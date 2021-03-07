@@ -14,6 +14,10 @@ type Prompt struct {
 	Default string
 }
 
+func (p Prompt) String() string {
+	return "input"
+}
+
 // Execute prompts user for input value
 func (p Prompt) Execute(context exec.Context) error {
 	if context.IsVarOverriden(p.Var) {

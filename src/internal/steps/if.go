@@ -16,7 +16,7 @@ type If struct {
 }
 
 func (i If) String() string {
-	return "do"
+	return "if"
 }
 
 // Execute executes a child action only when a given condition evaluates to true

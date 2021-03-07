@@ -78,6 +78,10 @@ actions:
 
   # By convention, the "uninstall" action is in charge of removing the project from infra
   uninstall:
-    # Here the "exec" step is invoked multiple times, each executing a single command
-    - exec: remove-docker-repo
-    - exec: remove-cicd-triggers
+    # The "confirm" step is similar to "if", however it prompts user with given message and
+    # only upon confirmation executes steps in the "then" clause.
+    - confirm: Are you sure you want to completely uninstall project {{.PROJECT}} from infrastructure?
+      then:
+        # Here the "exec" step is invoked multiple times, each executing a single command
+        - exec: remove-docker-repo
+        - exec: remove-cicd-triggers

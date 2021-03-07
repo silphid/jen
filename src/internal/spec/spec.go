@@ -106,12 +106,16 @@ func loadExecutables(list yaml.List, templateDir string) (exec.Executables, erro
 }
 
 func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error) {
-	// Special case for if step
+	// Special case for if and confirm steps
 	_map, ok := node.(yaml.Map)
 	if ok {
 		_, ok = _map["if"]
 		if ok {
 			return loadIfStep(_map, templateDir)
+		}
+		_, ok = _map["confirm"]
+		if ok {
+			return loadConfirmStep(_map, templateDir)
 		}
 	}
 
@@ -183,6 +187,25 @@ func loadIfStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	return steps.If{
 		Condition: condition,
 		Then:      executables,
+	}, nil
+}
+
+func loadConfirmStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+	message, err := getRequiredStringFromMap(_map, "confirm")
+	if err != nil {
+		return nil, err
+	}
+	list, err := getRequiredList(_map, "then")
+	if err != nil {
+		return nil, err
+	}
+	executables, err := loadExecutables(list, templateDir)
+	if err != nil {
+		return nil, err
+	}
+	return steps.Confirm{
+		Message: message,
+		Then:    executables,
 	}, nil
 }
 
