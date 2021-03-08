@@ -19,10 +19,11 @@ import (
 
 // Spec represents a template specification file found in the root of the template's dir
 type Spec struct {
-	Name        string
-	Version     string
-	Description string
-	Actions     map[string]Action
+	Name         string
+	Version      string
+	Description  string
+	Placeholders map[string]string
+	Actions      map[string]Action
 }
 
 // Load loads spec object from a template directory
@@ -58,6 +59,15 @@ func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
 		return nil, err
 	}
 
+	// Load placeholders
+	placeholders, ok, err := getOptionalMap(_map, "placeholders")
+	if err != nil {
+		return nil, err
+	}
+	if ok {
+		spec.Placeholders, err = loadPlaceholders(placeholders)
+	}
+
 	// Load actions
 	actions, err := getRequiredMap(_map, "actions")
 	if err != nil {
@@ -69,6 +79,18 @@ func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
 	}
 
 	return spec, nil
+}
+
+func loadPlaceholders(_map yaml.Map) (map[string]string, error) {
+	placeholders := make(map[string]string, len(_map))
+	for key, node := range _map {
+		value, ok := getString(node)
+		if !ok {
+			return nil, fmt.Errorf("value for placeholder %q must be a string", key)
+		}
+		placeholders[key] = value
+	}
+	return placeholders, nil
 }
 
 func loadActions(node yaml.Map, templateDir string) (ActionMap, error) {

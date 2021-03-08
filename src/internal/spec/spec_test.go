@@ -364,9 +364,10 @@ func TestLoadSpec(t *testing.T) {
 			Buffer: `
 version: 0.2.0
 description: Description
-import:
-  common: common
-  go: go/common
+placeholders:
+  projekt: {{.PROJECT | lower}}
+  Projekt: {{.PROJECT | title}}
+  PROJEKT: {{.PROJECT | upper}}
 actions:
   action1:
     - if: Condition 1
@@ -382,6 +383,11 @@ actions:
 				Name:        "template_name",
 				Version:     "0.2.0",
 				Description: "Description",
+				Placeholders: map[string]string{
+					"projekt": "{{.PROJECT | lower}}",
+					"Projekt": "{{.PROJECT | title}}",
+					"PROJEKT": "{{.PROJECT | upper}}",
+				},
 				Actions: ActionMap{
 					"action1": Action{
 						Name: "action1",

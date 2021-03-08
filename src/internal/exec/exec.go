@@ -17,7 +17,7 @@ type Context interface {
 	IsVarOverriden(name string) bool
 
 	// GetPlaceholders returns a map of special placeholders that can be used instead
-	// of go template expression, for lighter weight templating, especially for the
+	// of go template expressions, for more lightweight templating, especially for the
 	// project's name, which appears everywhere.
 	GetPlaceholders() map[string]string
 

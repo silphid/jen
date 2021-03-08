@@ -97,19 +97,10 @@ func (c context) IsVarOverriden(name string) bool {
 }
 
 // GetPlaceholders returns a map of special placeholders that can be used instead
-// of go template expression, for lighter weight templating, especially for the
-// project's name, which appears everywhere. For now, the only supported placeholder
-// is PROJECT, but we will eventually make placeholders configurable in spec file.
+// of go template expressions, for more lightweight templating, especially for the
+// project's name, which appears everywhere.
 func (c context) GetPlaceholders() map[string]string {
-	value, _ := c.project.Vars["PROJECT"]
-	str, ok := value.(string)
-	if !ok {
-		return nil
-	}
-	return map[string]string{
-		"projekt": strings.ToLower(str),
-		"PROJEKT": strings.ToUpper(str),
-	}
+	return c.spec.Placeholders
 }
 
 // GetEvalVars returns a dictionary of the project's variable names mapped to

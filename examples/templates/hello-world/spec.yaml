@@ -4,6 +4,15 @@ version: 0.2.0
 # Description displayed to user during template selection
 description: The customary Hello World example
 
+# Placeholders are a lightweight alternative to go template expressions, which can be used as
+# plain text anywhere in file/dir names and template files. Because placeholders are processed
+# using plain search-and-replace, ensure they have improbable names that don't risk conflicting
+# with anything else (ie: "projekt").
+placeholders:
+  projekt: "{{.PROJECT | lower}}"
+  Projekt: "{{.PROJECT | title}}"
+  PROJEKT: "{{.PROJECT | upper}}"
+
 # Actions are sets of steps that can be invoked by user by their name
 actions:
   # By convention, the "create" action is in charge of scaffolding the project initially

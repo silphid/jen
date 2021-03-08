@@ -18,7 +18,7 @@ type Context interface {
 	GetEvalVars() map[string]interface{}
 
 	// GetPlaceholders returns a map of special placeholders that can be used instead
-	// of go template expression, for lighter weight templating, especially for the
+	// of go template expressions, for more lightweight templating, especially for the
 	// project's name, which appears everywhere.
 	GetPlaceholders() map[string]string
 
@@ -64,8 +64,8 @@ func EvalTemplate(context Context, text string) (string, error) {
 	text = strings.ReplaceAll(text, tripleClose, doubleOpen+"`"+doubleClose+"`"+doubleClose)
 
 	// Perform replacement of placeholders
-	for search, replace := range context.GetPlaceholders() {
-		text = strings.ReplaceAll(text, search, replace)
+	for placeholderName, placeholderValue := range context.GetPlaceholders() {
+		text = strings.ReplaceAll(text, placeholderName, placeholderValue)
 	}
 
 	// Render go template

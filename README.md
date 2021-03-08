@@ -448,11 +448,18 @@ As the conditional for `if` steps is always a template expression, _do not_ encl
 
 ## Special placeholders
 
-Because the PROJECT variable is typically used pervasively throughout templates in the form of `{{.PROJECT}}` and `{{.PROJECT | upper}}`, we have introduced the special placeholders `projekt` and `PROJEKT`, which can be used anywhere in file/dir names and templates without any adornments.
+Placeholders are a lightweight alternative to go template expressions, which can be used as plain text anywhere in file/dir names and template files. Because placeholders are processed using plain search-and-replace, ensure they have improbable names that don't risk conflicting with anything else (ie: "projekt").
 
-For example, the text "MY PROJEKT FILE.TXT" is equivalent to "MY {{.PROJECT | upper}} FILE.TXT".
+For example, you can define the following placeholders in your template spec:
 
-Currently, those two placeholders are hardcoded and are the only ones supported, but we plan to add support for defining your own in the template spec.
+```yaml
+placeholders:
+  projekt: "{{ .PROJECT | lower }}"
+  Projekt: "{{ .PROJECT | title }}"
+  PROJEKT: "{{ .PROJECT | upper }}"
+```
+
+You can then use these placeholders anywhere without any adornments. For example, the text "MY PROJEKT FILE.TXT" is equivalent to "MY {{.PROJECT | upper}} FILE.TXT".
 
 This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
 unlikely to encounter in your project for any other reason than those placeholders!
@@ -486,10 +493,3 @@ To associate a template with an existing project that was not initially generate
 - Add more example templates, for go, node...
 - Fix `choice` step to pre-select current value, if any.
 - Allow special `.tmpl` and `.notmpl` extensions to be placed before actual extension (ie: `file.tmpl.txt`), to allow file editor to recognize them better during template editing.
-- Allow to customize placeholders in spec file:
-
-```
-placeholders:
-  projekt: {{.PROJECT | lower}}
-  PROJEKT: {{.PROJECT | upper}},
-```
