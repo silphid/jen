@@ -2,7 +2,7 @@
 
 > Jen - _noun_ (in Chinese philosophy) a compassionate love for humanity or for the world as a whole.
 
-Jen is a project scaffolding and script runner that accompanies your project throughout its life-time.
+Jen is a CLI tool for scaffolding new microservices based on Go templates, onboarding them with your CI/CD and infra, and augmenting them with your DevOps scripts for their entire life-time.
 
 # Motivation
 
