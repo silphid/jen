@@ -46,7 +46,7 @@ func GetOrCloneRepo() (string, error) {
 			return cloneDir, fmt.Errorf("listing content of target dir %q to ensure it's empty before cloning into it: %w", cloneDir, err)
 		}
 		if len(infos) > 0 {
-			return cloneDir, fmt.Errorf("jen dir %q already exists, is not a valid git working copy and already contains files so we cannot clone into it (please delete or empty it)", cloneDir)
+			return cloneDir, fmt.Errorf("dir %q already exists, but is not a valid git working copy and already contains files so we cannot clone into it (please delete or empty it)", cloneDir)
 		}
 	}
 
@@ -70,15 +70,15 @@ func getJenRepoURL() (string, error) {
 
 // getCloneDir returns the path where jen will clone the templates git repo, as specified by JEN_CLONE
 // env var, defaulting to "~/.jen/repo".
-func getCloneDir() (jenHomeDir string, err error) {
+func getCloneDir() (cloneDir string, err error) {
 	defer func() {
 		if err == nil {
-			logging.Log("Using jen home dir: %s", jenHomeDir)
+			logging.Log("Using clone dir: %s", cloneDir)
 		}
 	}()
 
-	jenHomeDir, ok := os.LookupEnv(jenCloneVar)
-	if ok && jenHomeDir != "" {
+	cloneDir, ok := os.LookupEnv(jenCloneVar)
+	if ok && cloneDir != "" {
 		return
 	}
 
@@ -87,7 +87,7 @@ func getCloneDir() (jenHomeDir string, err error) {
 		err = fmt.Errorf("failed to detect home directory: %w", err)
 		return
 	}
-	jenHomeDir = filepath.Join(home, constant.DefaultCloneDir)
+	cloneDir = filepath.Join(home, constant.DefaultCloneDir)
 	return
 }
 
