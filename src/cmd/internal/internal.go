@@ -208,6 +208,11 @@ func (c context) GetActionNames() []string {
 	return names
 }
 
+// GetTemplateDir returns the current template's dir
+func (c context) GetTemplateDir() string {
+	return c.templateDir
+}
+
 // GetProjectDir returns the current project's dir
 func (c context) GetProjectDir() string {
 	return c.project.Dir

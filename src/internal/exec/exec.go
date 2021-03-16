@@ -41,6 +41,9 @@ type Context interface {
 	// GetScripts returns the list of executable scripts in bin dirs
 	GetScripts() ([]string, error)
 
+	// GetTemplateDir returns the current template's dir
+	GetTemplateDir() string
+
 	// GetProjectDir returns the current project's dir
 	GetProjectDir() string
 }

@@ -366,8 +366,14 @@ func loadRenderStep(_map yaml.Map, templateDir string) (exec.Executable, error) 
 		return nil, err
 	}
 
+	target, err := getOptionalStringFromMap(_map, "target", "")
+	if err != nil {
+		return nil, err
+	}
+
 	return render.Render{
-		InputDir: filepath.Join(templateDir, source),
+		InputDir:  source,
+		OutputDir: target,
 	}, nil
 }
 

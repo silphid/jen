@@ -487,6 +487,7 @@ To associate a template with an existing project that was not initially generate
 
 - Add reusable modules (including both templates and scripts).
 - Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).
+- Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command returns either 0 or 1, depending on whether user responds Yes or No respectively).
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
