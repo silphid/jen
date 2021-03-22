@@ -1,6 +1,6 @@
 module github.com/Samasource/jen
 
-go 1.12
+go 1.16
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.2.9
