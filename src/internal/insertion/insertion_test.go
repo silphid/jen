@@ -1,6 +1,7 @@
 package insertion
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -112,13 +113,13 @@ body
 			},
 		},
 		{
-			name: "neither start nor end regex is invalid",
+			name: "cannot omit both start and end regex",
 			text: `
 <<<
 body
 >>>
 `,
-			error: "must specify either or both start/end regex",
+			error: "cannot omit both start and end regex",
 		},
 		{
 			name: "start flush on first line",
@@ -199,7 +200,7 @@ func TestEval(t *testing.T) {
 	items := []struct {
 		name     string
 		text     string
-		insert   *Insert
+		insert   Insert
 		expected string
 		error    string
 	}{
@@ -209,8 +210,10 @@ func TestEval(t *testing.T) {
 line 2
 line 3
 line 4
-line 2`,
-			insert: &Insert{
+line 2
+line 3
+`,
+			insert: Insert{
 				sections: []Section{{
 					start: "^line 2",
 					body:  "body 1\nbody 2",
@@ -222,7 +225,9 @@ body 1
 body 2
 line 3
 line 4
-line 2`,
+line 2
+line 3
+`,
 		},
 		{
 			name: "only end - should insert before first end match",
@@ -230,7 +235,7 @@ line 2`,
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{{
 					body: "body 1\nbody 2",
 					end:  "^line 4",
@@ -250,7 +255,7 @@ line 4
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{{
 					start: "^line 2",
 					body:  "body 1\nbody 2",
@@ -271,7 +276,7 @@ line 4`,
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{
 					{
 						start: "^line 1",
@@ -298,7 +303,7 @@ line 4`,
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{{
 					start: "^line 5",
 				}},
@@ -311,7 +316,7 @@ line 4`,
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{{
 					end: "^line 5",
 				}},
@@ -324,13 +329,31 @@ line 4`,
 line 2
 line 3
 line 4`,
-			insert: &Insert{
+			insert: Insert{
 				sections: []Section{{
 					start: "^line 2",
 					end:   "^line 1",
 				}},
 			},
 			error: `could not locate insertion end "^line 1" after start "^line 2"`,
+		},
+		{
+			name: "invalid start regex",
+			insert: Insert{
+				sections: []Section{{
+					start: "(",
+				}},
+			},
+			error: `invalid start regex "("`,
+		},
+		{
+			name: "invalid end regex",
+			insert: Insert{
+				sections: []Section{{
+					end: "(",
+				}},
+			},
+			error: `invalid end regex "("`,
 		},
 	}
 
@@ -342,7 +365,8 @@ line 4`,
 			actual, err := item.insert.Eval(item.text)
 
 			if item.error != "" {
-				require.EqualError(err, item.error)
+				require.Error(err)
+				require.True(strings.HasPrefix(err.Error(), item.error), "expected error starting with %q, but got %q", item.error, err.Error())
 			} else {
 				require.NoError(err, "parse should complete successfully")
 				assert.Equal(item.expected, actual)
