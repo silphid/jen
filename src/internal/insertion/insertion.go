@@ -45,6 +45,6 @@ func parse(text string) (*Insert, error) {
 	}, nil
 }
 
-func (Insert) Eval(target string) (string, error) {
+func (Insert) Eval(text string) (string, error) {
 	return "", fmt.Errorf("not implemented")
 }
