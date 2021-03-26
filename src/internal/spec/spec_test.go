@@ -227,7 +227,7 @@ choice:
 render:
   source: Source`,
 			Expected: render.Render{
-				InputDir: "TEMPLATE_DIR/Source",
+				InputDir: "Source",
 			},
 		},
 		{
@@ -235,7 +235,7 @@ render:
 			Buffer: `
 render: Source`,
 			Expected: render.Render{
-				InputDir: "TEMPLATE_DIR/Source",
+				InputDir: "Source",
 			},
 		},
 		{
@@ -305,7 +305,7 @@ do: Action`,
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadExecutable(m, "TEMPLATE_DIR")
+		return loadExecutable(m)
 	})
 }
 
@@ -353,7 +353,7 @@ action2:
 	}
 
 	run(t, fixtures, func(m yaml.Map) (interface{}, error) {
-		return loadActions(m, "TEMPLATE_DIR")
+		return loadActions(m)
 	})
 }
 

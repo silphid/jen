@@ -73,7 +73,7 @@ func loadFromMap(_map yaml.Map, templateDir string) (*Spec, error) {
 	if err != nil {
 		return nil, err
 	}
-	spec.Actions, err = loadActions(actions, templateDir)
+	spec.Actions, err = loadActions(actions)
 	if err != nil {
 		return nil, err
 	}
@@ -93,14 +93,14 @@ func loadPlaceholders(_map yaml.Map) (map[string]string, error) {
 	return placeholders, nil
 }
 
-func loadActions(node yaml.Map, templateDir string) (ActionMap, error) {
+func loadActions(node yaml.Map) (ActionMap, error) {
 	var actions []Action
 	for name, value := range node {
 		stepList, ok := value.(yaml.List)
 		if !ok {
 			return nil, fmt.Errorf("value of action %q must be a list", name)
 		}
-		executables, err := loadExecutables(stepList, templateDir)
+		executables, err := loadExecutables(stepList)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load action %q: %w", name, err)
 		}
@@ -115,10 +115,10 @@ func loadActions(node yaml.Map, templateDir string) (ActionMap, error) {
 	return m, nil
 }
 
-func loadExecutables(list yaml.List, templateDir string) (exec.Executables, error) {
+func loadExecutables(list yaml.List) (exec.Executables, error) {
 	var executables exec.Executables
 	for idx, value := range list {
-		step, err := loadExecutable(value, templateDir)
+		step, err := loadExecutable(value)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load step #%d: %w", idx+1, err)
 		}
@@ -127,17 +127,17 @@ func loadExecutables(list yaml.List, templateDir string) (exec.Executables, erro
 	return executables, nil
 }
 
-func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error) {
+func loadExecutable(node yaml.Node) (exec.Executable, error) {
 	// Special case for if and confirm steps
 	_map, ok := node.(yaml.Map)
 	if ok {
 		_, ok = _map["if"]
 		if ok {
-			return loadIfStep(_map, templateDir)
+			return loadIfStep(_map)
 		}
 		_, ok = _map["confirm"]
 		if ok {
-			return loadConfirmStep(_map, templateDir)
+			return loadConfirmStep(_map)
 		}
 	}
 
@@ -145,7 +145,7 @@ func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error)
 	items := []struct {
 		name          string
 		defaultSubKey string
-		fct           func(node yaml.Map, templateDir string) (exec.Executable, error)
+		fct           func(node yaml.Map) (exec.Executable, error)
 	}{
 		{
 			name: "input",
@@ -186,14 +186,14 @@ func loadExecutable(node yaml.Node, templateDir string) (exec.Executable, error)
 			return nil, err
 		}
 		if ok {
-			return x.fct(_map, templateDir)
+			return x.fct(_map)
 		}
 	}
 
 	return nil, fmt.Errorf("unknown step type")
 }
 
-func loadIfStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadIfStep(_map yaml.Map) (exec.Executable, error) {
 	condition, err := getRequiredStringFromMap(_map, "if")
 	if err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func loadIfStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	if err != nil {
 		return nil, err
 	}
-	executables, err := loadExecutables(list, templateDir)
+	executables, err := loadExecutables(list)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func loadIfStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	}, nil
 }
 
-func loadConfirmStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadConfirmStep(_map yaml.Map) (exec.Executable, error) {
 	message, err := getRequiredStringFromMap(_map, "confirm")
 	if err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func loadConfirmStep(_map yaml.Map, templateDir string) (exec.Executable, error)
 	if err != nil {
 		return nil, err
 	}
-	executables, err := loadExecutables(list, templateDir)
+	executables, err := loadExecutables(list)
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +231,7 @@ func loadConfirmStep(_map yaml.Map, templateDir string) (exec.Executable, error)
 	}, nil
 }
 
-func loadInputStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadInputStep(_map yaml.Map) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -251,7 +251,7 @@ func loadInputStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	}, nil
 }
 
-func loadOptionStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadOptionStep(_map yaml.Map) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -271,7 +271,7 @@ func loadOptionStep(_map yaml.Map, templateDir string) (exec.Executable, error) 
 	}, nil
 }
 
-func loadOptionsStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadOptionsStep(_map yaml.Map) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -313,7 +313,7 @@ func loadOptionsStep(_map yaml.Map, templateDir string) (exec.Executable, error)
 	}, nil
 }
 
-func loadChoiceStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadChoiceStep(_map yaml.Map) (exec.Executable, error) {
 	question, err := getRequiredStringFromMap(_map, "question")
 	if err != nil {
 		return nil, err
@@ -360,7 +360,7 @@ func loadChoiceStep(_map yaml.Map, templateDir string) (exec.Executable, error) 
 	}, nil
 }
 
-func loadRenderStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadRenderStep(_map yaml.Map) (exec.Executable, error) {
 	source, err := getRequiredStringFromMap(_map, "source")
 	if err != nil {
 		return nil, err
@@ -377,7 +377,7 @@ func loadRenderStep(_map yaml.Map, templateDir string) (exec.Executable, error) 
 	}, nil
 }
 
-func loadExecStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadExecStep(_map yaml.Map) (exec.Executable, error) {
 	commands, err := getRequiredStringsOrStringFromMap(_map, "commands")
 	if err != nil {
 		return nil, err
@@ -388,7 +388,7 @@ func loadExecStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
 	}, nil
 }
 
-func loadDoStep(_map yaml.Map, templateDir string) (exec.Executable, error) {
+func loadDoStep(_map yaml.Map) (exec.Executable, error) {
 	actions, err := getRequiredStringsOrStringFromMap(_map, "actions")
 	if err != nil {
 		return nil, err
