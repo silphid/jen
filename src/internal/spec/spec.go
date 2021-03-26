@@ -338,11 +338,11 @@ func loadChoiceStep(_map yaml.Map) (exec.Executable, error) {
 		if !ok {
 			return nil, fmt.Errorf("items of %q property must be objects", "options")
 		}
-		text, err := getRequiredStringFromMap(childMap, "text")
+		value, err := getRequiredStringFromMap(childMap, "value")
 		if err != nil {
 			return nil, err
 		}
-		value, err := getRequiredStringFromMap(childMap, "value")
+		text, err := getOptionalStringFromMap(childMap, "text", value)
 		if err != nil {
 			return nil, err
 		}

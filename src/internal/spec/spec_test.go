@@ -199,8 +199,7 @@ choice:
       value: Value 1
     - text: Text 2
       value: Value 2
-    - text: Text 3
-      value: Value 3`,
+    - value: Value 3`,
 			Expected: choice.Prompt{
 				Message: "Message",
 				Var:     "Variable",
@@ -215,7 +214,7 @@ choice:
 						Value: "Value 2",
 					},
 					{
-						Text:  "Text 3",
+						Text:  "Value 3",
 						Value: "Value 3",
 					},
 				},
