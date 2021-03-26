@@ -33,14 +33,17 @@ type Context interface {
 type RenderMode int
 
 const (
-	// UnchangedRendering preserves current rendering enabled/disabled state of parent
-	UnchangedRendering RenderMode = 0
+	// DefaultRendering preserves current rendering mode of parent
+	DefaultRendering RenderMode = iota
 
-	// EnableRendering enables rendering for itself and all children recursively
-	EnableRendering = 1
+	// TemplateRendering enables template rendering for itself and all children recursively
+	TemplateRendering
 
-	// DisableRendering disables rendering for itself and all children recursively
-	DisableRendering = 2
+	// CopyRendering disables template rendering for itself and all children recursively
+	CopyRendering
+
+	// InsertRendering enables template insertion, but only for a single file
+	InsertRendering
 )
 
 // EvalBoolExpression determines whether given go template expression evaluates to true or false
@@ -100,12 +103,12 @@ func evalFileName(context Context, name string) (string, bool, RenderMode, error
 		// Evaluate expression
 		value, err := EvalBoolExpression(context, exp)
 		if err != nil {
-			return "", false, UnchangedRendering, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
+			return "", false, DefaultRendering, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
 		}
 
 		// Should we exclude file/folder?
 		if !value {
-			return "", false, UnchangedRendering, nil
+			return "", false, DefaultRendering, nil
 		}
 
 		// Remove expression from name
@@ -115,7 +118,7 @@ func evalFileName(context Context, name string) (string, bool, RenderMode, error
 	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
 	outputName, err := EvalTemplate(context, name)
 	if err != nil {
-		return "", false, UnchangedRendering, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
+		return "", false, DefaultRendering, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
 	}
 
 	// Determine render mode and remove .tmpl/.notmpl extensions
@@ -123,22 +126,28 @@ func evalFileName(context Context, name string) (string, bool, RenderMode, error
 	return outputName, true, renderMode, nil
 }
 
-var tmplExtensionRegexp = regexp.MustCompile(`\.tmpl$`)
-var notmplExtensionRegexp = regexp.MustCompile(`\.notmpl$`)
+var tmplExtensionRegexp = regexp.MustCompile(`\.tmpl($|\.)`)
+var notmplExtensionRegexp = regexp.MustCompile(`\.notmpl($|\.)`)
+var insertExtensionRegexp = regexp.MustCompile(`\.insert($|\.)`)
 
 // getRenderModeAndRemoveExtension determines render mode based on .tmpl/.notmpl extensions and removes those extensions
 func getRenderModeAndRemoveExtension(name string) (RenderMode, string) {
 	name, ok := removeRegexp(name, tmplExtensionRegexp)
 	if ok {
-		return EnableRendering, name
+		return TemplateRendering, name
 	}
 
 	name, ok = removeRegexp(name, notmplExtensionRegexp)
 	if ok {
-		return DisableRendering, name
+		return CopyRendering, name
 	}
 
-	return UnchangedRendering, name
+	name, ok = removeRegexp(name, insertExtensionRegexp)
+	if ok {
+		return InsertRendering, name
+	}
+
+	return DefaultRendering, name
 }
 
 func removeRegexp(input string, regexp *regexp.Regexp) (string, bool) {

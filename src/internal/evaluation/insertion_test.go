@@ -1,4 +1,4 @@
-package insertion
+package evaluation
 
 import (
 	"strings"
@@ -9,7 +9,7 @@ import (
 	_require "github.com/stretchr/testify/require"
 )
 
-func TestParse(t *testing.T) {
+func TestNewInsert(t *testing.T) {
 
 	items := []struct {
 		name     string
@@ -177,7 +177,7 @@ body
 			deep.CompareUnexportedFields = true
 			defer func() { deep.CompareUnexportedFields = oldCompareUnexportedFields }()
 
-			actual, err := parse(item.text)
+			actual, err := NewInsert(item.text)
 
 			if item.error != "" {
 				assert.EqualError(err, item.error)
