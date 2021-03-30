@@ -4,6 +4,6 @@ Insertions are a way to insert snippets of code into an existing file. In this c
 each time developer adds a new endpoint via `jen do add-endpoint`, a new endpoint
 definition will be added in this file, along with a corresponding sub-directory.
 
-## List of endpoints (endpoint definitions will be added below, before empty line)
+List of endpoints: (endpoint definitions will be inserted below, before empty line)
 
-This text will remain a the end of file.
+This text will remain at the end of file.

@@ -19,8 +19,8 @@ actions:
   create:
     # This step invokes the "prompt" action defined below
     - do: prompt
-    # This step renders the "./src" template sub-dir into current dir
-    - render: ./src
+    # This step renders template files under "./project" sub-dir into current dir
+    - render: ./project
     # This step only executes its child steps if given expression evaluates to true
     - if: .INSTALL
       then:
