@@ -34,16 +34,16 @@ type RenderMode int
 
 const (
 	// DefaultRendering preserves current rendering mode of parent
-	DefaultRendering RenderMode = iota
+	DefaultMode RenderMode = iota
 
 	// TemplateRendering enables template rendering for itself and all children recursively
-	TemplateRendering
+	TemplateMode
 
 	// CopyRendering disables template rendering for itself and all children recursively
-	CopyRendering
+	CopyMode
 
 	// InsertRendering enables template insertion, but only for a single file
-	InsertRendering
+	InsertMode
 )
 
 // EvalBoolExpression determines whether given go template expression evaluates to true or false
@@ -103,12 +103,12 @@ func evalFileName(context Context, name string) (string, bool, RenderMode, error
 		// Evaluate expression
 		value, err := EvalBoolExpression(context, exp)
 		if err != nil {
-			return "", false, DefaultRendering, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
+			return "", false, DefaultMode, fmt.Errorf("failed to eval double-bracket expression in name %q: %w", name, err)
 		}
 
 		// Should we exclude file/folder?
 		if !value {
-			return "", false, DefaultRendering, nil
+			return "", false, DefaultMode, nil
 		}
 
 		// Remove expression from name
@@ -118,7 +118,7 @@ func evalFileName(context Context, name string) (string, bool, RenderMode, error
 	// Double-brace expressions (ie: "{{.name}}") in names get interpolated as expected
 	outputName, err := EvalTemplate(context, name)
 	if err != nil {
-		return "", false, DefaultRendering, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
+		return "", false, DefaultMode, fmt.Errorf("failed to evaluate double-brace expression in name %q: %w", name, err)
 	}
 
 	// Determine render mode and remove .tmpl/.notmpl extensions
@@ -134,23 +134,23 @@ var insertExtensionRegexp = regexp.MustCompile(`\.insert($|\.)`)
 func getRenderModeAndRemoveExtension(name string) (RenderMode, string) {
 	name, ok := removeRegexp(name, tmplExtensionRegexp)
 	if ok {
-		return TemplateRendering, name
+		return TemplateMode, name
 	}
 
 	name, ok = removeRegexp(name, notmplExtensionRegexp)
 	if ok {
-		return CopyRendering, name
+		return CopyMode, name
 	}
 
 	name, ok = removeRegexp(name, insertExtensionRegexp)
 	if ok {
-		return InsertRendering, name
+		return InsertMode, name
 	}
 
-	return DefaultRendering, name
+	return DefaultMode, name
 }
 
 func removeRegexp(input string, regexp *regexp.Regexp) (string, bool) {
-	output := regexp.ReplaceAllString(input, "")
+	output := regexp.ReplaceAllString(input, "$1")
 	return output, len(output) != len(input)
 }

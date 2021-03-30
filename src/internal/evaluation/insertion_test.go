@@ -196,6 +196,11 @@ body
 }
 
 func TestEval(t *testing.T) {
+	context := context{
+		vars: varMap{
+			"VAR1": "value1",
+		},
+	}
 
 	items := []struct {
 		name     string
@@ -297,6 +302,28 @@ body 3
 body 4
 line 4`,
 		},
+
+		// With templating
+		{
+			name: "with templating",
+			text: `line 1
+line 2`,
+			insert: Insert{
+				sections: []Section{
+					{
+						start: "^line 1",
+						body:  "body 1\n{{.VAR1}}\nbody 2",
+					},
+				},
+			},
+			expected: `line 1
+body 1
+value1
+body 2
+line 2`,
+		},
+
+		// Error cases
 		{
 			name: "no start match",
 			text: `line 1
@@ -362,7 +389,7 @@ line 4`,
 			assert := _assert.New(t)
 			require := _require.New(t)
 
-			actual, err := item.insert.Eval(item.text)
+			actual, err := item.insert.Eval(context, item.text)
 
 			if item.error != "" {
 				require.Error(err)

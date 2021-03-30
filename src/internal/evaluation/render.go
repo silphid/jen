@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Samasource/jen/src/internal/insertion"
 	"github.com/Samasource/jen/src/internal/logging"
 )
 
@@ -60,13 +59,13 @@ func getEntries(context Context, inputDir, outputDir string, parentMode RenderMo
 		}
 
 		// Mode defaults to parent's mode
-		if mode == DefaultRendering {
+		if mode == DefaultMode {
 			mode = parentMode
 		}
 
 		// Directory?
 		if info.IsDir() {
-			if mode == InsertRendering {
+			if mode == InsertMode {
 				return nil, fmt.Errorf("the .insert extension is not supported for directories: %q", inputName)
 			}
 			children, err := getEntries(context, inputPath, outputPath, mode)
@@ -96,15 +95,15 @@ func renderFile(context Context, inputPath, outputPath string, renderMode Render
 
 	// Render input as template or copy as-is
 	var outputText string
-	if renderMode == TemplateRendering {
+	if renderMode == TemplateMode {
 		// Render file as template
 		outputText, err = EvalTemplate(context, string(inputText))
 		if err != nil {
 			return fmt.Errorf("failed to render template %q: %w", inputPath, err)
 		}
-	} else if renderMode == InsertRendering {
+	} else if renderMode == InsertMode {
 		// Parse insertion template
-		insert, err := insertion.NewInsert(string(inputText))
+		insert, err := NewInsert(string(inputText))
 		if err != nil {
 			return fmt.Errorf("failed to parse insertion template %q: %w", inputPath, err)
 		}
