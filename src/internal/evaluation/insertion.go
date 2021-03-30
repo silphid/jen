@@ -1,8 +1,7 @@
-package insertion
+package evaluation
 
 import (
 	"fmt"
-	"io/ioutil"
 	"regexp"
 )
 
@@ -16,17 +15,9 @@ type Insert struct {
 	sections []Section
 }
 
-func Load(file string) (*Insert, error) {
-	text, err := ioutil.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-	return parse(string(text))
-}
-
 var regex = regexp.MustCompile(`(?m)^<<< *(.*)\n((?:.*\n)*?(?:.*))\n>>> *(.*)$\n?`)
 
-func parse(text string) (*Insert, error) {
+func NewInsert(text string) (*Insert, error) {
 	matches := regex.FindAllStringSubmatch(text, -1)
 	sections := make([]Section, len(matches))
 	for i, match := range matches {
@@ -45,13 +36,22 @@ func parse(text string) (*Insert, error) {
 	}, nil
 }
 
-func (i Insert) Eval(text string) (string, error) {
+func (i Insert) Eval(context Context, text string) (string, error) {
 	for _, section := range i.sections {
+		// Determine where to insert section body into target string
 		insertionIndex, err := findInsertionIndex(text, section.start, section.end)
 		if err != nil {
 			return "", err
 		}
-		text = text[:insertionIndex] + section.body + "\n" + text[insertionIndex:]
+
+		// Evaluate section body as template
+		body, err := EvalTemplate(context, string(section.body))
+		if err != nil {
+			return "", fmt.Errorf("failed to render insertion template body %q: %w", section.body, err)
+		}
+
+		// Insert section body at given insertion index
+		text = text[:insertionIndex] + body + "\n" + text[insertionIndex:]
 	}
 	return text, nil
 }

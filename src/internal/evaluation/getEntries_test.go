@@ -37,9 +37,9 @@ func TestGetEntries(t *testing.T) {
 				"file1.txt",
 			},
 			Expected: []entry{
-				{input: "dir1/file2.txt", output: "dir1/file2.txt"},
-				{input: "dir2/file3.txt", output: "dir2/file3.txt"},
-				{input: "file1.txt", output: "file1.txt"},
+				{input: "dir1/file2.txt", output: "dir1/file2.txt", mode: CopyMode},
+				{input: "dir2/file3.txt", output: "dir2/file3.txt", mode: CopyMode},
+				{input: "file1.txt", output: "file1.txt", mode: CopyMode},
 			},
 		},
 		{
@@ -50,9 +50,9 @@ func TestGetEntries(t *testing.T) {
 				"file1.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1/file2.txt.tmpl", output: "dir1/file2.txt", render: true},
-				{input: "dir2/file3.txt", output: "dir2/file3.txt", render: false},
-				{input: "file1.txt.tmpl", output: "file1.txt", render: true},
+				{input: "dir1/file2.txt.tmpl", output: "dir1/file2.txt", mode: TemplateMode},
+				{input: "dir2/file3.txt", output: "dir2/file3.txt", mode: CopyMode},
+				{input: "file1.txt.tmpl", output: "file1.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -69,15 +69,15 @@ func TestGetEntries(t *testing.T) {
 				"dir2/dir/file2.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1.tmpl/file1.txt", output: "dir1/file1.txt", render: true},
-				{input: "dir1.tmpl/file2.txt", output: "dir1/file2.txt", render: true},
-				{input: "dir1.tmpl/file3.txt.tmpl", output: "dir1/file3.txt", render: true},
-				{input: "dir1.tmpl/dir/file1.txt", output: "dir1/dir/file1.txt", render: true},
-				{input: "dir1.tmpl/dir/file2.txt.tmpl", output: "dir1/dir/file2.txt", render: true},
-				{input: "dir2/file1.txt", output: "dir2/file1.txt", render: false},
-				{input: "dir2/file2.txt.tmpl", output: "dir2/file2.txt", render: true},
-				{input: "dir2/dir/file1.txt", output: "dir2/dir/file1.txt", render: false},
-				{input: "dir2/dir/file2.txt.tmpl", output: "dir2/dir/file2.txt", render: true},
+				{input: "dir1.tmpl/file1.txt", output: "dir1/file1.txt", mode: TemplateMode},
+				{input: "dir1.tmpl/file2.txt", output: "dir1/file2.txt", mode: TemplateMode},
+				{input: "dir1.tmpl/file3.txt.tmpl", output: "dir1/file3.txt", mode: TemplateMode},
+				{input: "dir1.tmpl/dir/file1.txt", output: "dir1/dir/file1.txt", mode: TemplateMode},
+				{input: "dir1.tmpl/dir/file2.txt.tmpl", output: "dir1/dir/file2.txt", mode: TemplateMode},
+				{input: "dir2/file1.txt", output: "dir2/file1.txt", mode: CopyMode},
+				{input: "dir2/file2.txt.tmpl", output: "dir2/file2.txt", mode: TemplateMode},
+				{input: "dir2/dir/file1.txt", output: "dir2/dir/file1.txt", mode: CopyMode},
+				{input: "dir2/dir/file2.txt.tmpl", output: "dir2/dir/file2.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -91,12 +91,12 @@ func TestGetEntries(t *testing.T) {
 				"dir.tmpl/dir2.notmpl/dir/file2.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir.tmpl/file.txt", output: "dir/file.txt", render: true},
-				{input: "dir.tmpl/dir1/file.txt", output: "dir/dir1/file.txt", render: true},
-				{input: "dir.tmpl/dir2.notmpl/file1.txt", output: "dir/dir2/file1.txt", render: false},
-				{input: "dir.tmpl/dir2.notmpl/file2.txt.tmpl", output: "dir/dir2/file2.txt", render: true},
-				{input: "dir.tmpl/dir2.notmpl/dir/file1.txt", output: "dir/dir2/dir/file1.txt", render: false},
-				{input: "dir.tmpl/dir2.notmpl/dir/file2.txt.tmpl", output: "dir/dir2/dir/file2.txt", render: true},
+				{input: "dir.tmpl/file.txt", output: "dir/file.txt", mode: TemplateMode},
+				{input: "dir.tmpl/dir1/file.txt", output: "dir/dir1/file.txt", mode: TemplateMode},
+				{input: "dir.tmpl/dir2.notmpl/file1.txt", output: "dir/dir2/file1.txt", mode: CopyMode},
+				{input: "dir.tmpl/dir2.notmpl/file2.txt.tmpl", output: "dir/dir2/file2.txt", mode: TemplateMode},
+				{input: "dir.tmpl/dir2.notmpl/dir/file1.txt", output: "dir/dir2/dir/file1.txt", mode: CopyMode},
+				{input: "dir.tmpl/dir2.notmpl/dir/file2.txt.tmpl", output: "dir/dir2/dir/file2.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -107,7 +107,7 @@ func TestGetEntries(t *testing.T) {
 				"dir1/file3[[.UNDEFINED_VAR]].txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1/file1[[.TRUE_VAR]].txt.tmpl", output: "dir1/file1.txt", render: true},
+				{input: "dir1/file1[[.TRUE_VAR]].txt.tmpl", output: "dir1/file1.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -118,7 +118,7 @@ func TestGetEntries(t *testing.T) {
 				"dir3[[.UNDEFINED_VAR]]/file3.txt",
 			},
 			Expected: []entry{
-				{input: "dir1[[.TRUE_VAR]]/file1.txt", output: "dir1/file1.txt"},
+				{input: "dir1[[.TRUE_VAR]]/file1.txt", output: "dir1/file1.txt", mode: CopyMode},
 			},
 		},
 		{
@@ -127,7 +127,7 @@ func TestGetEntries(t *testing.T) {
 				"dir1{{.VAR1}}/file1{{.VAR2}}.txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1{{.VAR1}}/file1{{.VAR2}}.txt.tmpl", output: "dir1value1/file1value2.txt", render: true},
+				{input: "dir1{{.VAR1}}/file1{{.VAR2}}.txt.tmpl", output: "dir1value1/file1value2.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -136,7 +136,7 @@ func TestGetEntries(t *testing.T) {
 				"dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt.tmpl",
 			},
 			Expected: []entry{
-				{input: "dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt.tmpl", output: "dir1value1/file1value2.txt", render: true},
+				{input: "dir1{{.VAR1}}[[.TRUE_VAR]]/file1{{.VAR2}}[[.TRUE_VAR]].txt.tmpl", output: "dir1value1/file1value2.txt", mode: TemplateMode},
 			},
 		},
 		{
@@ -153,8 +153,8 @@ func TestGetEntries(t *testing.T) {
 				"abcprojektdef.txt",
 			},
 			Expected: []entry{
-				{input: "ABC_PROJEKT_DEF.txt", output: "ABC_MYPROJECT_DEF.txt"},
-				{input: "abcprojektdef.txt", output: "abcmyprojectdef.txt"},
+				{input: "ABC_PROJEKT_DEF.txt", output: "ABC_MYPROJECT_DEF.txt", mode: CopyMode},
+				{input: "abcprojektdef.txt", output: "abcmyprojectdef.txt", mode: CopyMode},
 			},
 		},
 		{
@@ -164,7 +164,7 @@ func TestGetEntries(t *testing.T) {
 				"dir3/[[.UNDEFINED_VAR]]/dir4/file2.txt",
 			},
 			Expected: []entry{
-				{input: "dir1/[[.TRUE_VAR]]/dir2/file1.txt", output: "dir1/dir2/file1.txt"},
+				{input: "dir1/[[.TRUE_VAR]]/dir2/file1.txt", output: "dir1/dir2/file1.txt", mode: CopyMode},
 			},
 		},
 	}
@@ -175,7 +175,7 @@ func TestGetEntries(t *testing.T) {
 			results = append(results, entry{
 				input:  filepath.Join(inputDir, ent.input),
 				output: filepath.Join("/output", ent.output),
-				render: ent.render,
+				mode:   ent.mode,
 			})
 		}
 		return results
@@ -192,7 +192,7 @@ func TestGetEntries(t *testing.T) {
 				createEmptyFile(inputFile)
 			}
 
-			actual, err := getEntries(context, inputDir, outputDir, false)
+			actual, err := getEntries(context, inputDir, outputDir, CopyMode)
 			expected := getExpected(f.Expected, inputDir)
 
 			sort.SliceStable(actual, func(i, j int) bool {

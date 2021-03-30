@@ -15,15 +15,14 @@ import (
 func Render(context Context, inputDir, outputDir string) error {
 	// Determine if rendering should be turned on from the start
 	renderMode, _ := getRenderModeAndRemoveExtension(inputDir)
-	renderRecursively := renderMode == EnableRendering
 
-	entries, err := getEntries(context, inputDir, outputDir, renderRecursively)
+	entries, err := getEntries(context, inputDir, outputDir, renderMode)
 	if err != nil {
 		return fmt.Errorf("failed to determine entries to render: %w", err)
 	}
 
 	for _, entry := range entries {
-		err = renderFile(context, entry.input, entry.output, entry.render)
+		err = renderFile(context, entry.input, entry.output, entry.mode)
 		if err != nil {
 			return err
 		}
@@ -35,10 +34,10 @@ func Render(context Context, inputDir, outputDir string) error {
 type entry struct {
 	input  string
 	output string
-	render bool
+	mode   RenderMode
 }
 
-func getEntries(context Context, inputDir, outputDir string, renderParent bool) ([]entry, error) {
+func getEntries(context Context, inputDir, outputDir string, parentMode RenderMode) ([]entry, error) {
 	var entries []entry
 	infos, err := ioutil.ReadDir(inputDir)
 	if err != nil {
@@ -48,28 +47,28 @@ func getEntries(context Context, inputDir, outputDir string, renderParent bool) 
 		// Determine input/output names and render mode
 		inputName := info.Name()
 		inputPath := filepath.Join(inputDir, inputName)
-		outputName, included, renderMode, err := evalFileName(context, inputName)
+		outputName, included, mode, err := evalFileName(context, inputName)
 		if err != nil {
 			return nil, err
 		}
 		outputPath := filepath.Join(outputDir, outputName)
-
-		// Determine render enabled/disabled for this item
-		renderItem := renderParent
-		if renderMode == EnableRendering {
-			renderItem = true
-		} else if renderMode == DisableRendering {
-			renderItem = false
-		}
 
 		// Skip item?
 		if !included {
 			continue
 		}
 
+		// Mode defaults to parent's mode
+		if mode == DefaultMode {
+			mode = parentMode
+		}
+
 		// Directory?
 		if info.IsDir() {
-			children, err := getEntries(context, inputPath, outputPath, renderItem)
+			if mode == InsertMode {
+				return nil, fmt.Errorf("the .insert extension is not supported for directories: %q", inputName)
+			}
+			children, err := getEntries(context, inputPath, outputPath, mode)
 			if err != nil {
 				return nil, err
 			}
@@ -78,29 +77,49 @@ func getEntries(context Context, inputDir, outputDir string, renderParent bool) 
 			entries = append(entries, entry{
 				input:  inputPath,
 				output: outputPath,
-				render: renderItem,
+				mode:   mode,
 			})
 		}
 	}
 	return entries, nil
 }
 
-func renderFile(context Context, inputPath, outputPath string, render bool) error {
+func renderFile(context Context, inputPath, outputPath string, renderMode RenderMode) error {
 	logging.Log("Rendering file %q -> %q", inputPath, outputPath)
 
 	// Read input file
 	inputText, err := ioutil.ReadFile(inputPath)
 	if err != nil {
-		return fmt.Errorf("failed to read template file: %w", err)
+		return fmt.Errorf("failed to read template file %q: %w", inputPath, err)
 	}
 
 	// Render input as template or copy as-is
-	outputText := string(inputText)
-	if render {
-		outputText, err = EvalTemplate(context, outputText)
+	var outputText string
+	if renderMode == TemplateMode {
+		// Render file as template
+		outputText, err = EvalTemplate(context, string(inputText))
 		if err != nil {
-			return fmt.Errorf("failed to render template %v: %w", inputPath, err)
+			return fmt.Errorf("failed to render template %q: %w", inputPath, err)
 		}
+	} else if renderMode == InsertMode {
+		// Parse insertion template
+		insert, err := NewInsert(string(inputText))
+		if err != nil {
+			return fmt.Errorf("failed to parse insertion template %q: %w", inputPath, err)
+		}
+		// Read target file
+		targetText, err := ioutil.ReadFile(outputPath)
+		if err != nil {
+			return fmt.Errorf("failed to read insertion target file %q: %w", outputPath, err)
+		}
+		// Perform insertion
+		outputText, err = insert.Eval(context, string(targetText))
+		if err != nil {
+			return fmt.Errorf("failed to insert template %q into target file %q: %w", inputPath, outputPath, err)
+		}
+	} else {
+		// Copy file as-is
+		outputText = string(inputText)
 	}
 
 	// Create output dir

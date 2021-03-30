@@ -9,12 +9,13 @@ import (
 	"github.com/Samasource/jen/src/cmd/pull"
 	"github.com/Samasource/jen/src/cmd/require"
 	"github.com/Samasource/jen/src/cmd/shell"
+	"github.com/Samasource/jen/src/cmd/versioning"
 	"github.com/Samasource/jen/src/internal/logging"
 	"github.com/spf13/cobra"
 )
 
 // NewRoot creates the root cobra command
-func NewRoot() *cobra.Command {
+func NewRoot(version string) *cobra.Command {
 	c := &cobra.Command{
 		Use:   "jen",
 		Short: "Jen is a code generator and script runner for creating and maintaining projects",
@@ -29,6 +30,7 @@ continues to support you throughout development in executing project-related com
 	c.PersistentFlags().StringVarP(&options.TemplateName, "template", "t", "", "Name of template to use (defaults to prompting user)")
 	c.PersistentFlags().BoolVarP(&options.SkipConfirm, "yes", "y", false, "skip all confirmation prompts")
 	c.PersistentFlags().StringSliceVarP(&options.VarOverrides, "set", "s", []string{}, "sets a project variable manually (can be used multiple times)")
+	c.AddCommand(versioning.New(version))
 	c.AddCommand(pull.New())
 	c.AddCommand(do.New(&options))
 	c.AddCommand(exec.New(&options))

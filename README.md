@@ -4,10 +4,13 @@
 
 Jen is a CLI tool for scaffolding new microservices based on Go templates, onboarding them with your CI/CD and infra, and augmenting them with your DevOps scripts for their entire life-time.
 
+# Scaffolding, rendering, templating...
+
+Throughout this document, the terms "scaffolding", "rendering" and "templating" are used interchangeably and all basically refer to the same idea of creating a project's general skeleton and boilerplate code from templates files. 
+
 # Motivation
 
-We were not satisfied with existing project scaffolding tools, which often are language-specific and leave you on your own once your project has been generated. Many DevOps shell scripts (ie: registering your project with CI/CD and other infra, promoting it from staging to prod...) need to be maintained, organized and shared separately. They typically require similar inputs to those provided
-during scaffolding (ie: project name, cluster, cloud region, team...), yet you have to pass that information as arguments all over again every time you invoke them.
+We were not satisfied with existing project scaffolding tools, which often are language-specific and leave you on your own once your project has been generated. Many DevOps shell scripts (ie: registering your project with CI/CD and other infra, promoting it from staging to prod...) need to be maintained, organized and shared separately. They typically require similar inputs to those provided during scaffolding (ie: project name, cluster, cloud region, team...), yet you have to pass that information as arguments all over again every time you invoke them.
 
 As DevOps, we have many concerns to address, such as:
 
@@ -463,6 +466,42 @@ You can then use these placeholders anywhere without any adornments. For example
 
 This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
 unlikely to encounter in your project for any other reason than those placeholders!
+
+## Adding multiple similar elements to a project after scaffolding
+
+Let's say you want developers to be able to add multiple endpoints to a microservice, each one with its own sub-dir and source files. To achieve that you simply need to put your endpoint template files in a separate sub-dir than the main template files. For example, if your project's main template files are in a `project` sub-dir, you could create another `endpoint` sub-dir with just your endpoint template files. Then simply create a standalone action that prompts user for endpoint-specific values and then renders the `endpoint` sub-dir using those values.
+
+See `hello-world` example template for a demonstration of adding multiple endpoints to an already generated project.
+
+## Inserting content into an existing file at a given location
+
+The endpoint scenario described in previous section is fine, except that the files and directories you generate for each endpoint will typically not just sit there in your project. You probably also need to reference them from some parent source file. That means that for each endpoint you add to the project, you would need to insert referencing code into some existing file.
+
+To that end, Jen supports special template files named "inserts" and marked with the `.insert` extension (or with `.insert.` anywhere in their name) that are intended to be inserted into a target file of same name (minus the `.insert` extension) that must already exist in project at same path location.
+
+Each insert template file may define one or more insertion sections, each delimited by `<<< START_REGEX` and `>>> END_REGEX` lines. The `START_REGEX` and `END_REGEX` expressions are optional, but at least one of them must be specified. Those start and end regular expressions allow to find the insertion location in target file for the section's template body. For example:
+
+```
+<<< ^List of endpoints
+Definition of endpoint {{.NAME}} for path {{.PATH}}
+>>> ^$
+```
+
+The start regex above (`^List of endpoints`) serves to find first line that starts with `List of endpoints`, then the end regex (`^$`) serves to find first empty line following start line. Jen will then insert the template's body (`Definition of endpoint...`) before that empty line.
+
+If you need to insert text in different locations of same file, you can specify multiple sections, each delimited by `<<<` and `>>>` markers.
+
+All text outside delimited sections simply gets discarded/ignored.
+
+The rules for finding insertion point is as follows:
+- If you specify only start regex, insertion will happen right after first matching start line.
+- If you specify only end regex, insertion will happen right before first matching end line.
+- If you specify both start and end regexes, insertion will happen right before first matching end line after
+first matching start line.
+
+See `hello-world` example template for a demonstration of inserting multiple snippets into an existing source file at a specific insertion location.
+
+For complete regex syntax reference, see the [RE2 wiki](https://github.com/google/re2/wiki/Syntax).
 
 # Other commands
 
