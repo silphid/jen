@@ -524,6 +524,7 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
+- Allow marking prompt steps' variables as transient, which does not persist them to jen.yaml file (useful for variables scoped to some action).
 - Add reusable modules (including both templates and scripts).
 - Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).
 - Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command returns either 0 or 1, depending on whether user responds Yes or No respectively).
@@ -532,4 +533,3 @@ To associate a template with an existing project that was not initially generate
 - Add regex validation for `input` prompt.
 - Add more example templates, for go, node...
 - Fix `choice` step to pre-select current value, if any.
-- Allow special `.tmpl` and `.notmpl` extensions to be placed before actual extension (ie: `file.tmpl.txt`), to allow file editor to recognize them better during template editing.
