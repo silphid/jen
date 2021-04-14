@@ -6,7 +6,7 @@ Jen is a CLI tool for scaffolding new microservices based on Go templates, onboa
 
 # Scaffolding, rendering, templating...
 
-Throughout this document, the terms "scaffolding", "rendering" and "templating" are used interchangeably and all basically refer to the same idea of creating a project's general skeleton and boilerplate code from templates files. 
+Throughout this document, the terms "scaffolding", "rendering" and "templating" are used interchangeably and all basically refer to the same idea of creating a project's general skeleton and boilerplate code from templates files.
 
 # Motivation
 
@@ -494,10 +494,11 @@ If you need to insert text in different locations of same file, you can specify 
 All text outside delimited sections simply gets discarded/ignored.
 
 The rules for finding insertion point is as follows:
+
 - If you specify only start regex, insertion will happen right after first matching start line.
 - If you specify only end regex, insertion will happen right before first matching end line.
 - If you specify both start and end regexes, insertion will happen right before first matching end line after
-first matching start line.
+  first matching start line.
 
 See `hello-world` example template for a demonstration of inserting multiple snippets into an existing source file at a specific insertion location.
 
@@ -524,9 +525,10 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
+- Support bin folder directly within each project, which can override scripts in other bin dirs.
+- Way for overridding bin script to fallback/call-out to default implementation(?)
 - Allow marking prompt steps' variables as transient, which does not persist them to jen.yaml file (useful for variables scoped to some action).
-- Add reusable modules (including both templates and scripts).
-- Add support for injecting snippets in specific sections of files in a second time (ie: adding multiple endpoints to an existing service).
+- Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
 - Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command returns either 0 or 1, depending on whether user responds Yes or No respectively).
 - Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
