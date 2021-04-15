@@ -119,8 +119,9 @@ func (c context) GetEvalVars() map[string]interface{} {
 // getBinDirs returns the list of bin dirs that actually exist
 func (c context) getBinDirs() []string {
 	binDirs := []string{
-		filepath.Join(c.cloneSubDir, "bin"),
 		filepath.Join(c.project.Dir, "bin"),
+		filepath.Join(c.templateDir, "bin"),
+		filepath.Join(c.cloneSubDir, "bin"),
 	}
 
 	// Add bin dirs to PATH env var
@@ -156,12 +157,8 @@ func (c context) GetScripts() ([]string, error) {
 // including the current process' env vars, the project's vars and an augmented
 // PATH var including extra bin dirs.
 func (c context) GetShellVars(includeProcessVars bool) []string {
-	// Add bin dirs to PATH env var
-	binDirs := c.getBinDirs()
-	pathVar := os.Getenv("PATH")
-	for _, dir := range binDirs {
-		pathVar = dir + ":" + pathVar
-	}
+	// Combine bin dirs with PATH env var
+	pathVar := strings.Join(append(c.getBinDirs(), os.Getenv("PATH")), ":")
 
 	// Collect all current process env vars, except PATH
 	var env []string

@@ -1,6 +1,10 @@
 package shell
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"github.com/Samasource/jen/src/cmd/internal"
 	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/spf13/cobra"
@@ -24,5 +28,16 @@ func run(options *internal.Options, args []string) error {
 		return err
 	}
 
-	return shell.Execute(execContext.GetShellVars(true), "", "$SHELL")
+	shellEnv := os.Getenv("SHELL")
+	if shellEnv == "" {
+		shellEnv = "/bin/bash"
+	}
+
+	flag := "--norc"
+	if strings.HasSuffix(shellEnv, "/zsh") {
+		flag = "--norcs"
+	}
+
+	cmd := fmt.Sprintf("%s %s", shellEnv, flag)
+	return shell.Execute(execContext.GetShellVars(true), "", cmd)
 }

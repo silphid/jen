@@ -525,7 +525,6 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
-- Support bin folder directly within each project, which can override scripts in other bin dirs.
 - Way for overridding bin script to fallback/call-out to default implementation(?)
 - Allow marking prompt steps' variables as transient, which does not persist them to jen.yaml file (useful for variables scoped to some action).
 - Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
