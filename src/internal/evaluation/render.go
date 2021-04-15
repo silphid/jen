@@ -93,6 +93,12 @@ func renderFile(context Context, inputPath, outputPath string, renderMode Render
 		return fmt.Errorf("failed to read template file %q: %w", inputPath, err)
 	}
 
+	// Read input file mode
+	stat, err := os.Stat(inputPath)
+	if err != nil {
+		return fmt.Errorf("failed to read file mode of template file %q: %w", inputPath, err)
+	}
+
 	// Render input as template or copy as-is
 	var outputText string
 	if renderMode == TemplateMode {
@@ -130,7 +136,7 @@ func renderFile(context Context, inputPath, outputPath string, renderMode Render
 	}
 
 	// Write file
-	err = ioutil.WriteFile(outputPath, []byte(outputText), os.ModePerm)
+	err = ioutil.WriteFile(outputPath, []byte(outputText), stat.Mode())
 	if err != nil {
 		return fmt.Errorf("failed to write rendered output file for template %v: %w", inputPath, err)
 	}

@@ -35,7 +35,7 @@ func getTempFile() string {
 
 func writeTempFile(content string) string {
 	file := getTempFile()
-	err := ioutil.WriteFile(file, []byte(content), os.ModePerm)
+	err := ioutil.WriteFile(file, []byte(content), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +62,7 @@ func createEmptyFile(filePath string) {
 	if err != nil {
 		panic(err)
 	}
-	err = ioutil.WriteFile(filePath, []byte(""), os.ModePerm)
+	err = ioutil.WriteFile(filePath, []byte(""), 0644)
 	if err != nil {
 		panic(err)
 	}

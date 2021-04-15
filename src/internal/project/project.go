@@ -55,7 +55,7 @@ func (p Project) Save() error {
 	}
 
 	path := filepath.Join(p.Dir, constant.ProjectFileName)
-	return ioutil.WriteFile(path, doc, os.ModePerm)
+	return ioutil.WriteFile(path, doc, 0644)
 }
 
 // Load loads the project file from given project directory
