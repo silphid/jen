@@ -42,14 +42,18 @@ Create a git repo to store all your templates and scripts, using the following s
 - `templates`
   - `TEMPLATE_NAME`
     - `spec.yaml` (defines actions/steps/variables)
-    - `src` (template files to render, but this dir can be named whatever you want)
+    - `project` (template files to render, but this dir can be named whatever you want)
     - `bin` (template-specific scripts)
 
 ### Scripts `bin` directories and your `PATH`
 
-DevOps-oriented shell scripts can be packaged and distributed with your jen templates and can be either "shared" (all projects can use them, regardless of which template they use) or "template-specific" (only accessible when a specific template is used).
+DevOps-oriented shell scripts that rely on your project variables can be packaged and distributed with your jen templates. Those scripts can be placed in three kinds of locations (in order of precedence):
 
-When executing any action or shell command, jen always prepends your `PATH` env var with the template-specific `bin` directory, followed by the shared one. That means you can override shared scripts at the template level by redefining scripts with the same name as shared ones.
+- project-level `bin` dir in project's root contains project-specific scripts (only accessible from that project).
+- template-level `bin` dir contains template-specific scripts (only accessible from projects associated with that template).
+- top-level `bin` dir in git repo contains shared scripts (accessible from all projects regardless of which template they are associated with).
+
+When executing any action or shell command, jen always prepends your `PATH` env var with the three directories above, in that order. That means you can override scripts at a more specific level by redefining them with the same names as less specific ones.
 
 ## Set Jen environment variables
 
