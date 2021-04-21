@@ -12,7 +12,7 @@ empty line (denoted by `^$`) that follows start line. Jen will then insert a sin
 is `Definition of endpoint...`) before that empty line.
 
 <<< ^List of endpoints
-Definition of endpoint {{.NAME}} for path {{.PATH}}
+Definition of endpoint {{.NAME}} for path {{.URL_PATH}}
 >>> ^$
 
 The rules for finding insertion point is as follows:

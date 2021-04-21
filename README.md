@@ -380,6 +380,23 @@ actions:
         # Here the "exec" step is invoked multiple times, each executing a single command
         - exec: remove-docker-repo
         - exec: remove-cicd-triggers
+
+  # This action can be invoked multiple times after project has been initially scaffolded, in
+  # order to simulate adding endpoints to our microservice.
+  add-endpoint:
+    - input:
+        question: Endpoint name
+        # Variables prefixed with ~ are transient (temporary) and are not saved to jen.yaml file.
+        # Note that the ~ symbol is not actually part of the variable name.
+        var: ~NAME
+    - input:
+        question: Endpoint path
+        var: ~URL_PATH
+    # This renders templates under `endpoint` sub-directory. One of those template files has a `.insert`
+    # extension, meaning it is a special "insertion" template, which is meant to be inserted into an
+    # existing file of the same name at a specific insertion point (defined by regular expressions).
+    # Have a look at that file for more details on how it works.
+    - render: endpoint
 ```
 
 # Templates

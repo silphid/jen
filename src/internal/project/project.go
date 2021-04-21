@@ -49,6 +49,16 @@ type Project struct {
 // Save saves project file into given project directory
 func (p Project) Save() error {
 	p.Version = constant.ProjectFileVersion
+
+	// Keep only non-transient vars
+	allVars := p.Vars
+	p.Vars = make(map[string]interface{})
+	for key, value := range allVars {
+		if !strings.HasPrefix(key, "@") {
+			p.Vars[key] = value
+		}
+	}
+
 	doc, err := yaml.Marshal(p)
 	if err != nil {
 		return err

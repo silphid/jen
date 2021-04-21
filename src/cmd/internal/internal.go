@@ -107,7 +107,21 @@ func (c context) GetPlaceholders() map[string]string {
 // their corresponding values for evaluation purposes. It does not include the
 // process' env var.
 func (c context) GetEvalVars() map[string]interface{} {
-	vars := c.GetVars()
+	// Combine persistent and transient vars
+	vars := make(map[string]interface{})
+	for k, v := range c.project.Vars {
+		if !strings.HasPrefix("@", k) {
+			vars[k] = v
+		}
+	}
+	for k, v := range c.project.Vars {
+		if strings.HasPrefix("@", k) {
+			k = strings.TrimPrefix(k, "@")
+			vars[k] = v
+		}
+	}
+
+	// Compute built-in vars
 	absProjectDir, err := filepath.Abs(c.project.Dir)
 	if err != nil {
 		panic(fmt.Errorf("failed to determine project's absolute dir: %w", err))
