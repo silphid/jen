@@ -1,5 +1,5 @@
 # Version of jen file format (for future compatibility checks)
-version: 0.2.0
+version: 2021.04
 
 # Description displayed to user during template selection
 description: The customary Hello World example
@@ -44,7 +44,10 @@ actions:
     # The "option" step prompts user for a single boolean variable as a yes/no question
     - option:
         question: Do you want to register project {{ .PROJECT }} in infrastructure?
-        var: INSTALL
+        # Variables prefixed with ~ are transient (temporary) and are not saved to jen.yaml file.
+        # Note that the ~ symbol is not actually part of the variable name, it just marks it as
+        # transient.
+        var: ~INSTALL
         default: true
 
     # The "options" step prompts user for multiple boolean variables as a list of toggles
@@ -105,12 +108,11 @@ actions:
   add-endpoint:
     - input:
         question: Endpoint name
-        # Variables prefixed with ~ are transient (temporary) and are not saved to jen.yaml file.
-        # Note that the ~ symbol is not actually part of the variable name.
         var: ~NAME
     - input:
         question: Endpoint path
         var: ~URL_PATH
+        default: /{{.NAME}}
     # This renders templates under `endpoint` sub-directory. One of those template files has a `.insert`
     # extension, meaning it is a special "insertion" template, which is meant to be inserted into an
     # existing file of the same name at a specific insertion point (defined by regular expressions).

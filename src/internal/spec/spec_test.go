@@ -381,7 +381,7 @@ func TestLoadSpec(t *testing.T) {
 		{
 			Name: "",
 			Buffer: `
-version: 0.2.0
+version: 2021.04
 description: Description
 placeholders:
   projekt: {{.PROJECT | lower}}
@@ -400,7 +400,7 @@ actions:
         var: Variable 2`,
 			Expected: &Spec{
 				Name:        "template_name",
-				Version:     "0.2.0",
+				Version:     "2021.04",
 				Description: "Description",
 				Placeholders: map[string]string{
 					"projekt": "{{.PROJECT | lower}}",

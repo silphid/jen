@@ -98,8 +98,8 @@ Let's have a look at our project's `jen.yaml` file that has just been created:
 
 ```bash
 cat jen.yaml
-version: 0.2.0
-templatename: hello-world
+version: 2021.04
+template: hello-world
 vars:
   INSTALL: true
   NEWRELIC: true
@@ -235,7 +235,7 @@ Each template has a `spec.yaml` file in its root that specifies how to render th
 It has this general structure:
 
 ```yaml
-version: 0.2.0
+version: 2021.04
 description: ...
 actions:
   ACTION1:
@@ -289,7 +289,7 @@ The following is the [spec.yaml](https://github.com/Samasource/jen/tree/master/e
 
 ```yaml
 # Version of jen file format (for future compatibility checks)
-version: 0.2.0
+version: 2021.04
 
 # Description displayed to user during template selection
 description: The customary Hello World example

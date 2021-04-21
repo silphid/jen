@@ -110,13 +110,13 @@ func (c context) GetEvalVars() map[string]interface{} {
 	// Combine persistent and transient vars
 	vars := make(map[string]interface{})
 	for k, v := range c.project.Vars {
-		if !strings.HasPrefix("@", k) {
+		if !strings.HasPrefix(k, "~") {
 			vars[k] = v
 		}
 	}
 	for k, v := range c.project.Vars {
-		if strings.HasPrefix("@", k) {
-			k = strings.TrimPrefix(k, "@")
+		if strings.HasPrefix(k, "~") {
+			k = strings.TrimPrefix(k, "~")
 			vars[k] = v
 		}
 	}
@@ -192,7 +192,8 @@ func (c context) GetShellVars(includeProcessVars bool) []string {
 
 	// Then values env vars
 	logging.Log("Environment variables:")
-	for key, value := range c.project.Vars {
+	vars := c.GetEvalVars()
+	for key, value := range vars {
 		entry := fmt.Sprintf("%s=%v", key, value)
 		env = append(env, entry)
 		logging.Log(entry)

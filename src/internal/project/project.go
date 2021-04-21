@@ -39,11 +39,11 @@ func GetProjectDir() (string, error) {
 
 // Project represents the configuration file in a project's root dir
 type Project struct {
-	Version       string
-	TemplateName  string
-	Vars          map[string]interface{}
-	Dir           string   `yaml:"-"`
-	OverridenVars []string `yaml:"-"`
+	Version       string                 `yaml:"version"`
+	TemplateName  string                 `yaml:"template"`
+	Vars          map[string]interface{} `yaml:"vars"`
+	Dir           string                 `yaml:"-"`
+	OverridenVars []string               `yaml:"-"`
 }
 
 // Save saves project file into given project directory
@@ -54,7 +54,7 @@ func (p Project) Save() error {
 	allVars := p.Vars
 	p.Vars = make(map[string]interface{})
 	for key, value := range allVars {
-		if !strings.HasPrefix(key, "@") {
+		if !strings.HasPrefix(key, "~") {
 			p.Vars[key] = value
 		}
 	}
@@ -161,7 +161,7 @@ func confirmCreateProject() error {
 	var result bool
 	err := survey.AskOne(&survey.Confirm{
 		Message: "Jen project not found. Do you want to initialize current directory as your project root?",
-		Default: false,
+		Default: true,
 	}, &result)
 	if err != nil {
 		return err
