@@ -318,9 +318,9 @@ actions:
     - input:
         question: Project name
         var: PROJECT
-        # Here we use the special "projectDirName" variable to propose to the user the
+        # Here we use the special "PROJECT_DIR_NAME" variable to propose to the user the
         # project's directory name as default project name, which is most often the case.
-        default: "{{ .projectDirName }}"
+        default: "{{ .PROJECT_DIR_NAME }}"
 
     # The "option" step prompts user for a single boolean variable as a yes/no question
     - option:

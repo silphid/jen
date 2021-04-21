@@ -112,7 +112,8 @@ func (c context) GetEvalVars() map[string]interface{} {
 	if err != nil {
 		panic(fmt.Errorf("failed to determine project's absolute dir: %w", err))
 	}
-	vars["projectDirName"] = filepath.Base(absProjectDir)
+	vars["PROJECT_DIR"] = absProjectDir
+	vars["PROJECT_DIR_NAME"] = filepath.Base(absProjectDir)
 	return vars
 }
 

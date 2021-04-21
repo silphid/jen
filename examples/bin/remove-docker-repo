@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
+
+# This command will make the script fail if given variable(s) are undefined.
+# It also serves for documenting which variables are expected by the script.
 jen require PROJECT
+
+# The $PROJECT_DIR variable is a built-in variable that is always dynamically set
+# to the absolute path of the project's root directory. Using the following command
+# at the beginning of all jen scripts allows for scripts to be invoked from any
+# sub-directory consistently.
+cd $PROJECT_DIR
+
 echo "Removing docker image repo for project $PROJECT"
 sleep 1
 echo "Done."
