@@ -13,6 +13,7 @@ import (
 	"github.com/Samasource/jen/src/internal/steps/option"
 	"github.com/Samasource/jen/src/internal/steps/options"
 	"github.com/Samasource/jen/src/internal/steps/render"
+	"github.com/Samasource/jen/src/internal/steps/set"
 	"github.com/go-test/deep"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/stretchr/testify/assert"
@@ -89,6 +90,25 @@ then:
 						Message: "Message",
 						Var:     "Variable",
 						Default: "Default",
+					},
+				},
+			},
+		},
+		{
+			Name: "set step",
+			Buffer: `
+set:
+  VAR1: Value1
+  VAR2: Value2`,
+			Expected: set.Set{
+				Variables: []set.Variable{
+					{
+						Name:  "VAR1",
+						Value: "Value1",
+					},
+					{
+						Name:  "VAR2",
+						Value: "Value2",
 					},
 				},
 			},

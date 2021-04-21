@@ -75,6 +75,11 @@ actions:
           - text: Customer Success Engineering
             value: cse
 
+    # The "set" step sets one or multiple variables to given values without user intervention.
+    - set:
+        ORGANIZATION_ID: 123456789
+        CLOUD_PROJECT_ID: 987654321
+
   # By convention, the "install" action is in charge of setting the project up with CI/CD
   # and infra. It is typically invoked as the last step of the "create" action.
   install:

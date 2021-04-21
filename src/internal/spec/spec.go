@@ -14,6 +14,7 @@ import (
 	"github.com/Samasource/jen/src/internal/steps/option"
 	"github.com/Samasource/jen/src/internal/steps/options"
 	"github.com/Samasource/jen/src/internal/steps/render"
+	"github.com/Samasource/jen/src/internal/steps/set"
 	"github.com/kylelemons/go-gypsy/yaml"
 )
 
@@ -148,6 +149,10 @@ func loadExecutable(node yaml.Node) (exec.Executable, error) {
 		fct           func(node yaml.Map) (exec.Executable, error)
 	}{
 		{
+			name: "set",
+			fct:  loadSetStep,
+		},
+		{
 			name: "input",
 			fct:  loadInputStep,
 		},
@@ -228,6 +233,20 @@ func loadConfirmStep(_map yaml.Map) (exec.Executable, error) {
 	return steps.Confirm{
 		Message: message,
 		Then:    executables,
+	}, nil
+}
+
+func loadSetStep(_map yaml.Map) (exec.Executable, error) {
+	var variables []set.Variable
+	for name, value := range _map {
+		value, _ := getString(value)
+		variables = append(variables, set.Variable{
+			Name:  name,
+			Value: value,
+		})
+	}
+	return set.Set{
+		Variables: variables,
 	}, nil
 }
 

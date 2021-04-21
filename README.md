@@ -281,6 +281,7 @@ Steps have predefined names and purposes:
 - `choice`: prompts user for a single string var among a list of multiple proposed choices
 - `option`: prompts user for single boolean var as a yes/no question
 - `options`: prompts user for multiple boolean vars as a list of toggles
+- `set`: sets one or multiple variables to given values without user intervention
 
 ## Example
 
@@ -354,6 +355,11 @@ actions:
             value: sre
           - text: Customer Success Engineering
             value: cse
+
+    # The "set" step sets one or multiple variables to given values without user intervention.
+    - set:
+        ORGANIZATION_ID: 123456789
+        CLOUD_PROJECT_ID: 987654321
 
   # By convention, the "install" action is in charge of setting the project up with CI/CD
   # and infra. It is typically invoked as the last step of the "create" action.
@@ -533,7 +539,6 @@ To associate a template with an existing project that was not initially generate
 - Allow marking prompt steps' variables as transient, which does not persist them to jen.yaml file (useful for variables scoped to some action).
 - Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
 - Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command returns either 0 or 1, depending on whether user responds Yes or No respectively).
-- Add `set` step to set multiple variables.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
 - Add more example templates, for go, node...
