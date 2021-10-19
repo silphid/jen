@@ -6,6 +6,8 @@ builds:
     goos:
       - linux
       - darwin
+    ldflags:
+      - -extldflags "-static"
 archives:
   - format: tar.gz
     wrap_in_directory: false
