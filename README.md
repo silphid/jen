@@ -30,9 +30,18 @@ Jen aims to provide a very simple framework to answer all those questions.
 
 # Getting started
 
-## Install Jen
+## Installation
 
-Download and install latest release from [github](https://github.com/silphid/jen/releases/latest).
+- MacOS
+
+  ```bash
+  $ brew tap silphid/jen
+  $ brew install jen
+  ```
+
+- Other platforms
+  - Download and install latest release for your platform from the GitHub [releases](https://github.com/silphid/jen/releases) page.
+  - Make sure you place the binary somewhere in your `$PATH`.
 
 ## Create git repo for templates/scripts
 
