@@ -5,7 +5,6 @@ import (
 	"github.com/Samasource/jen/src/cmd/exec"
 	"github.com/Samasource/jen/src/cmd/export"
 	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/cmd/list"
 	"github.com/Samasource/jen/src/cmd/pull"
 	"github.com/Samasource/jen/src/cmd/require"
 	"github.com/Samasource/jen/src/cmd/shell"
@@ -35,7 +34,6 @@ continues to support you throughout development in executing project-related com
 	c.AddCommand(do.New(&options))
 	c.AddCommand(exec.New(&options))
 	c.AddCommand(shell.New(&options))
-	c.AddCommand(list.New(&options))
 	c.AddCommand(export.New(&options))
 	c.AddCommand(require.New(&options))
 	return c
