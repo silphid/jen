@@ -32,7 +32,7 @@ Jen aims to provide a very simple framework to answer all those questions.
 
 ## Install Jen
 
-Download and install latest release from [github](https://github.com/Samasource/jen/releases/latest).
+Download and install latest release from [github](https://github.com/silphid/jen/releases/latest).
 
 ## Create git repo for templates/scripts
 
@@ -63,7 +63,7 @@ When executing any action or shell command, jen always prepends your `PATH` env 
 
 # Hello World example
 
-This `hello-world` example is available on [github](https://github.com/Samasource/jen/tree/master/examples/templates/hello-world). Don't hesitate to explore it there to better understand how it works (the template itself is much more instructive and interesting than the final output).
+This `hello-world` example is available on [github](https://github.com/silphid/jen/tree/master/examples/templates/hello-world). Don't hesitate to explore it there to better understand how it works (the template itself is much more instructive and interesting than the final output).
 
 ## Configuring jen
 
@@ -285,7 +285,7 @@ Steps have predefined names and purposes:
 
 ## Example
 
-The following is the [spec.yaml](https://github.com/Samasource/jen/tree/master/examples/templates/hello-world/spec.yaml) file of `hello-world` template in jen's [examples](https://github.com/Samasource/jen/tree/master/examples):
+The following is the [spec.yaml](https://github.com/silphid/jen/tree/master/examples/templates/hello-world/spec.yaml) file of `hello-world` template in jen's [examples](https://github.com/silphid/jen/tree/master/examples):
 
 ```yaml
 # Version of jen file format (for future compatibility checks)

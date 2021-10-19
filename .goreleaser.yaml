@@ -22,3 +22,13 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+brews:
+  - tap:
+      owner: silphid
+      name: homebrew-jen
+    homepage: "https://github.com/silphid/jen"
+    description: >-
+      Jen is a CLI tool for scaffolding new microservices based on Go templates,
+      onboarding them with your CI/CD and infra, and augmenting them with your
+      DevOps scripts for their entire life-time.
+    license: "MIT"
