@@ -1,6 +1,6 @@
 project_name: jen
 builds:
-  - dir: src
+  - dir: cmd/jen
     env:
       - CGO_ENABLED=0
     goos:
@@ -8,9 +8,12 @@ builds:
       - darwin
     ldflags:
       - -extldflags "-static"
+      - -s
+      - -w
+      - -X "main.version=v{{ .Version }}"
 archives:
   - format: tar.gz
-    wrap_in_directory: false
+    wrap_in_directory: "false"
     replacements:
       386: i386
       amd64: x86_64
