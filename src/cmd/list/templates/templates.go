@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/internal/home"
-	"github.com/Samasource/jen/src/internal/spec"
+	"github.com/silphid/jen/src/cmd/internal"
+	"github.com/silphid/jen/src/internal/home"
+	"github.com/silphid/jen/src/internal/spec"
 	"github.com/spf13/cobra"
 )
 

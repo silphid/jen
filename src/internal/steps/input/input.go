@@ -2,9 +2,9 @@ package input
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/exec"
-	"github.com/Samasource/jen/src/internal/helpers/variables"
+	"github.com/silphid/jen/src/internal/evaluation"
+	"github.com/silphid/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/helpers/variables"
 )
 
 // Prompt represents a single text input user prompt

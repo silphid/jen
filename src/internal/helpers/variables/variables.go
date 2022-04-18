@@ -1,6 +1,6 @@
 package variables
 
-import "github.com/Samasource/jen/src/internal/helpers/conversion"
+import "github.com/silphid/jen/src/internal/helpers/conversion"
 
 // TryGetString tries to fetch given variable from map and return it as a string,
 // also returning whether the variable was successfully found and converted.

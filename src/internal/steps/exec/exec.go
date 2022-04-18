@@ -1,8 +1,8 @@
 package exec
 
 import (
-	"github.com/Samasource/jen/src/internal/exec"
-	"github.com/Samasource/jen/src/internal/shell"
+	"github.com/silphid/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/shell"
 )
 
 // Exec represent a set of shell commands

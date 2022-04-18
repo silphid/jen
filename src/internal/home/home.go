@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Samasource/jen/src/internal/constant"
-	"github.com/Samasource/jen/src/internal/helpers"
-	"github.com/Samasource/jen/src/internal/logging"
-	"github.com/Samasource/jen/src/internal/shell"
 	"github.com/mitchellh/go-homedir"
+	"github.com/silphid/jen/src/internal/constant"
+	"github.com/silphid/jen/src/internal/helpers"
+	"github.com/silphid/jen/src/internal/logging"
+	"github.com/silphid/jen/src/internal/shell"
 )
 
 const (

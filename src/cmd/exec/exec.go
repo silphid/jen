@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/internal/exec"
-	"github.com/Samasource/jen/src/internal/shell"
+	"github.com/silphid/jen/src/cmd/internal"
+	"github.com/silphid/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/shell"
 	"github.com/spf13/cobra"
 )
 

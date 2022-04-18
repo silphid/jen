@@ -3,8 +3,8 @@ package render
 import (
 	"path/filepath"
 
-	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/evaluation"
+	"github.com/silphid/jen/src/internal/exec"
 )
 
 // Render represents an executable that renders a given source sub-folder

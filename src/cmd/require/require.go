@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Samasource/jen/src/cmd/internal"
+	"github.com/silphid/jen/src/cmd/internal"
 	"github.com/spf13/cobra"
 )
 

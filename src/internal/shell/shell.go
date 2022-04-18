@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/Samasource/jen/src/internal/logging"
+	"github.com/silphid/jen/src/internal/logging"
 )
 
 // Execute executes one or multiple shell commands, given specific env vars (defaults to process' env vars if nil)

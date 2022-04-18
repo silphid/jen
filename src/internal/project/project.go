@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	survey "github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/src/internal/constant"
-	"github.com/Samasource/jen/src/internal/helpers"
-	"github.com/Samasource/jen/src/internal/home"
-	"github.com/Samasource/jen/src/internal/spec"
+	"github.com/silphid/jen/src/internal/constant"
+	"github.com/silphid/jen/src/internal/helpers"
+	"github.com/silphid/jen/src/internal/home"
+	"github.com/silphid/jen/src/internal/spec"
 	"gopkg.in/yaml.v2"
 )
 

@@ -1,9 +1,9 @@
 package set
 
 import (
-	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/exec"
-	"github.com/Samasource/jen/src/internal/helpers/variables"
+	"github.com/silphid/jen/src/internal/evaluation"
+	"github.com/silphid/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/helpers/variables"
 )
 
 // Variable represents a single variable to be set to a given value

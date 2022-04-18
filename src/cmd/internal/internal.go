@@ -8,12 +8,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Samasource/jen/src/internal/exec"
-	"github.com/Samasource/jen/src/internal/helpers"
-	"github.com/Samasource/jen/src/internal/home"
-	"github.com/Samasource/jen/src/internal/logging"
-	"github.com/Samasource/jen/src/internal/project"
-	"github.com/Samasource/jen/src/internal/spec"
+	"github.com/silphid/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/helpers"
+	"github.com/silphid/jen/src/internal/home"
+	"github.com/silphid/jen/src/internal/logging"
+	"github.com/silphid/jen/src/internal/project"
+	"github.com/silphid/jen/src/internal/spec"
 )
 
 // Options represents all command line configurations

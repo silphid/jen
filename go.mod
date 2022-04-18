@@ -1,4 +1,4 @@
-module github.com/Samasource/jen
+module github.com/silphid/jen
 
 go 1.16
 

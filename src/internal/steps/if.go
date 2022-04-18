@@ -3,9 +3,9 @@ package steps
 import (
 	"fmt"
 
-	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/exec"
-	logging "github.com/Samasource/jen/src/internal/logging"
+	"github.com/silphid/jen/src/internal/evaluation"
+	"github.com/silphid/jen/src/internal/exec"
+	logging "github.com/silphid/jen/src/internal/logging"
 )
 
 // If represents a conditional step that executes its child executable only if

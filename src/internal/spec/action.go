@@ -1,8 +1,8 @@
 package spec
 
 import (
-	"github.com/Samasource/jen/src/internal/exec"
-	logging "github.com/Samasource/jen/src/internal/logging"
+	"github.com/silphid/jen/src/internal/exec"
+	logging "github.com/silphid/jen/src/internal/logging"
 )
 
 // Action represents a named executable that can be invoked from the

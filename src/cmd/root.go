@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"github.com/Samasource/jen/src/cmd/do"
-	"github.com/Samasource/jen/src/cmd/exec"
-	"github.com/Samasource/jen/src/cmd/export"
-	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/cmd/pull"
-	"github.com/Samasource/jen/src/cmd/require"
-	"github.com/Samasource/jen/src/cmd/shell"
-	"github.com/Samasource/jen/src/cmd/versioning"
-	"github.com/Samasource/jen/src/internal/logging"
+	"github.com/silphid/jen/src/cmd/do"
+	"github.com/silphid/jen/src/cmd/exec"
+	"github.com/silphid/jen/src/cmd/export"
+	"github.com/silphid/jen/src/cmd/internal"
+	"github.com/silphid/jen/src/cmd/pull"
+	"github.com/silphid/jen/src/cmd/require"
+	"github.com/silphid/jen/src/cmd/shell"
+	"github.com/silphid/jen/src/cmd/versioning"
+	"github.com/silphid/jen/src/internal/logging"
 	"github.com/spf13/cobra"
 )
 

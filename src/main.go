@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/Samasource/jen/src/cmd"
+	"github.com/silphid/jen/src/cmd"
 )
 
 var version string

@@ -3,7 +3,7 @@ package do
 import (
 	"fmt"
 
-	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/exec"
 )
 
 // Do represents a reference to another action within same spec file to which

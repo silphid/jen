@@ -2,8 +2,8 @@ package choice
 
 import (
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/Samasource/jen/src/internal/evaluation"
-	"github.com/Samasource/jen/src/internal/exec"
+	"github.com/silphid/jen/src/internal/evaluation"
+	"github.com/silphid/jen/src/internal/exec"
 )
 
 // Item represent one of the multiple choices prompted to user

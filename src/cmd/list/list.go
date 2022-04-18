@@ -1,11 +1,11 @@
 package list
 
 import (
-	"github.com/Samasource/jen/src/cmd/internal"
-	"github.com/Samasource/jen/src/cmd/list/actions"
-	"github.com/Samasource/jen/src/cmd/list/scripts"
-	"github.com/Samasource/jen/src/cmd/list/templates"
-	"github.com/Samasource/jen/src/cmd/list/vars"
+	"github.com/silphid/jen/src/cmd/internal"
+	"github.com/silphid/jen/src/cmd/list/actions"
+	"github.com/silphid/jen/src/cmd/list/scripts"
+	"github.com/silphid/jen/src/cmd/list/templates"
+	"github.com/silphid/jen/src/cmd/list/vars"
 	"github.com/spf13/cobra"
 )
 
