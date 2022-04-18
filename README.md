@@ -32,16 +32,25 @@ Jen aims to provide a very simple framework to answer all those questions.
 
 ## Installation
 
-- MacOS
+### Installing via brew on MacOS (recommended)
 
-  ```bash
-  $ brew tap silphid/jen
-  $ brew install jen
-  ```
+```bash
+$ brew tap silphid/jen
+$ brew install jen
+```
 
-- Other platforms
-  - Download and install latest release for your platform from the GitHub [releases](https://github.com/silphid/jen/releases) page.
-  - Make sure you place the binary somewhere in your `$PATH`.
+### Downloading binary
+
+- Download and install latest release for your platform from the GitHub [releases](https://github.com/silphid/jen/releases) page.
+- Make sure the binary is accessible via your `$PATH`.
+
+### Building and installing from source
+
+```bash
+$ go install github.com/silphid/jen/src@latest
+```
+
+You may also replace `@latest` with specific desired version, such as `@v0.1.2`.
 
 ## Create git repo for templates/scripts
 
@@ -79,7 +88,7 @@ This `hello-world` example is available on [github](https://github.com/silphid/j
 1. Configure jen to point to jen's example templates and scripts:
 
 ```bash
-$ export JEN_REPO=git@github.com:Samasource/jen.git
+$ export JEN_REPO=git@github.com:silphid/jen.git
 $ export JEN_SUBDIR=examples
 ```
 
@@ -412,15 +421,13 @@ actions:
 
 ## Go template language
 
-Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/) and augments its built-in functions with the very helpful [sprig](https://masterminds.github.io/sprig/)
-function library.
+Jen leverages the Go templating engine described [here](https://golang.org/pkg/text/template/) and augments its built-in functions with the very helpful [sprig](https://masterminds.github.io/sprig/) function library.
 
 Those template expressions can be used in templates, user prompts, and file/directory names, as described in following sections.
 
 ## Activating/deactivating rendering
 
-By default, all files in a template are copied as is, without rendering their content as templates. Template rendering can however be activated or deactivate selectively on a per-file/directory basis, by appending a `.tmpl` or `.notmpl` extension to file/directory names. Applying those
-extensions to a directory affects all child files recursively, unless overriden down the tree. Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file/ directory names.
+By default, all files in a template are copied as is, without rendering their content as templates. Template rendering can however be activated or deactivate selectively on a per-file/directory basis, by appending a `.tmpl` or `.notmpl` extension to file/directory names. Applying those extensions to a directory affects all child files recursively, unless overriden down the tree. Note that the `.tmpl` and `.notmpl` extensions are automatically stripped away from target file/directory names.
 
 To override the no templating default, you can simply append a `.tmpl` extension to the name of the root directory passed to the `render` step, ie:
 
@@ -500,8 +507,7 @@ placeholders:
 
 You can then use these placeholders anywhere without any adornments. For example, the text "MY PROJEKT FILE.TXT" is equivalent to "MY {{.PROJECT | upper}} FILE.TXT".
 
-This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very
-unlikely to encounter in your project for any other reason than those placeholders!
+This feature was inspired by the way we were previously creating new projects by duplicating an existing project and doing a search-and-replace for the project name in different case variants. That strategy was very simple and effective, as long as the project name was a very distinct string that did not appear in any other undesired contexts, hence our choice of `projekt` as something that you are (hopefully!) very unlikely to encounter in your project for any other reason than those placeholders!
 
 ## Adding multiple similar elements to a project after scaffolding
 
@@ -529,12 +535,11 @@ If you need to insert text in different locations of same file, you can specify 
 
 All text outside delimited sections simply gets discarded/ignored.
 
-The rules for finding insertion point is as follows:
+The rules for determining insertion point are the following:
 
 - If you specify only start regex, insertion will happen right after first matching start line.
 - If you specify only end regex, insertion will happen right before first matching end line.
-- If you specify both start and end regexes, insertion will happen right before first matching end line after
-  first matching start line.
+- If you specify both start and end regexes, insertion will happen right before first matching end line that is found following first matching start line (in other words, end line is searched relatively to start line).
 
 See `hello-world` example template for a demonstration of inserting multiple snippets into an existing source file at a specific insertion location.
 
@@ -544,7 +549,7 @@ For complete regex syntax reference, see the [RE2 wiki](https://github.com/googl
 
 ## Verifying required variables in custom scripts
 
-To make your scripts more robust and self documented, you can use the `jen require VAR1 VAR2 ...` command in their first few lines (typically after `set -e` to make script fail in case of missing variable):
+To make your jen bash scripts more robust and self documented, you can use the `jen require VAR1 VAR2 ...` command in their first few lines (typically after `set -e` to make script fail in case of missing variable):
 
 ```bash
 #!/bin/bash
@@ -561,13 +566,12 @@ To associate a template with an existing project that was not initially generate
 
 # Wishlist
 
-- Add `jen which [script]` command
-- Auto-completion
-- Way for overridding bin script to fallback/call-out to default implementation(?)
-- Allow marking prompt steps' variables as transient, which does not persist them to jen.yaml file (useful for variables scoped to some action).
-- Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
-- Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command returns either 0 or 1, depending on whether user responds Yes or No respectively).
+- Support for versioning templates, allowing projects generated with a specific template version to use a specific version of bash scripts (useful for progressively evolving scripts without breaking older projects).
+- Add `jen which [script]` command to show absolute path to script that would be executed by `jen exec [script]`.
+- Auto-completion for bash and zsh shells.
 - Add `--dry-run` flag (automatically turns on `--verbose`?).
 - Add regex validation for `input` prompt.
-- Add more example templates, for go, node...
+- Add `jen confirm MESSAGE` command for scripts to use for confirming dangerous operations like uninstalling (the command would return exit code 0 or 1, depending on whether user responds Yes or No respectively).
 - Fix `choice` step to pre-select current value, if any.
+- Way for overridding bin script to fallback/call-out to default implementation(?)
+- Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
