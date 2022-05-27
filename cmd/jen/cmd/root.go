@@ -5,6 +5,7 @@ import (
 	"github.com/silphid/jen/cmd/jen/cmd/exec"
 	"github.com/silphid/jen/cmd/jen/cmd/export"
 	"github.com/silphid/jen/cmd/jen/cmd/internal"
+	"github.com/silphid/jen/cmd/jen/cmd/list"
 	"github.com/silphid/jen/cmd/jen/cmd/pull"
 	"github.com/silphid/jen/cmd/jen/cmd/require"
 	"github.com/silphid/jen/cmd/jen/cmd/shell"
@@ -33,6 +34,7 @@ continues to support you throughout development in executing project-related com
 	c.AddCommand(pull.New())
 	c.AddCommand(do.New(&options))
 	c.AddCommand(exec.New(&options))
+	c.AddCommand(list.New(&options))
 	c.AddCommand(shell.New(&options))
 	c.AddCommand(export.New(&options))
 	c.AddCommand(require.New(&options))
