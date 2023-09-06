@@ -9,7 +9,7 @@ setup:
 
 build:
 	@mkdir -p ~/bin
-    @go build -ldflags "-X main.version=dev-$(date +%F-%T)" -o ~/bin/jen ./cmd/jen
+	@go build -ldflags "-X main.version=dev-$(date +%F-%T)" -o ~/bin/jen ./cmd/jen
 
 vet:
 	@go vet ./cmd/jen/...
