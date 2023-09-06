@@ -13,8 +13,9 @@ import (
 // New creates a cobra command
 func New(options *internal.Options) *cobra.Command {
 	return &cobra.Command{
-		Use:   "exec",
-		Short: "Executes custom scripts or arbitrary shell commands with project's environment variables",
+		Use:                "exec",
+		Short:              "Executes custom scripts or arbitrary shell commands with project's environment variables",
+		DisableFlagParsing: true,
 		RunE: func(_ *cobra.Command, args []string) error {
 			return run(options, args)
 		},

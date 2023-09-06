@@ -30,7 +30,7 @@ changelog:
 brews:
   - tap:
       owner: silphid
-      name: homebrew-jen
+      name: homebrew-tap
     homepage: "https://github.com/silphid/jen"
     description: >-
       Jen is a CLI tool for scaffolding new microservices based on Go templates,

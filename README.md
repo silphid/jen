@@ -35,7 +35,7 @@ Jen aims to provide a very simple framework to answer all those questions.
 ### Installing via brew on MacOS (recommended)
 
 ```bash
-$ brew tap silphid/jen
+$ brew tap silphid/tap
 $ brew install jen
 ```
 
