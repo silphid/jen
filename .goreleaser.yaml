@@ -13,12 +13,9 @@ builds:
       - -X "main.version=v{{ .Version }}"
 archives:
   - format: tar.gz
-    wrap_in_directory: "false"
-    replacements:
-      386: i386
-      amd64: x86_64
+    wrap_in_directory: false
 checksum:
-  name_template: "checksums.txt"
+  name_template: checksums.txt
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
@@ -31,9 +28,9 @@ brews:
   - tap:
       owner: silphid
       name: homebrew-tap
-    homepage: "https://github.com/silphid/jen"
+    homepage: https://github.com/silphid/jen
     description: >-
       Jen is a CLI tool for scaffolding new microservices based on Go templates,
       onboarding them with your CI/CD and infra, and augmenting them with your
       DevOps scripts for their entire life-time.
-    license: "MIT"
+    license: MIT
