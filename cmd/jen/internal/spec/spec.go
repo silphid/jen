@@ -3,6 +3,7 @@ package spec
 import (
 	"fmt"
 	"path/filepath"
+	"sort"
 
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/silphid/jen/cmd/jen/internal/constant"
@@ -245,6 +246,9 @@ func loadSetStep(_map yaml.Map) (exec.Executable, error) {
 			Value: value,
 		})
 	}
+	sort.Slice(variables, func(i, j int) bool {
+		return variables[i].Name < variables[j].Name
+	})
 	return set.Set{
 		Variables: variables,
 	}, nil
