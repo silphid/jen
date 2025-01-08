@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/silphid/jen/compare/v0.3.0...v0.3.1) (2025-01-08)
+
+
+### Bug Fixes
+
+* force build of new release ([68005cd](https://github.com/silphid/jen/commit/68005cd93fdfa016876e17d5c2a5ec0d0bcc90dd))
+
+
+
 # [0.3.0](https://github.com/silphid/jen/compare/v0.2.22...v0.3.0) (2025-01-08)
 
 
