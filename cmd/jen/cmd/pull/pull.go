@@ -10,7 +10,7 @@ import (
 func New() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pull",
-		Short: "Pulls latest templates from git repo",
+		Short: "Pulls latest template git repo",
 		Args:  cobra.NoArgs,
 		RunE: func(_ *cobra.Command, args []string) error {
 			jenHome, err := home.GetOrCloneRepo()

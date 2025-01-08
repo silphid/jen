@@ -17,6 +17,9 @@ func New(options *internal.Options) *cobra.Command {
 		Short:              "Executes custom scripts or arbitrary shell commands with project's environment variables",
 		DisableFlagParsing: true,
 		RunE: func(_ *cobra.Command, args []string) error {
+			for len(args) > 0 && strings.HasPrefix(args[0], "-") {
+				args = args[1:]
+			}
 			return run(options, args)
 		},
 	}

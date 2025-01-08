@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/silphid/jen/cmd/jen/internal/shell"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -20,6 +21,7 @@ import (
 type Options struct {
 	TemplateName string
 	SkipConfirm  bool
+	SkipPull     bool
 	VarOverrides []string
 }
 
@@ -28,6 +30,17 @@ func (o Options) NewContext() (exec.Context, error) {
 	_, err := home.GetOrCloneRepo()
 	if err != nil {
 		return nil, err
+	}
+
+	if !o.SkipPull {
+		jenHome, err := home.GetOrCloneRepo()
+		if err != nil {
+			return nil, err
+		}
+
+		if err := shell.ExecuteOutputOnlyErrors(nil, jenHome, "git pull"); err != nil {
+			return nil, fmt.Errorf("pulling latest templates: %w\nuse --skip-pull flag to bypass pulling template git repo", err)
+		}
 	}
 
 	proj, err := project.LoadOrCreate(o.TemplateName, o.SkipConfirm, o.VarOverrides)
