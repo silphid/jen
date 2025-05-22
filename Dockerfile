@@ -10,7 +10,7 @@ RUN go build
 
 # -----------
 
-FROM debian:buster
+FROM debian:12.10
 
 COPY --from=build /app/jen /jen
 CMD ["bash"]
