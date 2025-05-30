@@ -4,17 +4,18 @@ go 1.23
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.2.9
+	github.com/Masterminds/goutils v1.1.1 // indirect; security update
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/go-test/deep v1.0.7
 	github.com/kylelemons/go-gypsy v1.0.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.3.0
+	golang.org/x/sys v0.1.0 // indirect; security update
 	gopkg.in/yaml.v2 v2.3.0
 )
 
 require (
-	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.1.2 // indirect
@@ -30,6 +31,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
-	golang.org/x/sys v0.0.0-20190624142023-c5567b49c5d0 // indirect
 	golang.org/x/text v0.3.2 // indirect
 )
