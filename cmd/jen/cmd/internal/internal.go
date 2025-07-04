@@ -2,12 +2,14 @@ package internal
 
 import (
 	"fmt"
-	"github.com/silphid/jen/cmd/jen/internal/shell"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
+
+	"github.com/silphid/jen/cmd/jen/internal/shell"
 
 	"github.com/silphid/jen/cmd/jen/internal/exec"
 	"github.com/silphid/jen/cmd/jen/internal/helpers"
@@ -33,13 +35,8 @@ func (o Options) NewContext() (exec.Context, error) {
 	}
 
 	if !o.SkipPull {
-		jenHome, err := home.GetOrCloneRepo()
-		if err != nil {
+		if err = maybePull(); err != nil {
 			return nil, err
-		}
-
-		if err := shell.ExecuteOutputOnlyErrors(nil, jenHome, "git pull"); err != nil {
-			return nil, fmt.Errorf("pulling latest templates: %w\nuse --skip-pull flag to bypass pulling template git repo", err)
 		}
 	}
 
@@ -69,6 +66,33 @@ func (o Options) NewContext() (exec.Context, error) {
 		project:     proj,
 		spec:        *specification,
 	}, nil
+}
+
+func maybePull() error {
+	jenHome, err := home.GetOrCloneRepo()
+	if err != nil {
+		return err
+	}
+
+	sentinelFile := filepath.Join(jenHome, ".git/last-pull")
+
+	if info, err := os.Stat(sentinelFile); err == nil {
+		if time.Since(info.ModTime()).Hours() < 24 {
+			logging.Log("Skipping git pull as it was run less than 24 hours ago. Use `jen pull` to force a pull.")
+			return nil
+		}
+	}
+
+	logging.Log("Running git pull in %s ...\n", jenHome)
+	if err := shell.ExecuteOutputOnlyErrors(nil, jenHome, "git pull"); err != nil {
+		return fmt.Errorf("pulling latest templates: %w\nuse --skip-pull flag to bypass pulling template git repo", err)
+	}
+
+	if err := os.WriteFile(sentinelFile, []byte{}, 0644); err != nil {
+		return fmt.Errorf("Failed to update last pull sentinel file: %v", err)
+	}
+
+	return nil
 }
 
 // context contains all the information for implementing both the

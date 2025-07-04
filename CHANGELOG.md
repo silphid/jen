@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/silphid/jen/compare/v0.3.1...v0.4.0) (2025-04-25)
+
+
+### Features
+
+* **pull:** only pull jenHome every 24h ([5b8673b](https://github.com/silphid/jen/commit/5b8673bfb006909b115281e008d49011f191e299))
+
+
+
 ## [0.3.1](https://github.com/silphid/jen/compare/v0.3.0...v0.3.1) (2025-01-08)
 
 
