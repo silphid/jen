@@ -49,8 +49,9 @@ func promptScript(context exec.Context) (string, error) {
 		return "", err
 	}
 	prompt := &survey.Select{
-		Message: "Select script to execute",
-		Options: scripts,
+		Message:  "Select script to execute",
+		Options:  scripts,
+		PageSize: 20,
 	}
 	var script string
 	if err := survey.AskOne(prompt, &script); err != nil {
