@@ -10,7 +10,7 @@ RUN go build
 
 # -----------
 
-FROM debian:12.11
+FROM debian:12.12
 
 COPY --from=build /app/jen /jen
 CMD ["bash"]
