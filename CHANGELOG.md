@@ -1,3 +1,12 @@
+## [0.5.1](https://github.com/silphid/jen/compare/v0.5.0...v0.5.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* Dockerfile to reduce vulnerabilities ([8c0e3e3](https://github.com/silphid/jen/commit/8c0e3e336a547bcff4c70c36d504a8f83141d867))
+
+
+
 # [0.5.0](https://github.com/silphid/jen/compare/v0.4.0...v0.5.0) (2025-07-11)
 
 
