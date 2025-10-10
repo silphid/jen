@@ -1,3 +1,26 @@
+## [0.5.1](https://github.com/silphid/jen/compare/v0.5.0...v0.5.1) (2025-10-10)
+
+
+### Bug Fixes
+
+* Dockerfile to reduce vulnerabilities ([8c0e3e3](https://github.com/silphid/jen/commit/8c0e3e336a547bcff4c70c36d504a8f83141d867))
+
+
+
+# [0.5.0](https://github.com/silphid/jen/compare/v0.4.0...v0.5.0) (2025-07-11)
+
+
+### Bug Fixes
+
+* Dockerfile to reduce vulnerabilities ([5fbc7f6](https://github.com/silphid/jen/commit/5fbc7f6daf09f3067091b07266650a11e8b5d6ea))
+
+
+### Features
+
+* **PL-2890:** increase page size ([85b26e0](https://github.com/silphid/jen/commit/85b26e0b1832b7280c011529d86ba03e59aba479))
+
+
+
 # [0.4.0](https://github.com/silphid/jen/compare/v0.3.1...v0.4.0) (2025-04-25)
 
 
