@@ -225,7 +225,7 @@ func (c context) GetShellVars(includeProcessVars bool) []string {
 	// Override PATH env var
 	entry := fmt.Sprintf("PATH=%v", pathVar)
 	env = append(env, entry)
-	logging.Log(entry)
+	logging.Log("%s", entry)
 
 	// Then values env vars
 	logging.Log("Environment variables:")
@@ -233,7 +233,7 @@ func (c context) GetShellVars(includeProcessVars bool) []string {
 	for key, value := range vars {
 		entry := fmt.Sprintf("%s=%v", key, value)
 		env = append(env, entry)
-		logging.Log(entry)
+		logging.Log("%s", entry)
 	}
 	return env
 }
