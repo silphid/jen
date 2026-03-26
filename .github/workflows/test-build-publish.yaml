@@ -56,7 +56,7 @@ jobs:
 
       - name: Generate changelog and tag release
         id: changelog
-        uses: TriPSs/conventional-changelog-action@v4
+        uses: nestoca/conventional-changelog-action@releases/v5
         with:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
@@ -88,7 +88,7 @@ jobs:
 
       - name: Release new CLI version
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@5fdedb94abba051217030cc86d4523cf3f02243d
         with:
           version: latest
           args: release --clean --release-notes "${{ runner.temp }}/CHANGELOG.md"
