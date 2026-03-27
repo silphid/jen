@@ -1,3 +1,20 @@
+# [0.6.0](https://github.com/silphid/jen/compare/v0.5.1...v0.6.0) (2026-03-27)
+
+
+### Bug Fixes
+
+* Dockerfile to reduce vulnerabilities ([a3da959](https://github.com/silphid/jen/commit/a3da959f504c0a9cd07a899f63aefe17c586d894))
+* Dockerfile to reduce vulnerabilities ([a9cbd29](https://github.com/silphid/jen/commit/a9cbd299e973674102aad8f2e678e65e65ef241f))
+* **PL-3611:** go get -u Masterminds/sprig (vulnerable ./goutils, x/sys) ([9d57a85](https://github.com/silphid/jen/commit/9d57a8596264a80a1f12aa7fc911ff96b186ea6b))
+* **PL-4595:** update openssl provider legacy ([8d8b5c9](https://github.com/silphid/jen/commit/8d8b5c982aec128de199ab231a317cf4f6da39bc))
+
+
+### Features
+
+* **PL-5209:** pin external action ([be946c9](https://github.com/silphid/jen/commit/be946c93bef46caf875638c7827e2dbe40e7b680))
+
+
+
 ## [0.5.1](https://github.com/silphid/jen/compare/v0.5.0...v0.5.1) (2025-10-10)
 
 
