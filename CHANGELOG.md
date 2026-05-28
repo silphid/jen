@@ -1,3 +1,13 @@
+# [0.7.0](https://github.com/silphid/jen/compare/v0.6.0...v0.7.0) (2026-05-28)
+
+
+### Features
+
+* log resolved project dir/file in verbose mode ([#16](https://github.com/silphid/jen/issues/16) [#17](https://github.com/silphid/jen/issues/17) [#18](https://github.com/silphid/jen/issues/18)) ([0f55002](https://github.com/silphid/jen/commit/0f55002d369c88ed7da4316f224dfb299d47f518))
+* log resolved project dir/file in verbose mode ([#16](https://github.com/silphid/jen/issues/16)) ([#17](https://github.com/silphid/jen/issues/17)) ([8a56b7e](https://github.com/silphid/jen/commit/8a56b7e03cabd9b18bc0dfba43c2b9d2bead5859))
+
+
+
 # [0.6.0](https://github.com/silphid/jen/compare/v0.5.1...v0.6.0) (2026-03-27)
 
 
