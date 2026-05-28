@@ -579,3 +579,4 @@ To associate a template with an existing project that was not initially generate
 - Fix `choice` step to pre-select current value, if any.
 - Way for overridding bin script to fallback/call-out to default implementation(?)
 - Add reusable modules, including both templates and scripts (ie: scripts common to all go projects).
+
