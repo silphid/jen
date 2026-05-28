@@ -12,6 +12,7 @@ import (
 	"github.com/silphid/jen/cmd/jen/internal/constant"
 	"github.com/silphid/jen/cmd/jen/internal/helpers"
 	"github.com/silphid/jen/cmd/jen/internal/home"
+	"github.com/silphid/jen/cmd/jen/internal/logging"
 	"github.com/silphid/jen/cmd/jen/internal/spec"
 	"gopkg.in/yaml.v2"
 )
@@ -35,6 +36,33 @@ func GetProjectDir() (string, error) {
 		}
 		dir = filepath.Dir(dir)
 	}
+}
+
+// LogResolvedProjectPaths prints the resolved project directory and jen.yaml path when verbose is enabled.
+func LogResolvedProjectPaths() error {
+	projectDir, err := GetProjectDir()
+	if err != nil {
+		return err
+	}
+	dir := projectDir
+	if dir == "" {
+		dir, err = os.Getwd()
+		if err != nil {
+			return fmt.Errorf("finding project's root dir: %w", err)
+		}
+	}
+	absDir, err := filepath.Abs(dir)
+	if err != nil {
+		absDir = dir
+	}
+	projectFilePath := filepath.Join(dir, constant.ProjectFileName)
+	absProjectFile, err := filepath.Abs(projectFilePath)
+	if err != nil {
+		absProjectFile = projectFilePath
+	}
+	logging.Log("Using jen project dir: %s", absDir)
+	logging.Log("Using jen project file: %s", absProjectFile)
+	return nil
 }
 
 // Project represents the configuration file in a project's root dir
@@ -99,16 +127,21 @@ func LoadOrCreate(templateName string, skipConfirm bool, varOverrides []string) 
 		return nil, err
 	}
 	if projectDir == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return nil, fmt.Errorf("finding project's root dir: %w", err)
+		}
 		if !skipConfirm {
 			err := confirmCreateProject()
 			if err != nil {
 				return nil, err
 			}
 		}
-		proj := Project{}
+		proj := Project{Dir: cwd}
 		if err := proj.Save(); err != nil {
 			return nil, err
 		}
+		projectDir = cwd
 	}
 
 	proj, err := Load(projectDir)
