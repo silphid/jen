@@ -44,6 +44,7 @@ func LogResolvedProjectPaths() error {
 	if err != nil {
 		return err
 	}
+
 	dir := projectDir
 	if dir == "" {
 		dir, err = os.Getwd()
@@ -51,17 +52,21 @@ func LogResolvedProjectPaths() error {
 			return fmt.Errorf("finding project's root dir: %w", err)
 		}
 	}
+
 	absDir, err := filepath.Abs(dir)
 	if err != nil {
 		absDir = dir
 	}
+
 	projectFilePath := filepath.Join(dir, constant.ProjectFileName)
 	absProjectFile, err := filepath.Abs(projectFilePath)
 	if err != nil {
 		absProjectFile = projectFilePath
 	}
+
 	logging.Log("Using jen project dir: %s", absDir)
 	logging.Log("Using jen project file: %s", absProjectFile)
+
 	return nil
 }
 
