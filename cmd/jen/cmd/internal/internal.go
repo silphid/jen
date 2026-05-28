@@ -40,6 +40,10 @@ func (o Options) NewContext() (exec.Context, error) {
 		}
 	}
 
+	if err := project.LogResolvedProjectPaths(); err != nil {
+		return nil, err
+	}
+
 	proj, err := project.LoadOrCreate(o.TemplateName, o.SkipConfirm, o.VarOverrides)
 	if err != nil {
 		return nil, err
