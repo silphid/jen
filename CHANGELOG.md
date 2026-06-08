@@ -1,3 +1,12 @@
+## [0.7.1](https://github.com/silphid/jen/compare/v0.7.0...v0.7.1) (2026-06-08)
+
+
+### Bug Fixes
+
+* **PL-5102:** confirm default value ([#19](https://github.com/silphid/jen/issues/19)) ([06c0986](https://github.com/silphid/jen/commit/06c0986e4f8a16e768d77d51eaae19ed60e01207))
+
+
+
 # [0.7.0](https://github.com/silphid/jen/compare/v0.6.0...v0.7.0) (2026-05-28)
 
 
