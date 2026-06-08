@@ -95,6 +95,26 @@ then:
 			},
 		},
 		{
+			Name: "confirm with default true",
+			Buffer: `
+confirm: Message
+default: true
+then:
+  - input:
+      question: Message
+      var: Variable`,
+			Expected: steps.Confirm{
+				Message: "Message",
+				Default: true,
+				Then: exec.Executables{
+					input.Prompt{
+						Message: "Message",
+						Var:     "Variable",
+					},
+				},
+			},
+		},
+		{
 			Name: "set step",
 			Buffer: `
 set:
