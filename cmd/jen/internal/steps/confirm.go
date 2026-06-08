@@ -11,6 +11,7 @@ import (
 // user answers Yes when prompted for given message
 type Confirm struct {
 	Message string
+	Default bool
 	Then    exec.Executables
 }
 
@@ -26,7 +27,7 @@ func (c Confirm) Execute(context exec.Context) error {
 	}
 	prompt := &survey.Confirm{
 		Message: message,
-		Default: false,
+		Default: c.Default,
 	}
 	value := false
 	if err := survey.AskOne(prompt, &value); err != nil {

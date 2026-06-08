@@ -231,8 +231,13 @@ func loadConfirmStep(_map yaml.Map) (exec.Executable, error) {
 	if err != nil {
 		return nil, err
 	}
+	defaultValue, err := getOptionalBool(_map, "default", false)
+	if err != nil {
+		return nil, err
+	}
 	return steps.Confirm{
 		Message: message,
+		Default: defaultValue,
 		Then:    executables,
 	}, nil
 }
